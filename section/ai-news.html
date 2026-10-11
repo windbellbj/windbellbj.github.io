@@ -24,38 +24,47 @@ header-img: "img/post-bg-ai-news.svg"
 <div class="container">
     <div class="row">
         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <p>本板块由 GitHub Actions 每周自动抓取三类来源：重点跟踪清单（点名关注的新工具）、GitHub 近期爆火的 AI 编程工具（AI 编程助手 / CLI、Skill、MCP、Agent Harness、编码 Agent、AI IDE 插件）、Hacker News 的 Show HN 新品。所有候选先经关键词粗筛，再由 AI 按「Java 程序员、日常使用 Trae Work 开发」的视角逐条精判，每个入选项目独立成篇：AI 阅读官方 README 与素材后生成中文介绍，站在 Trae Work 集成视角讲清安装配置，并附一段可整段复制给 AI 助手的「落地指令」。</p>
+            <p>本板块由 GitHub Actions 每周两次自动汇总三类来源：重点跟踪清单（点名关注的新工具）、GitHub 近期爆火的 AI 编程工具（AI 编程助手 / CLI、Skill、MCP、Agent Harness、编码 Agent、AI IDE 插件）、Hacker News 的 Show HN 新品。所有候选先经关键词粗筛，再由 AI 按「Java 程序员、日常使用 Trae Work 开发」的视角逐条精判，每个入选项目独立成篇：AI 综合官方仓库、项目官网、公开介绍与社区讨论写成中文说明书，站在 Trae Work 集成视角讲清安装配置与上手步骤，并附一段可整段复制给 AI 助手的「落地指令」。</p>
             <hr>
             {% assign all_posts = site.tags["AI新资讯"] %}
-            {% if all_posts %}
-            {% assign groups = "skill|AI 技能 Skill*mcp|MCP 服务与工具*harness|Agent Harness*agent-cli|编码 Agent 与 CLI*ide-plugin|AI IDE 插件*other|其他" | split: "*" %}
-            {% for group in groups %}
-            {% assign parts = group | split: "|" %}
-            {% assign key = parts[0] %}
-            {% if key == "other" %}
-            {% assign cat_posts = all_posts | where_exp: "post", "post.news_category != 'skill'" | where_exp: "post", "post.news_category != 'mcp'" | where_exp: "post", "post.news_category != 'harness'" | where_exp: "post", "post.news_category != 'agent-cli'" | where_exp: "post", "post.news_category != 'ide-plugin'" | sort: "date" | reverse %}
-            {% else %}
-            {% assign cat_posts = all_posts | where_exp: "post", "post.news_category == key" | sort: "date" | reverse %}
-            {% endif %}
-            {% if cat_posts.size > 0 %}
-            <h2 class="news-cat-title">{{ parts[1] }}<span class="news-cat-count">{{ cat_posts.size }}</span></h2>
-            {% for post in cat_posts %}
-            <div class="post-preview">
-                <a href="{{ post.url | prepend: site.baseurl }}">
-                    <h2 class="post-title">{{ post.title }}</h2>
-                    {% if post.subtitle %}
-                    <h3 class="post-subtitle">{{ post.subtitle }}</h3>
-                    {% endif %}
+            {% assign skill_posts = all_posts | where_exp: "post", "post.news_category == 'skill'" %}
+            {% assign mcp_posts = all_posts | where_exp: "post", "post.news_category == 'mcp'" %}
+            {% assign harness_posts = all_posts | where_exp: "post", "post.news_category == 'harness'" %}
+            {% assign agent_cli_posts = all_posts | where_exp: "post", "post.news_category == 'agent-cli'" %}
+            {% assign ide_plugin_posts = all_posts | where_exp: "post", "post.news_category == 'ide-plugin'" %}
+            {% assign other_posts = all_posts | where_exp: "post", "post.news_category == 'other'" %}
+            <div class="news-cards">
+                <a class="news-card" href="{{ site.baseurl }}/ai-news/skill/">
+                    <span class="news-card-head"><span class="news-card-title">AI技能</span><span class="news-card-en">Skill</span><span class="news-card-count">{{ skill_posts.size }} 篇</span></span>
+                    <span class="news-card-desc">可复用的技能包，为 AI 助手补充领域知识与标准工作流</span>
+                    <span class="news-card-go">进入分类 →</span>
                 </a>
-                <p class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</p>
+                <a class="news-card" href="{{ site.baseurl }}/ai-news/mcp/">
+                    <span class="news-card-head"><span class="news-card-title">MCP服务</span><span class="news-card-en">MCP</span><span class="news-card-count">{{ mcp_posts.size }} 篇</span></span>
+                    <span class="news-card-desc">Model Context Protocol 服务与客户端，让 AI 助手接入外部工具与数据</span>
+                    <span class="news-card-go">进入分类 →</span>
+                </a>
+                <a class="news-card" href="{{ site.baseurl }}/ai-news/harness/">
+                    <span class="news-card-head"><span class="news-card-title">Agent Harness</span><span class="news-card-en">Harness</span><span class="news-card-count">{{ harness_posts.size }} 篇</span></span>
+                    <span class="news-card-desc">智能体运行壳，负责上下文管理、工具调用与任务编排</span>
+                    <span class="news-card-go">进入分类 →</span>
+                </a>
+                <a class="news-card" href="{{ site.baseurl }}/ai-news/agent-cli/">
+                    <span class="news-card-head"><span class="news-card-title">编码Agent</span><span class="news-card-en">Coding Agent / CLI</span><span class="news-card-count">{{ agent_cli_posts.size }} 篇</span></span>
+                    <span class="news-card-desc">终端里的编码 Agent 与命令行 AI 编程工具</span>
+                    <span class="news-card-go">进入分类 →</span>
+                </a>
+                <a class="news-card" href="{{ site.baseurl }}/ai-news/ide-plugin/">
+                    <span class="news-card-head"><span class="news-card-title">AI IDE插件</span><span class="news-card-en">IDE Plugin</span><span class="news-card-count">{{ ide_plugin_posts.size }} 篇</span></span>
+                    <span class="news-card-desc">IDE 内的 AI 编程插件与扩展</span>
+                    <span class="news-card-go">进入分类 →</span>
+                </a>
+                <a class="news-card" href="{{ site.baseurl }}/ai-news/other/">
+                    <span class="news-card-head"><span class="news-card-title">其他</span><span class="news-card-en">Others</span><span class="news-card-count">{{ other_posts.size }} 篇</span></span>
+                    <span class="news-card-desc">暂未归入上述分类的 AI 编程新品</span>
+                    <span class="news-card-go">进入分类 →</span>
+                </a>
             </div>
-            <hr>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-            {% else %}
-            <p class="text-muted">该板块还没有文章，第一次自动抓取执行后将出现在这里。</p>
-            {% endif %}
         </div>
     </div>
 </div>

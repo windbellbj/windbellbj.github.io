@@ -1,18 +1,19 @@
 ---
 layout: post
-title: "ECC 上手：给编码 Agent 装上工程化操作系统"
-subtitle: "71 个 Agent、311 个 Skill、记忆与安全扫描，一次装好融进你的日常开发流"
+title: "ECC 使用说明书：给编码 Agent 装上工程化操作系统"
+subtitle: "71 个 Agent、311 个技能、记忆与安全扫描，一次装好让 AI 按计划—测试—实现—复核—验证—记忆的流程干活"
 date: 2026-10-11 23:45:03 +0800
 author: ""
 header-img: "img/post-bg-ai-news.svg"
 tags:
     - AI新资讯
+    - Agent Harness
 news_category: harness
 ---
 
 - 来源：GitHub 近期爆火
 - 仓库：https://github.com/affaan-m/ECC
-- Stars：276939
+- Stars：277202
 - 语言：JavaScript
 - 创建时间：2026-01-18
 - 最近更新：2026-10-11
@@ -20,135 +21,149 @@ news_category: harness
 
 ---
 
-## 解决什么问题
+> ECC 是一套面向编码 Agent 的「运行壳操作系统」：它把计划、测试、实现、复核、验证、记忆、改进这套工程流程固化下来，让 Claude Code、Codex、Cursor 等工具里的 AI 不再每次从零写提示词。最适合已经在用 AI 编程助手、但苦于结果不稳定、上下文易丢、缺少安全把关的开发者。
 
-README 的定位是：你的 Agent 已经能写代码，但 ECC 给它一套协同的工程系统与工具箱——先规划再动手、用测试验证改动、从全新上下文里审查自己的工作、记住关键信息，并把反复奏效的做法沉淀成可复用的 skills 与工作流。
+## 它到底解决什么问题
 
-README 用一条流水线概括这套流程：`plan -> test -> implement -> review -> verify -> remember -> improve`。它的主张是：与其在每个 prompt 里重建这套流程，不如装一次，让它成为 Agent 工作方式的一部分。README 的口号是「Optimize the context window. Persist everything else.」（优化上下文窗口，其余一切持久化）。
+AI 编程助手能写代码，但通常缺少一套稳定的工作方式：不先规划就动手、改完不跑测试、不会换一个干净上下文复核自己的产出、上一轮踩过的坑下一轮又踩。ECC 的做法是把这套流程做成可安装的「工程系统」，一次装好，之后 Agent 就按固定节奏工作：
 
-README 明确说明：ECC 是 MIT 许可的开源项目，目前与 Claude Code 配合最好，有原生 Codex 与 Qoder 插件路径，并为 Cursor、OpenCode、Gemini、Zed、GitHub Copilot、Antigravity、Qwen 等 harness 提供能力受限的适配器，并提醒在假设功能对等之前先看支持状态矩阵。
+**plan → test → implement → review → verify → remember → improve**
 
-## 核心概念
+它提供的核心资产包括：
 
-README 给出的核心组成与数量：
+| 组成 | 规模 | 作用 |
+| --- | --- | --- |
+| Agents | 71 个 | 覆盖规划、复核、构建修复、安全、架构与领域工作 |
+| Skills | 311 个 | TDD、调研、安全、文档、前端、数据、ML、运维等 |
+| Commands | 97 个 | 便捷入口，项目正逐步转向以技能为主的界面 |
+| Hooks 与记忆 | 运行时 | 规则强制、会话摘要、持续学习、本能（instincts）、上下文控制 |
+| Rules | 按需加载 | 按语言或项目选择常驻标准 |
+| AgentShield | 内置 | 扫描提示词、hooks、MCP 配置、权限、密钥与 Agent 文件 |
 
-- Agents：71 个，覆盖规划、审查、构建修复、安全、架构与领域工作。
-- Skills：311 个，覆盖 TDD、研究、安全、文档、前端、数据、ML、运维等。
-- Commands：97 个，作为便捷入口，同时 ECC 正在转向 skills-first 的界面。
-- Hooks and memory：运行时能力，包含强制约束、会话摘要、持续学习、instincts 与上下文控制。
-- Rules：选择性加载的标准，按语言或项目挑选。
-- AgentShield：内置扫描，覆盖 prompts、hooks、MCP 配置、权限、密钥与 agent 文件。
+一句话概括它的设计信条：**优化上下文窗口，其余一切持久化。**
 
-README 还提到三个公开标识符不可互换：GitHub 源码仓库 `affaan-m/ECC`、Claude marketplace/plugin 标识 `ecc@ecc`、npm 包 `ecc-universal`。npm 版本按版本 tag 发布（2.1、2.2……），而不是按每次提交发布；想要最新代码可以从 git 安装。
+## 支持哪些工具，成熟度并不一致
 
-## 前置依赖
+ECC 官方明确说明：目前与 **Claude Code** 配合最好，**Codex 与 Qoder** 有原生插件路径，对 **Cursor、OpenCode、Gemini、Zed、GitHub Copilot、Antigravity、Qwen** 等提供能力受限的适配器。官方提醒不要默认各平台功能对等，使用前应先查看其支持状态矩阵。
 
-README 明确写出：
+官网列出的安装入口分为几类：Claude Code 与 Codex 为原生插件，Cursor 与 OpenCode 为托管适配器，Kimi Code 为项目级安装，另有 GitHub 仓库工作流。
 
-- 通用包需要 Node.js 18 或更新版本。
-- Claude 插件安装还需要 Git，以及 `PATH` 中可用的 Claude Code 2.1 或更新版本。
-- Qoder 的非交互 hook 环境同样适用 Node.js 18+ 的要求；其 MCP server 首次使用还需要 `npx` 与网络访问。
+> **重要提醒：只从官方渠道安装。** 官方点名的可信来源为 GitHub 仓库 `github.com/affaan-m/ECC`、npm 包 `ecc-universal` 与 `ecc-agentshield`、GitHub App `ecc-tools`、插件标识 `ecc@ecc`，以及官网 `ecc.tools`。第三方转载与镜像未经项目维护或审查，可能包含恶意代码。
 
-README 未提供针对 Java、Spring 或 Trae Work 的额外依赖说明。
+## 环境与前置依赖
 
-## 安装与配置
+通用包要求 **Node.js 18 或更高版本**。若走 Claude Code 插件安装路径，还需要 **Git** 以及 **Claude Code 2.1 或更高版本**，且这些命令都要能在 `PATH` 中找到。
 
-README 反复强调一条原则：**每个 harness 只选一种安装方式，不要叠加安装**。同一 harness 装两次可能重复 skills、commands、hooks 或配置；装到多个 harness 则不会。
+在 Windows 上，建议先打开 PowerShell 逐项确认：
 
-### 通用安装步骤（Windows 视角）
+1. 运行 `node --version`，确认输出不低于 18。
+2. 运行 `git --version`，确认 Git 可用。
+3. 运行 `claude --version`，确认 Claude Code 不低于 2.1。
 
-README 专门给了 Windows 首次使用的复制粘贴路径，按顺序为：
+任何一条提示「找不到命令」，先安装或修复该前置项，再重新执行 ECC 安装。
 
-1. 安装 Node.js 18 或更新版本、Git、Claude Code。
-2. 从 Windows 开始菜单打开 PowerShell。
-3. 确认每个前置条件可用：`node --version`、`git --version`、`claude --version`。
-4. 运行引导安装器：`npx ecc-universal@2.2.3 setup`。
-5. 典型个人配置选择 **Global user**、**Standard** hooks，然后确认。
-6. 启动新的 Claude Code 会话，运行 `/plugin list` 验证 `ecc@ecc` 已启用。
+## 安装：推荐走引导式安装
 
-README 说明这条路径不需要克隆仓库；如果任一前置命令找不到，先安装或修复该前置条件再重跑 ECC setup。如果 npm 报版本或缓存错误，先确认 registry 版本：`npm view ecc-universal version`。
+官方推荐的通用引导式安装命令为 `npx ecc-universal@2.2.3 setup`。该命令同时负责 Claude Code 插件安装、更新、作用域变更与 hook 配置变更。
 
-README 还列出其他包运行器的等价引导命令：pnpm 用 `pnpm dlx ecc-universal@2.2.3 setup`，Yarn 2+ 用 `yarn dlx ecc-universal@2.2.3 setup`，Bun 用 `bunx ecc-universal@2.2.3 setup`。Yarn Classic 1 不提供 `yarn dlx`，README 建议改用 `npx`、全局安装或升级 Yarn。
+Windows 首次安装可按下面步骤照做：
 
-### 多 harness 引导
+1. 安装 Node.js 18+、Git 与 Claude Code。
+2. 从开始菜单打开 **PowerShell**。
+3. 依次执行 `node --version`、`git --version`、`claude --version` 确认前置条件。
+4. 执行引导安装：`npx ecc-universal@2.2.3 setup`。
+5. 典型个人使用场景下，选择 **Global user**，hooks 选择 **Standard**，然后确认。
+6. 新开一个 Claude Code 会话，执行 `/plugin list`，确认 `ecc@ecc` 已启用。
 
-README 提供 `npx ecc-universal@2.2.3 install --guided`，可在一个流程里选择 Claude Code、Codex、Kimi Code 的任意组合，展示每个安装通道与目标位置，在首次写入前预检所有选择，并做一次最终确认。自动化场景可显式指定：`npx ecc-universal@2.2.3 install --guided --harness claude --harness codex --harness kimi --claude-scope local --claude-hooks standard --profile core --yes`。
+这条路径**不需要克隆仓库**。如果 npm 报版本或缓存错误，可先执行 `npm view ecc-universal version` 确认仓库中的版本号，再重试。
 
-README 还给出不写入的预检命令：`npx ecc-universal@2.2.3 install --guided --harness codex --dry-run` 与 `npx ecc-universal@2.2.3 install --profile core --target kimi --dry-run`。
+除 npm 外，官方也支持其他现代包运行器，命令形式一致，只是前缀不同：
 
-### 其他可用命令
+| 包运行器 | 引导安装命令 |
+| --- | --- |
+| npm / npx | `npx ecc-universal@2.2.3 setup` |
+| pnpm | `pnpm dlx ecc-universal@2.2.3 setup` |
+| Yarn 2+ | `yarn dlx ecc-universal@2.2.3 setup` |
+| Bun | `bunx ecc-universal@2.2.3 setup` |
 
-README 列出：`npx ecc-universal@2.2.3 consult "security reviews" --target claude`、`npx ecc-universal@2.2.3 install --profile minimal --target claude --with capability:machine-learning`、`npx ecc-universal@2.2.3 doctor --target kimi`。README 特别警告不要使用 `npx ecc-install --profile minimal --target claude`：`ecc-install` 是 `ecc-universal` 内部的二进制名，不是单独发布的 npm 包。
+> Yarn Classic 1 不提供 `yarn dlx`，请改用 `npx`、全局安装，或升级 Yarn 后再做一次性运行。
 
-### Claude Code 原生插件路径
+官方同时提示：**锁定版本号不等于安全审计或完整性校验**。运行包代码前应自行审阅发布源码与仓库完整性，未发布的改动请使用经过审阅的检出副本。
 
-README 说明也可以在 Claude Code 内运行原生插件命令：`/plugin marketplace add https://github.com/affaan-m/ECC` 与 `/plugin install ecc@ecc`。README 提醒：如果选了这条路径就到此为止，不要再叠加完整手动安装；如果原生命令报已存在安装或 scope 冲突，改用 2.2 引导安装或先解决冲突的 Claude 插件 scope。
+官网首页另给出一个引导式安装写法 `npx ecc-universal install --guided`，与仓库中带版本号的 `setup` 写法并存。两种写法在不同渠道出现，具体以你实际执行的版本为准。
 
-README 还说明 Claude Code 插件无法分发 `rules`，需要手动只添加你真正想要的规则包：先 `git clone https://github.com/affaan-m/ECC.git`，进入 ECC 目录，创建 `~/.claude/rules/ecc`，再复制 `rules/common`，并按你的技术栈复制对应语言包（README 示例用的是 `rules/typescript`，并注明替换成你自己的栈）。README 建议从 `rules/common` 加一个你实际使用的语言或框架包开始；如果装了插件，就不要之后运行 `./install.sh --profile full`。
+## 在 Trae Work + Java / Spring 工作流中怎么用
 
-README 还给出声明式写法：在 `~/.claude/settings.json` 中加入 `extraKnownMarketplaces`（source 为 github、repo 为 `affaan-m/ECC`）与 `enabledPlugins`（`ecc@ecc` 为 true），效果等同上面两条 `/plugin` 命令。
+这是最需要说清楚的部分。
 
-### 低上下文 / 无 hooks 路径
+**官方未提供与 Trae Work 的集成方式。** 官方点名的原生路径是 Claude Code 与 Codex 插件、Qoder 插件，以及 Cursor、OpenCode、Gemini、Zed、GitHub Copilot、Antigravity、Qwen 等适配器，其中并不包含 Trae Work。
 
-README 提供 `npx ecc-universal@2.2.3 install --profile minimal --target claude`，源码检出下的等价命令是 `./install.sh --profile minimal --target claude`，Windows 下是 `.\install.ps1 --profile minimal --target claude`。该 profile 有意排除 `hooks-runtime`。
+**官方也未提供 Java / Spring 的 SDK 或 HTTP 集成方式。** ECC 本身不是 Java 库，不通过 Maven / Gradle 依赖引入，也没有面向 Java 应用的 API。仓库语言徽章中出现的 Java 标识，指的是其技能与规则覆盖的语言范围，而非提供 Java SDK。
 
-README 说明：任何会落地 hook runtime 的安装都需要显式决定；没有 `--enable-hooks` 或 `--no-hooks` 时，安装器会先打印 hooks 能做什么，然后停止写入。引导安装器会交互式询问这个选择。
+因此，在 Windows + Trae Work + Java / Spring 的组合下，现实可行的做法是：
 
-### 融入 Trae Work 与 Java 日常工作流
+1. **把 ECC 当作 Claude Code 侧的工程系统使用**：按上文步骤在 Claude Code 中装好 `ecc@ecc`，让规划、复核、安全扫描这类工作交给它。
+2. **把 ECC 的产出当作规范带进 Trae Work**：ECC 生成的计划、复核清单、规则文件都是纯文本资产，可以放进你的 Spring 项目里，作为 Trae Work 的上下文参考。
+3. **不要臆造配置路径**：官方没有给出 Trae Work 的插件目录、MCP 注册方式或技能投放路径，任何声称「把 ECC 放进 Trae 某目录即可」的说法都缺乏公开依据。
+4. **MCP 方面**：AgentShield 会扫描 MCP 配置，但官方未公开说明 ECC 自身以 MCP 服务形式对外提供能力。
 
-README 未提供与 Trae Work / Java 的集成方式。README 中出现的 harness 与编辑器目标为 Claude Code、Codex、Qoder、Cursor、OpenCode、Gemini、Zed、Antigravity、Qwen、Hermes、OpenClaw、Kimi、CodeBuddy、JoyCode、GitHub Copilot，未提及 Trae Work，也未提供 MCP 服务接入、Skill 目录投放、SDK 或 HTTP 集成方式。README 提到对没有原生 ECC 目标的 harness，可参考 manual adaptation guide，把一小部分 ECC skills 与工作流指令带进聊天式工具，但不假装 hooks 或原生 skill 发现可用。
+如果你的团队坚持只在 Trae Work 内工作，那么 ECC 目前的价值主要体现在「把它的流程与规则文本搬进项目」，而不是「装一个插件就自动生效」。
 
-## 最小可用示例
+## 如何确认装好了
 
-下面这段指令可直接整段复制给 Trae Work 等 AI 编程助手，用于在 Java/Spring 项目里试用 ECC 的工作流思路（注意：README 未提供 Trae Work 集成方式，此处仅借用其流程理念，不代表 ECC 已在 Trae Work 中安装成功）。
+- 在 Claude Code 中执行 `/plugin list`，看到 `ecc@ecc` 处于启用状态。
+- 引导安装向导会先盘点官方市场与所有原生 Claude 安装作用域，再执行变更；安装过程中若出现作用域或 hook 配置确认项，说明向导已正常运行。
+- 官方未公开说明独立的健康检查命令或状态页，暂无公开资料可给出更细的验证手段。
+
+## 费用、许可与商业模式
+
+- **许可证：MIT**。仓库明确承诺开源部分永久 MIT 授权。
+- **开源保持免费**，项目由赞助者与 Pro 订阅者资助。
+- **ECC Pro 是托管版 GitHub App**，面向私有仓库，官网定价页显示私有仓库 **每位席位每月 19 美元起**。GitHub App 可免费安装。
+- 官方说明：单一维护者每周跨 7 个 harness 发布更新。
+
+## 社区与第三方评价
+
+- 第三方插件目录站 awesomeclaudeplugins.com 收录了该项目，并给出通用安装建议：安装前审阅源仓库、近期维护情况与许可证；阅读市场清单与插件源文件后再运行命令；从最小必要权限集开始，并在安全环境中验证行为。
+- 该第三方站点显示的数据为 **276,498 stars、41,239 forks、1,380 watchers/subscribers**，与仓库元信息中的 277,202 stars 存在小幅差异，属于不同时间点的快照。
+- 官网列出的使用者包括 Tesla、xAI、GoDaddy、ByteDance、Amazon、DigitalOcean 等公司的工程师。
+- 官网还披露了一组获取量数据：2026 年 8 月 29 日至 9 月 11 日期间 **673,617 次 clone 事件、90,216 个窗口内独立克隆者**，并注明 clone 操作不等于完成安装。
+- 官方强调各渠道数据存在重叠，不可相加；缺少原生插件计数意味着「未知」，而不是「零」。
+- 本次未获取到 Hacker News 上的相关讨论内容，暂无公开资料可引用其社区评价。
+
+## 局限与风险
+
+- **平台成熟度不均**：官方自己声明只有 Claude Code 配合最好，其他 harness 为能力受限适配，不要假设功能对等。
+- **供应链风险**：官方专门发出警告，第三方转载与镜像未经审查，可能含恶意代码；同时提醒版本锁定不等于安全审计。
+- **权限面较大**：ECC 会介入 hooks、记忆、权限与 MCP 配置，第三方目录站建议从最小权限集开始试用。
+- **对 Trae Work 用户的实际收益有限**：没有官方集成路径，需要手动搬运文本资产。
+- **版本与命令存在渠道差异**：仓库写 `npx ecc-universal@2.2.3 setup`，官网写 `npx ecc-universal install --guided`，两者并列存在，执行前请以实际版本为准。
+- **数据口径需谨慎**：star 数、下载量、clone 数来自不同时间点与不同统计口径，且官方承认存在重叠与上报缺口。
+
+## 快速上手清单
+
+1. 确认 Node.js 18+、Git、Claude Code 2.1+ 均可用。
+2. 执行 `npx ecc-universal@2.2.3 setup`。
+3. 选择 Global user 与 Standard hooks。
+4. 新开会话执行 `/plugin list` 验证。
+5. 在一个 Spring 项目里让它先出计划、再改代码、最后跑复核。
 
 ```text
-背景：我在 Windows 上用 Trae Work 开发一个 Java / Spring Boot 后端项目，代码库已有单元测试与集成测试。
+背景：我在 Windows 上用 Trae Work 开发，主力技术栈是 Java / Spring Boot，项目用 Maven 构建，代码托管在 Git 仓库。我已经在 Claude Code 里装好了 ECC（插件标识 ecc@ecc，通过 npx ecc-universal@2.2.3 setup 安装，选择 Global user + Standard hooks）。
 
-目标：请按 ECC 的工程流程理念，帮我完成一个小需求的端到端改动，而不是直接给代码。
+目标：请按 ECC 的工程流程，帮我把当前 Spring Boot 项目里的一个 REST 接口做一次完整改造，并让我看到每一步的产出。
 
-要求：
-1. 先规划：用要点列出你打算改哪些类、哪些接口、影响哪些调用方，等我确认后再动手。
-2. 再测试：先写出或补充能复现该需求的失败测试（JUnit），说明测试放在哪个目录、断言什么。
-3. 后实现：给出最小改动的 Java 代码，保持现有分层与命名风格，不要引入新的第三方依赖。
-4. 自审查：换一个全新视角审查这次改动，指出潜在的空指针、并发、事务边界与兼容性问题。
-5. 再验证：给出我应该在本地执行的验证步骤（编译、跑哪些测试、如何手工调用接口确认）。
-6. 最后沉淀：把这次改动中可复用的经验总结成 3 条以内的规则，方便我下次直接复用。
+具体要求：
+1. 先规划：读一遍我指定的 Controller、Service、Repository 三层代码，输出一份改造计划，列出要动的文件、风险点和需要补充的测试用例清单，先不要改代码。
+2. 再测试：为这个接口补上 JUnit 5 + MockMvc 的测试，覆盖正常路径、参数校验失败、以及一个边界条件，先让测试跑起来并确认当前是失败的或通过的。
+3. 后实现：按计划修改代码，让新增测试通过，保持现有接口签名兼容，不要引入新的第三方依赖。
+4. 换上下文复核：以全新视角审查这次改动，重点看空指针、事务边界、异常处理是否统一、日志是否泄露敏感信息。
+5. 验证：给出在 Windows PowerShell 下运行 Maven 测试与打包的命令，并说明每条命令的作用。
+6. 记忆：把这次改造中可复用的约定（命名、异常处理、测试组织方式）整理成一份简短规则，方便下次直接沿用。
 
-约束：每一步都先说明你要做什么再输出内容；涉及不确定的地方直接说不确定，不要编造 API 或配置。
+约束：所有命令请用 Windows PowerShell 写法；不要编造我项目里不存在的类名或路径，需要我补充信息时直接问我。
 ```
-
-## 验证方法
-
-README 给出的可执行验证步骤：
-
-1. 启动一个新的 Claude Code 会话，运行 `/plugin list`，确认 `ecc@ecc` 已启用（这是 README 在 Windows 首次使用路径中给出的验证方式）。
-2. 使用 `node scripts/ecc.js list-installed` 列出已安装内容。
-3. 使用 `node scripts/ecc.js doctor` 做诊断。
-4. 如果本地 Claude 配置被清空或重置，README 建议先跑 `node scripts/ecc.js list-installed`，再跑 `node scripts/ecc.js doctor` 与 `node scripts/ecc.js repair`，通常能在不重建整套配置的情况下恢复 ECC 管理的文件。
-5. 安装前想先看文件计划，可用 `node scripts/ecc.js consult "security reviews" --target claude` 返回匹配组件、相关 profile 与预览/安装命令。
-6. Codex 路径可用 `codex plugin list --json` 与 `node scripts/codex/check-plugin-cache.js` 检查。
-
-README 未提供针对 Trae Work 或 Java 项目的验证方法。
-
-## 风险与注意事项
-
-README 明确提示的风险与约束：
-
-- **只从官方渠道安装**：README 用 WARNING 强调只从 GitHub 仓库 `github.com/affaan-m/ECC`、npm 包 `ecc-universal` 与 `ecc-agentshield`、GitHub App、插件 slug `ecc@ecc`、官网 `ecc.tools` 安装；第三方重新上传与非官方镜像不由项目维护或审查，可能包含恶意软件。
-- **不要叠加安装方式**：同一 harness 装两次可能重复 skills、commands、hooks 或配置。README 列出「可行」与「避免」的组合，并说明如果已经叠加安装且出现重复，直接跳到 Reset / Uninstall ECC。
-- **版本固定不等于安全审计**：README 说明示例选择已发布的 ECC 2.2.3 版本，但版本固定不是安全审计或完整性检查；运行包代码前应审查发布源码与 registry 完整性，未发布改动请使用已审查的检出。
-- **hooks 需要显式决定**：任何会落地 hook runtime 的安装都需要显式选择，否则安装器会打印说明后停止写入。
-- **平台能力不对等**：README 提醒在假设功能对等前先看支持状态矩阵；Codex 原生 hooks 需要显式信任决定，且不使用 Claude 的四档 ECC hook profile；Qoder 不会把完整 Claude hook profile 复制过去，阻塞式工具 hooks、异步 stop 任务与 Claude 专有 matcher 不在初始原生集成范围内。
-- **命名不可互换**：`affaan-m/ECC`、`ecc@ecc`、`ecc-universal` 三者用途不同；旧文章里的长 marketplace 标识只应视为遗留别名。
-- **ECC 不会自动上传诊断信息**：README 在安装问题一节中说明 ECC never uploads diagnostics automatically。
-
-README 未提供关于 Java 项目、Trae Work 或 Windows 特定安全风险的其他说明。
-
-## 替代方案
-
-README 未提供替代方案章节，也未列出与 ECC 功能对标的其他工具。README 仅说明：对没有原生 ECC 目标的 harness，可使用 manual adaptation guide，把一小部分 ECC skills 与工作流指令带入聊天式工具；以及 ECC Pro 是面向私有仓库的托管 GitHub App，开源部分永久保持 MIT 许可。
 
 ---
 
-> 本文由 AI 阅读官方素材（GitHub README）后生成，已要求其仅依据素材撰写；关键命令请以官方文档为准。
+> 本文由 AI 综合官方仓库、项目官网与第三方公开资料撰写，已要求其仅依据公开资料成文；关键命令请以官方文档为准。

@@ -33,7 +33,7 @@
                     <li>
                         <a href="{{ site.baseurl }}/ai-news/">AI新资讯</a>
                     </li>
-                    {% for p in site.pages %}{% if p.title and p.url != "/traditional-development/" and p.url != "/ai-development/" and p.url != "/ai-news/" %}
+                    {% for p in site.pages %}{% if p.title and p.hide_in_nav != true and p.url != "/traditional-development/" and p.url != "/ai-development/" and p.url != "/ai-news/" %}
                     <li>
                         <a href="{{ p.url | prepend: site.baseurl }}">{{ p.title }}</a>
                     </li>

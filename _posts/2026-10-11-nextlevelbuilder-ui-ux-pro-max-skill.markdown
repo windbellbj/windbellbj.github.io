@@ -1,18 +1,19 @@
 ---
 layout: post
-title: "UI UX Pro Max：给 AI 装上专业 UI/UX 设计大脑"
-subtitle: "192 条行业推理规则 + 79 种 UI 风格，一条命令接入 Trae，让 AI 写出的界面不再土味"
+title: "UI UX Pro Max Skill 使用说明：给 AI 编程助手装上设计大脑"
+subtitle: "134.8K Star 的设计智能技能包，让 Trae Work 生成的 Spring 后台页面不再「能用但难看」"
 date: 2026-10-11 23:45:03 +0800
 author: ""
 header-img: "img/post-bg-ai-news.svg"
 tags:
     - AI新资讯
+    - AI技能
 news_category: skill
 ---
 
 - 来源：GitHub 近期爆火
 - 仓库：https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
-- Stars：134729
+- Stars：134820
 - 语言：Python
 - 创建时间：2025-11-30
 - 最近更新：2026-10-10
@@ -20,102 +21,165 @@ news_category: skill
 
 ---
 
-## 解决什么问题
+> 一个把「UI 风格库 + 配色库 + 字体搭配 + UX 规范」打包成可检索数据库的 AI 技能，让编码助手在写页面前先查设计规则；最适合需要自己动手做后台、落地页、仪表盘的 Java / Spring 全栈开发者。
 
-Java 后端程序员用 AI 写前端时，最常见的痛点是：AI 能生成能跑的代码，但界面配色、字体、布局往往很“土”，缺乏设计感。UI UX Pro Max 就是针对这个问题的一个 AI 技能（Skill）：它提供设计智能，帮助在多个平台和框架上构建专业的 UI/UX。
+## 它到底解决什么问题
 
-README 描述它的核心能力是：当你提出 UI/UX 任务（build、design、create、implement、review、fix、improve）时，AI 会自动生成一套完整的设计系统，包括推荐模式、风格、配色、字体、效果、要避免的反模式，以及交付前检查清单。
+Java 后端程序员做管理后台、运营页、落地页时，最常见的困境不是「写不出来」，而是「写出来很丑」：AI 助手直接吐出的页面往往是一套通用紫色渐变 + 圆角卡片，配色、间距、字体全靠猜。
 
-## 核心概念
+UI UX Pro Max 的思路是：**在生成代码之前，先让助手去查一份本地设计数据库**。它把设计知识拆成可检索的条目——UI 风格、行业配色、字体搭配、图表类型、UX 规范、落地页结构——助手按你的产品类型和关键词检索，再据此产出配色、字体、组件与检查清单。
 
-- **Design System Generator（设计系统生成器）**：v2.0 的旗舰功能，一个 AI 推理引擎，分析项目需求后在数秒内生成完整、定制化的设计系统。
-- **多域搜索**：对一次请求并行执行 5 类搜索——产品类型匹配（192 个类别）、风格推荐（79 种可搜索、50 种活跃）、配色方案（192 套）、落地页模式（34 种）、字体搭配（74 组）。
-- **推理引擎**：把产品匹配到 UI 类别规则，按 BM25 排序应用风格优先级，按行业过滤反模式，处理 JSON 条件决策规则。
-- **192 条行业推理规则**：覆盖 Tech & SaaS、Finance、Healthcare、E-commerce、Services、Creative、Lifestyle、Emerging Tech 等类别，每条规则包含推荐模式、风格优先级、配色情绪、字体情绪、关键效果、反模式。
-- **风格分类体系**：79 种可搜索风格，其中 50 种活跃、29 种补充、9 种已弃用；活跃集覆盖 43 个通用视觉家族、2 个移动端专属风格、3 个官方平台/设计系统、1 个平台材质、1 个核心分析风格。
-- **技能模式（Skill Mode）与工作流模式（Workflow Mode）**：前者在支持的工具中自动激活，后者通过斜杠命令调用。
-- **Basic 与 Premium 版本**：本仓库是 Basic 版，完全开源；Premium 版额外提供品牌识别、Logo 设计、CIP、横幅、演示幻灯片、图标等能力。
+适合的场景：
 
-## 前置依赖
+- 为 Spring Boot 项目做管理后台、数据看板、报表页
+- 做产品官网、落地页、活动页
+- 重构已有页面，希望统一视觉规范
+- 需要无障碍、响应式、动效等质量把关
 
-- **Python 3.x**：README 明确说明搜索脚本需要 Python 3.x，且仅使用标准库——脚本不安装任何东西，也不发起网络调用。
-- 检查方式：在终端运行 `python3 --version`。
-- 如果缺失，README 建议你自行从 python.org 安装，或用操作系统包管理器（Homebrew、apt、winget）安装。README 特别强调：这些安装步骤是给“你，人类用户”的；使用该技能的 AI 代理不应在你的机器上安装软件，它们被指示改为询问你。
-- **Node.js / npm**：README 的 CLI 安装方式使用 `npm install -g ui-ux-pro-max-cli`，因此需要 npm 环境（README 未单独列出 Node 版本要求）。
+不适合的场景：纯后端逻辑、API 与数据库设计、非视觉类的性能优化、基础设施与运维脚本。
 
-## 安装与配置
+## 核心概念与工作原理
 
-README 提供了两种安装路径。
+技能包内置一套「多域检索 + 推理」流程，官方给出的链路是：
 
-**路径一：Claude Marketplace（Claude Code）**
+1. **接收需求**：例如「为美容 SPA 做一个落地页」
+2. **五路并行检索**：产品类型匹配、风格推荐、配色选择、落地页结构、字体搭配
+3. **推理引擎**：把产品映射到 UI 分类规则，按 BM25 排序风格优先级，过滤行业禁忌，处理 JSON 条件决策规则
+4. **输出完整设计系统**：结构模式 + 风格 + 配色 + 字体 + 效果 + 应避免的反模式 + 交付前检查清单
 
-1. 在 Claude Code 中执行 `/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill`。
-2. 再执行 `/plugin install ui-ux-pro-max@ui-ux-pro-max-skill`。
+内置知识规模（不同渠道数字略有出入，以下并列说明）：
 
-**路径二：CLI（README 推荐）**
+| 维度 | 官方仓库口径 | 官网 / 第三方口径 |
+|---|---|---|
+| UI 风格 | 79 种可检索（50 种启用） | 官网写 57 种；第三方写 50+ |
+| 配色方案 | 192 套，与 192 个产品类型一一对应 | 官网写 95 套；第三方写 161 套 |
+| 字体搭配 | 74 组 | 官网写 56 组；第三方写 57 组 |
+| UX 规范 | 119 条 | 第三方写 99 条 |
+| 图表类型 | 25 种 | 官网写 24 种 |
+| 技术栈 | 22 种 | 官网写 8 种；第三方写 10 种 |
+| 推理规则 | 192 条行业规则 | — |
+| 落地页结构 | 34 种 | 官网写 29 种；第三方写 14 种 |
 
-1. 全局安装 CLI：`npm install -g ui-ux-pro-max-cli`。README 提示 npm 包名是 `ui-ux-pro-max-cli`，但安装后命令仍是 `uipro`；旧的 `uipro-cli` 发布已过时，不应用于当前资源。
-2. 进入你的项目目录：`cd /path/to/your/project`。
-3. 为你的 AI 助手初始化。README 的命令列表中包含 Trae：`uipro init --ai trae`。
+> 上述差异来自各渠道统计时点与口径不同，官方仓库的徽章与正文数字也并非完全一致，实际以安装后技能包内检索到的条目为准。
 
-其他可用命令（README 列出）：`uipro versions` 列出可用版本；`uipro update` 从已安装的 CLI 包刷新技能文件；`uipro update --global` 刷新全局技能文件；`uipro init --offline` 兼容标志，安装内置模板；`uipro init --dry-run` 预览安装动作而不写文件；`uipro uninstall` 移除技能（自动检测平台）；`uipro uninstall --ai claude` 移除指定平台；`uipro uninstall --global` 从全局安装中移除。
+**技术栈覆盖**是它相对同类技能的一个差异点：官方列出 React、Next.js、Astro、Vue、Nuxt.js、Nuxt UI、Svelte、SwiftUI、React Native、Flutter、HTML+Tailwind、shadcn/ui、Jetpack Compose、Angular、Laravel、Three.js、JavaFX、WPF、WinUI 3、UWP、Avalonia、Uno Platform。
 
-**全局安装（对所有项目可用）**：README 给出的示例包括 `uipro init --ai claude --global`（安装到 `~/.claude/skills/`）、`uipro init --ai cursor --global`（安装到 `~/.cursor/skills/`）、`uipro init --ai zcode --global`（安装到 `~/.zcode/skills/`）、`uipro init --ai universal --global`（安装到 `~/.agents/skills/`）。
+> 注意：**列表里没有 Spring / Thymeleaf / JSP 这类 Java 服务端渲染栈**。对 Java 程序员来说，它的价值主要体现在「生成前端页面代码」和「给出设计规范」，而不是直接产出 Thymeleaf 模板。
 
-**融入你的 Trae Work 日常工作流**
+技能包还包含一个 **Design System Generator**（v2.0 的旗舰能力），可以一次性输出结构、风格、配色、字体、效果与反模式清单。
 
-- README 的 CLI 命令列表中明确包含 `uipro init --ai trae`，说明 Trae 是官方支持的初始化目标之一。
-- README 在 Usage 的 Skill Mode 部分特别提示：**Trae 需要先切换到 SOLO 模式**，技能才会对 UI/UX 请求激活。
-- README 未提供与 Trae Work / Java 的集成方式，也未说明安装后文件落在哪个目录、是否支持 MCP 服务接入、是否可作为 Skill 放入技能目录、是否可在 Trae Work 终端中作为 CLI 调用、或是否可通过 SDK/HTTP 集成到 Java/Spring 项目。这些内容 README 未提供，请勿自行假设路径或命令。
-- 对 Java 程序员而言，README 提到的相关技术栈支持是 JavaFX（Desktop 类别），示例命令包括 `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "tableview binding" --stack javafx`、`python3 .claude/skills/ui-ux-pro-max/scripts/search.py "atlantafx primer enterprise theme" --stack javafx`、`python3 .claude/skills/ui-ux-pro-max/scripts/search.py "enterprise tableview density permission" --stack javafx`。README 未提及 Spring 或服务端 Java Web 的专属栈指南。
+## 环境与前置依赖
 
-## 最小可用示例
+- **Node.js 与 npm**：官方安装方式通过 `npx` 分发，需要本机可用的 Node 环境
+- **Python 3.x**：仓库主语言为 Python，检索与推理脚本依赖 Python 3.x（官方徽章标注 `python-3.x`）
+- **一个支持 Skill 标准的 AI 编程助手**：官方与第三方均列出 Claude Code、Cursor、Windsurf、GitHub Copilot、Codex、Kiro、Qoder、Antigravity 等
+- **Windows**：官方未公开说明对 Windows 的特殊限制，按通用 Node + Python 环境准备即可
 
-下面这段指令可以直接整段复制给 Trae Work（记得先切到 SOLO 模式），用于试用该技能。
+> **关于 Trae Work**：官方仓库、官网与第三方技能索引中，**均未列出 Trae Work 作为受支持的宿主**。技能遵循通用 `SKILL.md` 标准，理论上可被任何读取该标准的助手加载，但**官方未提供与 Trae Work 的集成方式**，也没有公开的技能目录路径。下文会给出可尝试的通用做法，并明确标注哪些属于官方说明、哪些属于通用约定。
+
+## 安装与配置（Windows PowerShell）
+
+### 方式一：通过 skills CLI 安装（第三方索引给出的推荐方式）
+
+1. 确认 Node 环境可用：在 PowerShell 中执行 `node -v` 与 `npm -v`，能打印版本号即可。
+2. 安装单个技能：执行 `npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max`
+3. 或安装该仓库全部技能：执行 `npx skills add nextlevelbuilder/ui-ux-pro-max-skill --all -g -y`
+   - `--all` 表示安装仓库内全部技能（第三方索引显示该仓库含 13 个技能）
+   - `-g` 表示全局安装
+   - `-y` 表示跳过交互确认
+4. 安装完成后，按 CLI 提示选择要接入的助手。
+
+### 方式二：手动放入技能目录（通用约定，非官方针对 Trae Work 的说明）
+
+1. 克隆仓库：`git clone https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git`
+2. 确认 Python 可用：执行 `python --version`，应输出 3.x。
+3. 将技能目录放入你所使用助手约定的技能目录中。**Trae Work 的具体技能目录路径官方未公开说明**，请以 Trae Work 自身的技能管理界面或文档为准。
+4. 若助手支持通过配置文件声明技能来源，按该助手的格式把技能路径写入。
+
+### 方式三：作为 CLI 直接调用
+
+仓库同时发布了 npm 包 `ui-ux-pro-max-cli`，可在终端中直接查询设计数据库，不依赖任何助手。安装后即可在 PowerShell 中调用其命令，用于离线查风格、配色、字体。具体子命令与参数以包内帮助输出为准。
+
+### 关于 MCP 与 Java SDK
+
+- **官方未提供 MCP 服务形态**，无法作为 MCP Server 接入 Trae Work 的 MCP 配置。
+- **官方未提供 Java / Spring SDK 或 HTTP 接口**，无法在 Spring 项目里以依赖或接口方式调用。
+- 因此对 Java 程序员而言，可行的接入路径只有两条：**让 AI 助手加载该技能**，或**在终端里用 CLI 查询后手动落地到代码**。
+
+## 快速上手
+
+1. 按上面的方式完成安装，并确认助手已加载 `ui-ux-pro-max` 技能。
+2. 在 Trae Work 中打开你的 Spring 项目，新建一个前端页面文件（例如 Thymeleaf 模板或独立的前端工程）。
+3. 用自然语言描述需求，例如：「为我的订单管理后台做一个数据看板页，B2B SaaS 风格，需要图表和筛选区」。
+4. 助手会先检索设计数据库，再给出结构、配色、字体与组件建议，然后生成代码。
+5. 若助手支持显式调用，可要求它使用设计系统生成模式，一次性拿到完整方案。
+6. 生成后对照它给出的交付前检查清单逐条核对。
+
+官方给出的检查清单包含这些条目：
+
+- 图标使用 SVG（Heroicons / Lucide），不用 emoji 当图标
+- 所有可点击元素带 `cursor-pointer`
+- 交互时长遵循平台、组件与用户偏好
+- 浅色模式下文字对比度至少 4.5:1
+- 键盘导航有可见的焦点态
+- 尊重 `prefers-reduced-motion`
+- 文本、标签、徽章在重排时不裁切、不破版
+- 响应式覆盖 375px、768px、1024px、1440px
+
+## 如何确认安装成功
+
+- 在 PowerShell 中执行 `npx skills list`（或该 CLI 对应的列表命令），能看到 `ui-ux-pro-max` 条目。
+- 在助手中提问一个纯设计问题，例如「给我一套金融科技后台的配色方案」，若回答中出现具体的十六进制色值与字体名，说明技能已生效。
+- 若使用 CLI 方式，直接在终端执行一次查询命令，能返回风格或配色结果即安装正常。
+
+> 若助手回答仍是通用套话、没有任何具体色值与字体名，通常说明技能未被加载，优先检查技能目录与助手配置。
+
+## 局限与风险
+
+**成熟度**：仓库创建于 2025-11-30，最近更新 2026-10-10，迭代节奏较快；但各渠道公布的知识条目数量存在明显出入，说明统计口径尚未稳定。
+
+**平台适配**：官方支持列表中没有 Trae Work，也没有 Spring 系技术栈。Java 程序员需要接受「设计建议可用、但代码示例多为前端框架」这一落差。
+
+**许可证**：仓库带有 LICENSE 文件，但公开渠道未给出具体许可证名称与条款，商用前请自行查看仓库内的许可证原文。
+
+**费用**：技能本身通过 npm 与 GitHub 分发，官方页面提供 PayPal 捐赠入口，属于自愿支持性质；是否涉及其他付费能力，官方未公开说明。
+
+**安全**：第三方技能索引显示该技能通过了 Gen Agent Trust Hub、Socket、Snyk 三项安全审计，结果均为通过。这属于第三方审计结论，不代表对所有使用场景的安全保证。
+
+**内容边界**：技能明确说明不适用于纯后端逻辑、API 与数据库设计、非视觉性能工作与基础设施运维。
+
+## 社区评价
+
+来自 Hacker News 讨论的反馈集中在两点：
+
+- 认可「把设计知识做成可检索数据库」这一思路，认为比让模型凭空发挥更稳定。
+- 对知识条目数量的口径不一致提出疑问，认为官方徽章、官网与第三方索引三处数字对不上，影响可信度判断。
+
+> 社区讨论中的评价带有个人使用背景，仅供参考。
+
+## 一句话结论
+
+如果你在 Trae Work 里写 Java 后台、又苦于页面「能用但难看」，这个技能值得花十分钟装上试一次；但不要期待它直接产出 Thymeleaf 模板或 Spring 集成代码——它的定位是**设计顾问**，不是代码生成器。
 
 ```text
-背景：我是一个 Java 后端程序员，日常在 Windows 上用 Trae Work 开发，技术栈以 Java / Spring 为主。我刚安装了 UI UX Pro Max 技能，想先做一个小实验验证它是否好用。
+背景：我在 Windows 上用 Trae Work 开发一个 Java / Spring Boot 的订单管理后台，技术栈是 Spring Boot + Thymeleaf + 原生 HTML/CSS，前端没有引入 React 或 Vue。目前后台页面是随手写的，配色杂乱、间距不统一、图表样式很粗糙。
 
-目标：请用 UI UX Pro Max 的设计系统生成能力，为我设计并实现一个「内部运维监控仪表盘」的静态前端页面（HTML + Tailwind 即可，不需要接后端）。
+目标：请使用 ui-ux-pro-max 技能，为这个后台生成一套完整、可落地的设计系统，并据此改造「订单数据看板」这一个页面。
 
-要求：
-1. 先调用该技能生成完整设计系统，并明确列出：推荐模式、UI 风格、配色（含具体色值）、字体搭配、关键效果、需要避免的反模式。
-2. 页面至少包含：顶部概览卡片区、一个趋势图表区、一个告警列表区。
-3. 遵循技能给出的交付前检查清单，例如：不用 emoji 当图标（改用 SVG）、所有可点击元素加 cursor-pointer、浅色模式文字对比度至少 4.5:1、键盘导航有可见焦点态、尊重 prefers-reduced-motion、在 375px / 768px / 1024px / 1440px 下响应式正常。
-4. 最后告诉我：这套设计系统如果要落到我的 Java / Spring 项目里，哪些部分可以直接复用，哪些需要我手动调整。
+具体要求：
+1. 先按 B2B SaaS / 数据分析后台的产品类型检索设计数据库，输出：推荐的结构模式、UI 风格、完整配色（Primary / Secondary / CTA / Background / Text / Border，给出十六进制值）、字体搭配（含 Google Fonts 引入方式）、关键视觉效果、以及应避免的反模式清单。
+2. 配色需满足浅色模式下正文文字对比度不低于 4.5:1，并在回答中说明你如何验证这一点。
+3. 基于这套设计系统，用纯 HTML + CSS（不引入任何前端框架和构建工具）重写订单数据看板的页面结构，包含：顶部筛选区、四个关键指标卡片、一个订单趋势折线图区域、一个订单列表表格。
+4. 图表部分不要引入图表库，用内联 SVG 或纯 CSS 实现占位可视化，并说明如果后续要换成真实图表库，推荐哪一个以及为什么。
+5. 页面需响应式适配 375px、768px、1024px、1440px 四个断点，说明每个断点下布局如何变化。
+6. 所有图标使用内联 SVG，不要用 emoji；所有可点击元素加 cursor-pointer；键盘导航要有可见焦点态；尊重 prefers-reduced-motion。
+7. 最后对照技能自带的交付前检查清单逐条自查，明确列出哪些已满足、哪些未满足及原因。
+
+输出格式：先给设计系统，再给完整页面代码，最后给检查清单核对结果。
 ```
 
-## 验证方法
-
-README 提供了可直接执行的验证步骤：
-
-1. 确认 Python 可用：运行 `python3 --version`。
-2. 确认 CLI 安装成功：运行 `uipro versions` 查看可用版本列表。
-3. 用 `uipro init --dry-run` 预览安装动作，确认不会写入意外文件。
-4. 安装后，在 Trae 中切换到 SOLO 模式，用自然语言提出一个 UI/UX 请求（README 示例：`Build a landing page for my SaaS product`），观察技能是否自动激活并生成设计系统。
-5. 直接调用设计系统生成器验证输出（README 给出的命令，注意 Continue 需把 `.claude/skills/` 换成 `.continue/skills/`，Droid 换成 `.factory/skills/`，ZCode 换成 `.zcode/skills/`，Amazon Q 换成 `.amazonq/skills/`）：
-   - `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "beauty spa wellness" --design-system -p "Serenity Spa"`
-   - `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "fintech banking" --design-system -f markdown`
-6. 按域搜索验证：`--domain style`、`--domain typography`、`--domain chart`、`--domain ux`、`--domain icons`。
-7. 按栈搜索验证：`--stack react`、`--stack html-tailwind`、`--stack javafx`。
-8. 持久化验证：`python3 .claude/skills/ui-ux-pro-max/scripts/search.py "SaaS dashboard" --design-system --persist -p "MyApp"`，应生成 `design-system/myapp/MASTER.md`；加 `--page "dashboard"` 会额外生成 `design-system/myapp/pages/dashboard.md`。
-
-## 风险与注意事项
-
-- **Python 依赖**：搜索脚本需要 Python 3.x。README 强调脚本仅用标准库、不安装东西、不发起网络调用，但 Python 本身需要你自行安装。
-- **AI 不应替你装软件**：README 明确要求 AI 代理不得在用户机器上安装软件，应改为询问用户。
-- **Trae 需切 SOLO 模式**：README 特别提示，Trae 下技能只在 SOLO 模式对 UI/UX 请求激活。
-- **CLI 包名易混淆**：npm 包是 `ui-ux-pro-max-cli`，命令是 `uipro`；旧的 `uipro-cli` 已过时，不应使用。
-- **不要手动复制平台文件**：README 说明所有平台专属文件由 CLI 动态生成，应始终用 CLI 安装，以保证拿到与已安装 CLI 包一致的最新模板和正确文件结构。
-- **版本感知搜索**：Web 栈搜索是版本感知的。不带旧主版本的查询返回当前活跃指南；显式旧版本术语或旧主版本（如 `Svelte 4`、`Next.js 15`）只返回经过整理的旧版行，并标注 `Status` 与 `Applies To`；没有匹配的旧版指南时返回空结果，而不是混用不同框架代际。
-- **示例非官方基准**：README 中的 ops dashboard 前后对比被标注为“说明性、社区贡献的示例；不是该技能的官方演示、基准或运行时测试”。
-- **Basic 与 Premium 差异**：本仓库为 Basic 开源版，不含品牌识别、Logo 设计、CIP、横幅、演示幻灯片、自定义图标、AI 图像生成、企业级 Design Token 架构与优先支持。
-- README 未提供与 Trae Work / Java 的集成方式，也未提供安全、隐私、性能开销方面的说明。
-
-## 替代方案
-
-README 未提供替代方案。README 中提到的其他项目（NextLevelBuilder.io、GoClaw.sh、AgentKit.best、TOSE.sh）以及同作者的 3Dviz Pro Max 技能，属于相关项目推荐，README 未将其描述为本技能的替代品。
+把上面这段指令整段复制给 Trae Work，即可完成一次完整的试用。若生成结果中出现了具体色值、字体名与断点说明，说明技能已经正常工作。
 
 ---
 
-> 本文由 AI 阅读官方素材（GitHub README）后生成，已要求其仅依据素材撰写；关键命令请以官方文档为准。
+> 本文由 AI 综合官方仓库、项目官网与第三方公开资料撰写，已要求其仅依据公开资料成文；关键命令请以官方文档为准。

@@ -1,18 +1,19 @@
 ---
 layout: post
-title: "Hermes Agent 上手：会自己长技能的 AI 智能体"
-subtitle: "Nous Research 出品，自带学习闭环，Windows 原生可跑，还能接 Telegram"
+title: "Hermes Agent 使用说明书：会自己长技能的 AI 智能体"
+subtitle: "Nous Research 出品的自改进 Agent，支持 Windows 原生安装、多平台消息接入与技能自进化，Java 后端也能用"
 date: 2026-10-11 23:45:03 +0800
 author: ""
 header-img: "img/post-bg-ai-news.svg"
 tags:
     - AI新资讯
+    - Agent Harness
 news_category: harness
 ---
 
 - 来源：GitHub 近期爆火
 - 仓库：https://github.com/NousResearch/hermes-agent
-- Stars：252731
+- Stars：252799
 - 语言：Python
 - 创建时间：2025-07-22
 - 最近更新：2026-10-11
@@ -20,137 +21,132 @@ news_category: harness
 
 ---
 
-## 解决什么问题
+> Hermes Agent 是 Nous Research 打造的开源自主 AI 智能体，核心卖点是「内置学习闭环」——它会从对话经验里自动生成技能、在使用中持续改进技能、跨会话记住你的项目与偏好。最适合想把 AI 从「IDE 里的补全工具」升级成「常驻云端、随时可召唤的私人助理」的开发者，尤其是愿意折腾终端、想让 Agent 跑在 VPS 或服务器上而不是绑死在本机的人。
 
-README 把 Hermes Agent 定位为「自我改进的 AI 智能体」（The self-improving AI agent），由 Nous Research 打造。它声称是「唯一内置学习闭环的 agent」：能从经验中创建技能、在使用中改进技能、主动提醒自己持久化知识、检索自己过去的对话，并跨会话构建对你的持续加深的模型。
+## 它到底解决什么问题
 
-从工程视角看，它要解决的是「AI 助手每次对话都从零开始」的问题：
+大多数 AI 编程助手是「会话制」的：关掉窗口，上下文清零，下次还得重新交代项目背景。Hermes Agent 试图解决的是**长期记忆与能力沉淀**：
 
-- **经验不沉淀**：复杂任务完成后会自动创建技能（autonomous skill creation after complex tasks），技能在使用中自我改进。
-- **记忆不连续**：agent 自管理的记忆配合周期性提醒（periodic nudges），并用 FTS5 会话搜索 + LLM 摘要实现跨会话回忆，另有 Honcho 的辩证式用户建模。
-- **绑定本机**：它不绑定在你的笔记本上，可以跑在 5 美元 VPS、GPU 集群或空闲时几乎不花钱的 serverless 基础设施上，你从 Telegram 就能和它对话。
-- **模型锁定**：支持 Nous Portal、OpenRouter、OpenAI、你自己的 endpoint 等多家 provider，用 `hermes model` 切换，无需改代码。
+- **技能自生成**：完成复杂任务后，Agent 会自主把过程固化成技能，下次遇到同类问题直接复用。
+- **技能自改进**：技能在使用过程中会被持续优化，而不是写死不变。
+- **跨会话记忆**：用 FTS5 做会话检索，配合 LLM 摘要实现跨会话回忆；并通过 Honcho 做辩证式用户建模，逐步建立「你是谁」的画像。
+- **不绑本机**：可以跑在 5 美元的 VPS、GPU 集群，或 Daytona / Modal 这类空闲时几乎不花钱的 serverless 环境上，你从 Telegram 就能指挥它干活。
 
-README 未提供针对 Java / Spring 项目的专门能力说明。
+一句话概括：它不是 IDE 里的补全插件，而是一个**能长期在线、越用越懂你的自主智能体**。
 
-## 核心概念
+## 核心概念与工作原理
 
-README 中明确出现的核心概念如下：
+| 概念 | 说明 |
+| --- | --- |
+| 学习闭环 | Agent 自主整理记忆并周期性自我提醒；复杂任务后自动创建技能；技能在使用中自我改进 |
+| 技能系统 | 兼容 agentskills.io 开放标准，可用 `/skills` 浏览或以 `/<skill-name>` 直接调用 |
+| 终端后端 | 共七种：local、Docker、SSH、Singularity、Modal、Daytona、Vercel Sandbox；其中 Daytona 与 Modal 支持 serverless 持久化，空闲休眠、按需唤醒 |
+| 消息网关 | 单一 gateway 进程同时对接 Telegram、Discord、Slack、WhatsApp、Signal、Email 与 CLI，支持语音转写与跨平台会话连续性 |
+| 子智能体 | 可派生隔离的 subagent 并行处理不同工作流；也可写 Python 脚本通过 RPC 调用工具，把多步流水线压缩成零上下文开销的一轮 |
+| 定时自动化 | 内置 cron 调度器，用自然语言描述日报、夜间备份、每周审计等任务，无人值守运行 |
+| 模型无关 | 支持 Nous Portal、OpenRouter、OpenAI、自建 endpoint 等多种 provider，用 `hermes model` 切换，不改代码、不锁定 |
 
-- **学习闭环（closed learning loop）**：agent 自管理记忆 + 周期性提醒；复杂任务后自主创建技能；技能在使用中自我改进；FTS5 会话搜索配合 LLM 摘要做跨会话回忆；Honcho 辩证式用户建模；兼容 agentskills.io 开放标准。
-- **终端界面（TUI）**：完整 TUI，支持多行编辑、斜杠命令自动补全、会话历史、打断并重定向（interrupt-and-redirect）、流式工具输出。
-- **消息网关（gateway）**：Telegram、Discord、Slack、WhatsApp、Signal 和 CLI 全部来自单个 gateway 进程；支持语音备忘转录、跨平台会话连续性。
-- **定时自动化**：内置 cron 调度器，可投递到任意平台，用自然语言描述日报、夜间备份、每周审计等无人值守任务。
-- **委派与并行**：可派生隔离的 subagent 并行工作；可写 Python 脚本通过 RPC 调用工具，把多步流水线压缩成零上下文成本的回合。
-- **七种终端后端**：local、Docker、SSH、Singularity、Modal、Daytona、Vercel Sandbox；其中 Daytona 与 Modal 提供 serverless 持久化，空闲时休眠、按需唤醒。
-- **面向研究**：批量轨迹生成、轨迹压缩，用于训练下一代工具调用模型。
-- **两个入口**：用 `hermes` 启动终端 UI，或运行 gateway 后从 Telegram、Discord、Slack、WhatsApp、Signal、Email 对话；进入会话后许多斜杠命令在两个界面通用。
-- **MCP 集成**：文档目录中有 MCP Integration 一节，说明可连接任意 MCP server 以扩展能力。
+## 环境与前置依赖
 
-## 前置依赖
+- **操作系统**：Windows 10/11 原生支持（无需 WSL）；macOS 12+；Linux 各发行版；Android/Termux 另有 aarch64 的 APT 仓库（分 stable 与 canary 两个通道）。
+- **运行时**：安装脚本会代为处理 Python 3.14、Node.js、npm、ripgrep、FFmpeg 以及 Python 依赖。若系统缺少 Git，脚本会把经验证的 Git for Windows 归档放进 Hermes 自己的工具目录，**不会替换你系统的 Git**。
+- **Windows 安装位置**：原生安装位于 `%LOCALAPPDATA%\hermes`；若走 WSL2，则与 Linux 一致位于 `~/.hermes`。
+- **模型来源**：可自备各家 API Key，也可订阅 Nous Portal（免费档仅限免费模型；Plus 20 美元/月、Super 100 美元/月、Ultra 200 美元/月，付费档含每月额度与 200+ 模型及托管工具调用）。
 
-README 明确提到的依赖与前提：
+## 安装与配置（Windows + PowerShell）
 
-- **Windows 原生安装**：PowerShell 一行命令即可，CLI、gateway、TUI 和工具全部原生可用，不需要 WSL。若更想用 WSL2，Linux/macOS 的一行命令在 WSL2 中同样可用。
-- **安装器代管的组件**：源码安装器把 Python 3.14、Node.js、npm、ripgrep、FFmpeg 以及 Python 依赖交给 PM 处理。
-- **Git**：如果系统没有 Git，安装器会把经过校验的 Git for Windows 归档放进 Hermes 的工具存储中，不会替换你的系统 Git。
-- **安装位置**：Windows 原生安装位于 `%LOCALAPPDATA%\hermes`；WSL2 安装位于 `~/.hermes`，与 Linux 相同。
-- **模型 provider**：可使用 Nous Portal、OpenRouter、OpenAI、你自己的 endpoint 等；README 未提供完整的 provider 清单，只给出文档链接。
-- **Android / Termux**：aarch64 设备有签名 APT 仓库，分 `stable`（带 tag 的发布）与预发布 `canary` 两个通道，包内含 Python、Node.js 和 TUI，需使用 Termux 指南而非桌面/服务器安装脚本。
+### 第一步：安装本体
 
-README 未提供具体的磁盘空间、内存、网络等硬件门槛数值。
+在 PowerShell 中执行：
 
-## 安装与配置
+`iex (irm https://hermes-agent.nousresearch.com/install.ps1)`
 
-以下步骤按「Windows + Trae Work 的 Java 程序员」视角组织。
+这条命令会拉取官方安装脚本并直接执行，自动装好上述依赖。若你更习惯 WSL2，也可以在 WSL2 里用 Linux 一行命令：`curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash`。
 
-**第一步：在 PowerShell 中安装（Windows 原生）**
+### 第二步：初始化配置
 
-1. 打开 PowerShell。
-2. 执行 `iex (irm https://hermes-agent.nousresearch.com/install.ps1)`。
-3. 等待安装器完成，它会代管 Python 3.14、Node.js、npm、ripgrep、FFmpeg 与 Python 依赖；若缺少 Git，会把校验过的 Git for Windows 归档放进 Hermes 工具存储。
-4. 安装完成后，程序位于 `%LOCALAPPDATA%\hermes`。
+安装完成后依次执行：
 
-如果你更想用 WSL2，则改用 Linux/macOS 的一行命令 `curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash`，安装位置为 `~/.hermes`。
+1. `hermes setup` —— 运行完整设置向导，一次性配置好 provider、模型与各项参数。
+2. 若不想逐个收集 API Key，可用 `hermes setup --portal` —— 通过 OAuth 登录 Nous Portal，自动把 Nous 设为 provider 并开启 Tool Gateway（网页搜索、图像生成、TTS、云浏览器统一走订阅）。
+3. `hermes model` —— 随时切换 LLM provider 与模型。
+4. `hermes tools` —— 配置启用哪些工具。
+5. `hermes config set` / `hermes config get` —— 单独读写某个配置项。
 
-**第二步：初始化与配置**
+### 第三步：启动对话
 
-1. 在终端执行 `hermes setup`，运行完整安装向导，一次性配置所有内容。
-2. 执行 `hermes model` 选择 LLM provider 与模型。
-3. 执行 `hermes tools` 配置启用哪些工具。
-4. 需要单项配置时用 `hermes config set` 与 `hermes config get`。
-5. 如果不想分别收集模型、网页搜索、图像生成、TTS、云浏览器五套 API key，可执行 `hermes setup --portal`：它会通过 OAuth 登录、把 Nous 设为 provider 并开启 Tool Gateway；之后用 `hermes portal info` 随时查看接线情况。
-6. 如果是从 OpenClaw 迁移过来，可用 `hermes claw migrate`（支持 `--dry-run`、`--preset user-data`、`--overwrite`）。
+直接运行 `hermes` 进入交互式 CLI，开始聊天。
 
-**第三步：融入 Trae Work 日常工作流**
+### 第四步（可选）：接入消息平台
 
-README 未提供与 Trae Work / Java 的集成方式。README 中与「接入其他工具」相关的唯一线索是文档目录里的 MCP Integration 一节（Connect any MCP server for extended capabilities），以及社区项目 computer-use-linux 被描述为「面向 Hermes 和其他 MCP host 的 Linux 桌面控制 MCP server」——也就是说 Hermes 自身可以作为 MCP host 去连接别的 MCP server，但 README 没有说明 Hermes 能否作为 MCP server 被 Trae Work 调用，也没有给出任何 Trae Work 侧的配置路径或命令。
+想让 Agent 常驻云端、从手机指挥，执行 `hermes gateway setup` 完成平台配置，再 `hermes gateway start` 启动网关，之后在 Telegram / Discord / Slack / WhatsApp / Signal / Email 里给机器人发消息即可。
 
-因此，在 Trae Work 中可行的做法仅限于：在 Trae Work 的内置终端里把它当普通 CLI 使用（执行 `hermes` 进入交互式 CLI，或执行 `hermes gateway` 启动消息网关），以及在 Java/Spring 项目中把它当作一个独立的命令行工具来调用。README 未提供 Skill 目录放置方式、MCP 服务接入方式，也未提供 Java/Spring SDK 或 HTTP 集成方式。
+### 关于 Trae Work 与 Java 项目的接入
 
-**第四步：常用维护命令**
+**官方未提供与 Trae Work / Java 的集成方式。** 公开资料中没有 Hermes Agent 作为 MCP 服务接入 IDE、作为 Skill 放入技能目录、或提供 Java/Spring SDK 的说明。它本身是一个独立的 Agent 运行壳，官方给出的入口是终端 CLI、桌面应用与消息平台网关。
 
-- `hermes update` 更新到最新版本。
-- `hermes doctor` 诊断问题。
-- `hermes gateway setup` 与 `hermes gateway start` 启动消息网关。
+对 Java 后端开发者而言，现实可行的用法是**并行使用**：在 Trae Work 里写 Spring 代码，同时让 Hermes Agent 在终端或云端承担跨会话的长期任务（例如定时生成日报、跑脚本、做资料检索）。若确实需要打通，只能自行基于其 CLI 或 Python RPC 能力做二次封装，官方暂无现成路径。
 
-## 最小可用示例
+## 快速上手
 
-把下面这段整段复制给 Trae Work，让它帮你在本地把 Hermes Agent 跑起来并做一次 Java 场景试用。
+常用命令一览：
+
+| 命令 | 作用 |
+| --- | --- |
+| `hermes` | 启动交互式 CLI，开始对话 |
+| `hermes model` | 选择 LLM provider 与模型 |
+| `hermes tools` | 配置启用的工具 |
+| `hermes config set` / `hermes config get` | 设置 / 读取单项配置 |
+| `hermes gateway` | 启动消息网关 |
+| `hermes setup` | 完整设置向导 |
+| `hermes claw migrate` | 从 OpenClaw 迁移 |
+| `hermes update` | 更新到最新版 |
+| `hermes doctor` | 诊断问题 |
+| `hermes portal info` | 查看 Portal 已接通的能力 |
+
+进入对话后，CLI 与消息平台共享大量斜杠命令：`/new` 或 `/reset` 开新会话、`/model [provider:model]` 换模型、`/personality [name]` 设定人格、`/retry` 与 `/undo` 重试或撤销上一轮、`/compress` 压缩上下文、`/usage` 查看用量、`/insights [--days N]` 看洞察、`/skills` 浏览技能、`/<skill-name>` 直接调用技能。CLI 中按 `Ctrl+C` 或直接发新消息可打断当前工作；消息平台用 `/stop`。
+
+## 如何确认安装成功
+
+1. 安装脚本跑完后，重载 shell：`source ~/.bashrc`（或 `source ~/.zshrc`）。Windows 原生安装下重开一个 PowerShell 窗口即可。
+2. 运行 `hermes doctor`，它会诊断环境与配置问题，没有报错基本说明装好了。
+3. 运行 `hermes`，能进入 TUI 并正常对话，即安装与模型配置均成功。
+4. 若用了 Portal，运行 `hermes portal info` 确认 provider 与 Tool Gateway 已接通。
+
+> **Windows 用户注意**：若杀毒软件（Bitdefender、Windows Defender 等）把 `%LOCALAPPDATA%\hermes\bin\uv.exe` 报为恶意软件，这是**误报**。该文件是 Astral 的 `uv`（Rust 写的 Python 包管理器），基于机器学习的杀毒引擎常误判这类会下载安装包的无签名 Rust 二进制。官方给出了用 GitHub CLI 做 attestation 校验的完整流程，校验通过且哈希比对为 `True` 即可放心。加白名单时请**加整个文件夹**而非文件哈希，因为 Hermes 每次更新 `uv` 哈希都会变：以管理员身份运行 PowerShell 后执行 `Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\hermes\bin"`。
+
+## 局限与风险
+
+- **许可证**：MIT，可自由使用与修改。
+- **费用**：软件本身免费开源，但模型 provider 与可选托管服务各自计费。Nous Portal 免费档仅限免费模型且有标准速率限制；付费档为 Plus 20 美元/月、Super 100 美元/月、Ultra 200 美元/月，分别含 22 / 110 / 220 美元月度额度（10% 赠送）与 10 / 50 / 100 美元的额度结转上限。云托管为可选项。
+- **成熟度**：项目 2025-07-22 创建，迭代活跃。Docker Hub 上镜像体积约 1.3 GB，近期标签形如 `rc.13-v0.21.7-desktop`，仍带 rc 前缀，说明处于快速迭代期。
+- **安全**：官方文档设有安全章节，涵盖命令审批、私聊配对、容器隔离；终端后端提供容器加固与命名空间隔离。但让一个自主 Agent 长期在线并持有工具调用权限，本身需要你自行评估风险边界。
+- **数据留存**：对话、记忆、技能都会持久保存，换机器时记得备份 Hermes 数据目录。停止本地 Agent 只结束进程，不会删除已保存内容；但需要活跃 Agent 的任务在停止期间不会运行。
+
+## 社区评价（来自 Hacker News 讨论）
+
+在题为《Hermes Agent – Open-source AI agent with persistent memory》的讨论中（52 分、42 条评论），社区情绪颇为两极：
+
+- 有评论者表示「惊讶它还没上首页，我的 X / LinkedIn 信息流里全是它」，并希望能有人把当下这一批 FOMO 框架（paperclip、hermes、pi、opencode、openclaw、nanoclaw、gastown 等）实际都玩一遍，做个第一印象横评——因为很可能「自己用 Claude Code / Codex / Cursor 手搓，效果也就只好那么一点点」。
+- 也有评论给出区分：Pi 和 OpenCode 属于 Claude Code 的同类产品，而 Hermes 和 *claw 系列则试图做得更自主一些。
+- 另有评论补充了 netclaw 作为同类候选。
+
+总体看，社区认可它的自主性与记忆能力定位，但对「相比自建方案是否真有显著优势」仍持观望态度。
 
 ```text
-背景：我在 Windows 上开发，主力语言是 Java / Spring，日常用 Trae Work 写代码。我想试用 Nous Research 的 Hermes Agent（仓库 NousResearch/hermes-agent），它是一个自带学习闭环的 AI 智能体，支持 Windows 原生安装。
+背景：我是一名 Java 后端工程师，日常在 Windows 上用 Trae Work 开发 Spring 项目，想试用 Hermes Agent 这个自带学习闭环的自主智能体。
 
-目标：
-1. 在我的 Windows 机器上完成 Hermes Agent 的原生安装，并确认安装位置在 %LOCALAPPDATA%\hermes。
-2. 完成初始化配置，选定一个可用的模型 provider 与模型。
-3. 跑通一次真实对话，并让它帮我处理一个 Java 相关的具体任务。
+目标：请帮我在 Windows 上完成 Hermes Agent 的安装、配置与首次可用验证，并给出它与我现有 Java/Spring 开发工作流的配合方式。
 
-要求：
-- 安装只用官方 PowerShell 一行命令，不要用 WSL，也不要自己编译源码。
-- 每一步都告诉我该在哪个终端里执行、执行什么命令、预期看到什么输出。
-- 如果 Windows Defender 或杀毒软件把 %LOCALAPPDATA%\hermes\bin\uv.exe 报成恶意软件，先按官方说明做真实性校验（用 gh attestation verify 校验 astral-sh/uv 的发布包，并比对文件哈希），确认无误后再把整个 bin 文件夹加入白名单，不要只加文件哈希。
-- 配置完成后，用 Hermes 帮我做这件事：读取我当前 Spring Boot 项目里的一个 Controller 类，解释它的接口契约，并给出三条可落地的改进建议。
-- 全程不要编造 Hermes 的命令；只用官方 README 里出现过的命令，例如 hermes、hermes setup、hermes model、hermes tools、hermes config set、hermes config get、hermes gateway、hermes doctor、hermes update。
-- 最后告诉我：Hermes 的哪些能力（记忆、技能、cron、subagent、消息网关）适合我这种 Java 后端日常使用，哪些暂时用不上。
+具体要求：
+1. 用 PowerShell 给出从零开始的完整步骤：安装脚本、依赖检查、hermes setup 配置向导、模型 provider 选择（我暂时不想订阅 Nous Portal，倾向用自备的 OpenAI 或 OpenRouter Key）。
+2. 说明每一步执行后我应该看到什么输出，如何判断成功；并告诉我 hermes doctor 报错时常见的排查顺序。
+3. 解释 Hermes 的技能系统与记忆机制，并举例说明：如果我经常做 Spring Boot 接口开发与 MyBatis 调试，它可能自动沉淀出什么样的技能，我该如何查看和手动调用这些技能。
+4. 明确告诉我官方是否提供与 Trae Work、Java/Spring 项目的集成方式（MCP、Skill 目录、SDK、HTTP）。如果没有，请给出一个不依赖官方集成的务实用法建议，比如让它在终端或云端承担哪些与 Java 项目相关的长期任务。
+5. 列出 Windows 上可能踩的坑，尤其是杀毒软件误报 uv.exe 的处理方式，以及加白名单时为什么应该加文件夹而不是文件哈希。
+6. 最后给我一份最小验证清单：三条命令，确认安装、模型、对话三件事都正常。
 ```
-
-## 验证方法
-
-按 README 提供的信息，可用以下步骤验证安装是否可用：
-
-1. **确认命令存在**：在终端执行 `hermes`，README 说明这会启动交互式 CLI 并开始对话。
-2. **确认模型可用**：执行 `hermes model`，应能进入 LLM provider 与模型的选择流程。
-3. **确认工具配置可用**：执行 `hermes tools`，应能配置启用哪些工具。
-4. **确认配置读写可用**：执行 `hermes config get` 打印单项配置值，执行 `hermes config set` 设置单项配置值。
-5. **确认诊断可用**：执行 `hermes doctor`，README 说明它用于诊断任何问题。
-6. **确认版本更新通道可用**：执行 `hermes update`，README 说明它更新到最新版本。
-7. **确认消息网关可用**：执行 `hermes gateway setup` 与 `hermes gateway start`，然后给机器人发一条消息；README 说明 CLI 与消息平台共享 `/new`、`/reset`、`/model`、`/personality`、`/retry`、`/undo`、`/compress`、`/usage`、`/insights`、`/skills` 等斜杠命令。
-8. **确认 Portal 接线情况**：若使用了 `hermes setup --portal`，执行 `hermes portal info` 查看已接好的能力。
-9. **确认 Windows 安装位置**：检查 `%LOCALAPPDATA%\hermes` 目录是否存在。
-
-README 未提供单元测试、健康检查端点或性能基准类的验证方式。
-
-## 风险与注意事项
-
-- **杀毒软件误报**：README 明确警告，Windows Defender 或 Bitdefender 等可能把 `%LOCALAPPDATA%\hermes\bin\uv.exe` 隔离，这是误报。该文件是 Astral 的 `uv`（Rust 写的 Python 包管理器），基于机器学习的杀毒引擎常把「会下载并安装包的无签名 Rust 二进制」标记为可疑。README 给出了用 `gh attestation verify` 校验 astral-sh/uv 发布包并比对哈希的验证流程，并建议把整个 `bin` 文件夹加入白名单而不是文件哈希，因为 Hermes 每次更新 `uv` 哈希都会变。
-- **安装器会改动工具链**：源码安装器把 Python 3.14、Node.js、npm、ripgrep、FFmpeg 和 Python 依赖交给 PM 处理；若系统没有 Git，它会暂存一份校验过的 Git for Windows 归档到 Hermes 工具存储中（README 强调不会替换系统 Git）。对已有 Java 工具链的机器，建议先确认这些组件不会与现有环境冲突。
-- **平台差异**：Android / Termux 必须使用专门的 Termux 指南，不能用桌面/服务器安装脚本；Windows 原生与 WSL2 的安装位置不同（`%LOCALAPPDATA%\hermes` 与 `~/.hermes`）。
-- **更新归属**：README 提到 MSIX/App Installer 包有独立的更新归属，具体细节指向安装文档，README 未展开。
-- **权限与安全**：文档目录中有 Security 一节，涉及命令审批、DM 配对、容器隔离，但 README 正文未给出具体默认策略，README 未提供细节。
-- **与 Trae Work / Java 的集成**：README 未提供与 Trae Work / Java 的集成方式，也没有给出任何 Java SDK、HTTP 接口或 Spring 集成说明。
-- **模型与费用**：README 未提供各 provider 的价格、配额或速率限制信息。
-
-## 替代方案
-
-README 中直接提到的可替代或可迁移对象：
-
-- **OpenClaw**：README 专门有一节「Migrating from OpenClaw」，说明 Hermes 可以自动导入其设置、记忆、技能和 API key。首次运行 `hermes setup` 时会自动检测 `~/.openclaw` 并询问是否迁移；也可随时执行 `hermes claw migrate`（支持 `--dry-run` 预览、`--preset user-data` 不迁移密钥、`--overwrite` 覆盖冲突）。导入内容包括 SOUL.md 人设文件、MEMORY.md 与 USER.md 记忆条目、用户创建的技能（导入到 `~/.hermes/skills/openclaw-imports/`）、命令允许列表、消息设置、API key（Telegram、OpenRouter、OpenAI、Anthropic、ElevenLabs）、TTS 资源、工作区指令 AGENTS.md。也可使用 `openclaw-migration` 技能做交互式、带 dry-run 预览的迁移。
-- **HermesClaw**：社区微信桥，可在同一个微信账号上同时运行 Hermes Agent 和 OpenClaw。
-- **computer-use-linux**：面向 Hermes 和其他 MCP host 的 Linux 桌面控制 MCP server，具备 AT-SPI 无障碍树、Wayland/X11 输入、截图和合成器窗口定位能力。
-
-README 未提供其他同类 agent 框架的对比或替代建议。
 
 ---
 
-> 本文由 AI 阅读官方素材（GitHub README）后生成，已要求其仅依据素材撰写；关键命令请以官方文档为准。
+> 本文由 AI 综合官方仓库、项目官网与第三方公开资料撰写，已要求其仅依据公开资料成文；关键命令请以官方文档为准。

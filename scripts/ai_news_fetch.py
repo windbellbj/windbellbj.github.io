@@ -8,13 +8,20 @@ import os
 import re
 import sys
 import time
+import glob
 import http.client
 from datetime import datetime, timedelta, timezone
+from html import unescape as html_unescape
 from html.parser import HTMLParser
 from urllib import parse, request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CST = timezone(timedelta(hours=8))
+
+BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+)
 
 READER_CONTEXT = (
     "读者画像：Java 后端程序员，日常在 Windows 上使用 Trae Work（AI IDE）开发，技术栈以 Java / Spring 为主；"
@@ -78,6 +85,7 @@ def repo_item(repo, kind, order=None):
         "topics": repo.get("topics") or [],
         "created": (repo.get("created_at") or "")[:10],
         "pushed": (repo.get("pushed_at") or "")[:10],
+        "homepage": (repo.get("homepage") or "").strip(),
         "order": order,
     }
 
@@ -205,7 +213,7 @@ def fetch_readme(full_name, limit):
         log("README 获取失败(%s)：%s" % (full_name, e))
         return ""
     if len(text) > limit:
-        text = text[:limit] + "\n\n（README 较长，已截取前 %d 字符）" % limit
+        text = text[:limit] + "\n\n（官方仓库说明较长，已截取前 %d 字符）" % limit
     return text
 
 
@@ -320,53 +328,265 @@ def fetch_hn_material(item, limit=20000):
             log("原文网页抓取失败：%s" % e)
     text = "\n\n".join(parts)
     if len(text) > limit:
-        text = text[:limit] + "\n\n（素材较长，已截取）"
+        text = text[:limit] + "\n\n（讨论内容较长，已截取前 %d 字符）" % limit
     return text
 
 
-TOOL_SECTIONS = ["解决什么问题", "核心概念", "前置依赖", "安装与配置", "最小可用示例",
-                 "验证方法", "风险与注意事项", "替代方案"]
+# ---------- 多源调研：官网正文 + DuckDuckGo 搜索深抓 + HN 社区讨论（全部免密钥，失败静默跳过） ----------
+
+_SKIP_DOMAINS = (
+    "duckduckgo.com", "github.com", "news.ycombinator.com", "youtube.com",
+    "twitter.com", "x.com", "reddit.com", "facebook.com", "login.",
+)
+
+
+def _is_candidate_url(url):
+    low = (url or "").lower()
+    if not low.startswith("http"):
+        return False
+    return not any(d in low for d in _SKIP_DOMAINS)
+
+
+def fetch_page_text(url, limit):
+    try:
+        html = http_text(
+            url,
+            headers={"User-Agent": BROWSER_UA, "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8"},
+            timeout=20, retries=0,
+        )
+    except Exception:
+        return ""
+    return html_to_text(html, limit)
+
+
+def ddg_search(query, max_results=4):
+    # DuckDuckGo HTML/Lite 免密钥端点；解析 /l/?uddg= 跳转链接还原真实 URL，任一失败静默返回空
+    endpoints = [
+        "https://html.duckduckgo.com/html/?q=",
+        "https://lite.duckduckgo.com/lite/?q=",
+    ]
+    for base in endpoints:
+        hrefs = []
+        try:
+            html = http_text(
+                base + parse.quote(query),
+                headers={"User-Agent": BROWSER_UA, "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8"},
+                timeout=20, retries=0,
+            )
+        except Exception:
+            continue
+        for raw in re.findall(r'href="([^"]*(?:uddg=|/l/\?)[^"]*)"', html):
+            href = html_unescape(raw)
+            if href.startswith("//"):
+                href = "https:" + href
+            target = ""
+            if "uddg=" in href:
+                target = (parse.parse_qs(parse.urlparse(href).query).get("uddg") or [""])[0]
+            elif href.startswith("http"):
+                target = href
+            if target and _is_candidate_url(target) and target not in hrefs:
+                hrefs.append(target)
+            if len(hrefs) >= max_results:
+                break
+        if hrefs:
+            return hrefs[:max_results]
+        time.sleep(1)
+    return []
+
+
+def _squash(text):
+    return re.sub(r"[^a-z0-9]+", "", (text or "").lower())
+
+
+# 常见通用词：仅凭标题里出现这些词不能判定讨论的是该项目
+_GENERIC_HN_NAMES = {
+    "skill", "skills", "mcp", "agent", "agents", "harness", "cli", "ide",
+    "code", "codes", "opencode", "tool", "tools", "plugin", "plugins", "ecc",
+}
+
+# 标题只命中产品名时，还需命中 AI 编程领域词，避免 superpowers 这类通用词误匹配
+_DOMAIN_RE = re.compile(
+    r"\b(agent|agents|ai|llm|mcp|skill|skills|harness|coding|code|claude|"
+    r"copilot|cursor|trae|codex|cli|ide)\b",
+    re.I,
+)
+
+
+def _story_matches(name, hit):
+    title = (hit.get("title") or "").lower()
+    url = (hit.get("url") or "").lower()
+    owner, _, short = name.partition("/")
+    if "github.com/" + name.lower() in url:
+        return True
+    # 标题命中但链接指向其他 owner 的 GitHub 仓库，按同名异物排除
+    if "github.com/" in url and owner.lower() not in url:
+        return False
+    if name.lower() in title:
+        return True
+    title_sq = _squash(title)
+    if owner.lower() in title and _squash(short) in title_sq:
+        return True
+    short_sq = _squash(short)
+    if (
+        len(short_sq) >= 6
+        and short_sq not in _GENERIC_HN_NAMES
+        and short_sq in title_sq
+        and _DOMAIN_RE.search(hit.get("title") or "")
+    ):
+        return True
+    return False
+
+
+def fetch_hn_discussions(name, story_cap=3, limit=5000):
+    # 按项目名搜 HN story，取热门讨论的标题与高赞评论
+    queries = [name]
+    short = name.split("/")[-1]
+    if short and short != name:
+        queries.append(short.replace("-", " "))
+    hits = {}
+    for q in queries:
+        url = "https://hn.algolia.com/api/v1/search?" + parse.urlencode({
+            "query": q, "tags": "story", "hitsPerPage": 8,
+        })
+        try:
+            data = http_json(url, timeout=20, retries=0)
+        except Exception:
+            continue
+        for h in data.get("hits", []):
+            if (h.get("points") or 0) >= 10 and h.get("objectID") and _story_matches(name, h):
+                hits[h["objectID"]] = h
+        time.sleep(0.5)
+    top = sorted(hits.values(), key=lambda h: -(h.get("points") or 0))[:story_cap]
+    if not top:
+        return ""
+    parts = []
+    for h in top:
+        parts.append(
+            "- 《%s》：%s points，%s 条评论，%s"
+            % (
+                h.get("title") or "",
+                h.get("points") or 0,
+                h.get("num_comments") or 0,
+                h.get("url") or ("https://news.ycombinator.com/item?id=" + h["objectID"]),
+            )
+        )
+    for h in top[:2]:
+        try:
+            thread = http_json(
+                "https://hn.algolia.com/api/v1/items/%s" % h["objectID"], timeout=30, retries=0
+            )
+        except Exception:
+            continue
+        comments = []
+        _collect_comments(thread, comments)
+        comments.sort(key=lambda c: -c["points"])
+        tops = [
+            "  （%d points）%s" % (c["points"], html_to_text(c["text"], 700))
+            for c in comments[:3]
+        ]
+        if tops:
+            parts.append("  高赞评论：\n" + "\n".join(tops))
+        time.sleep(0.5)
+    text = "\n".join(parts)
+    return text[:limit]
+
+
+def research_tool(item, rcfg):
+    # 汇总官网正文、第三方介绍评测、HN 讨论；任何渠道失败都不影响其他渠道
+    blocks = []
+    homepage = (item.get("homepage") or "").strip()
+    if homepage and "github.com" not in homepage.lower():
+        text = fetch_page_text(homepage, rcfg.get("homepage_chars", 4000))
+        if text and len(text) >= 200:
+            blocks.append("【官网/文档正文】来源：%s\n%s" % (homepage, text))
+            time.sleep(1)
+    web_cap = rcfg.get("web_result_count", 2)
+    picked = 0
+    visited = {homepage.rstrip("/").lower()}
+    queries = [item["name"], item["name"].split("/")[-1].replace("-", " ")]
+    for q in queries:
+        if picked >= web_cap:
+            break
+        for target in ddg_search(q, max_results=web_cap * 2):
+            if picked >= web_cap:
+                break
+            norm = target.rstrip("/").lower()
+            if norm in visited:
+                continue
+            visited.add(norm)
+            text = fetch_page_text(target, rcfg.get("web_result_chars", 4000))
+            if not text or len(text) < 200:
+                continue
+            blocks.append("【第三方介绍/评测】来源：%s\n%s" % (target, text))
+            picked += 1
+            time.sleep(1)
+    hn = fetch_hn_discussions(
+        item["name"], rcfg.get("hn_story_count", 3), rcfg.get("hn_chars", 5000)
+    )
+    if hn:
+        blocks.append("【Hacker News 社区讨论】\n" + hn)
+    return "\n\n".join(blocks)
 
 TOOL_SYSTEM = (
-    "你是一名资深工程师，负责把一个开源 AI 开发工具/技能的官方 README 读透，用中文写出可直接落地的介绍文章。\n"
-    "硬性要求：\n"
-    "1. 全文使用中文；所有事实只能来自用户给出的 README 原文与仓库元信息，README 未提及的内容写“README 未提供”，"
-    "严禁编造版本号、命令或结论。\n"
-    "2. 输出严格使用以下 8 个二级标题，顺序不变，不多不少："
-    + " / ".join("## " + s for s in TOOL_SECTIONS) + "。\n"
-    "3. 「安装与配置」必须站在读者视角给步骤：读者是 Java 程序员，在 Windows 上用 Trae Work 开发。"
-    "除通用安装步骤外，必须说明该工具如何融入其日常工作流（例如：作为 MCP 服务接入 Trae Work、"
-    "作为 Skill 放入技能目录、在 Trae Work 终端中作为 CLI 调用、或在 Java/Spring 项目中通过 SDK/HTTP 集成）；"
-    "README 未提供对应接入方式时写“README 未提供与 Trae Work / Java 的集成方式”，严禁编造配置路径或命令。\n"
-    "4. 「最小可用示例」中必须包含且只能包含一个 ```text 代码块，块内是读者可整段复制给 Trae Work 等 AI 编程助手的落地指令"
-    "（含背景、目标、要求），指令要贴合 Java 程序员的试用场景。\n"
-    "   特别强调：全文有且仅有这一个围栏代码块（即全文只能出现一次开头的 ```text 与一次结尾的 ```）；"
-    "「安装与配置」等章节中的命令一律改用行内代码（反引号）或编号普通文本步骤表达，"
-    "严禁使用 ```bash、```shell、```json 等任何围栏代码块，即使命令很多也不允许例外。\n"
-    "5. 「验证方法」给可执行步骤；「风险与注意事项」「替代方案」基于 README 事实撰写，README 没有就写“README 未提供”。\n"
-    "6. title 需包含项目名称且不超过 40 字，subtitle 不超过 60 字，措辞面向想第一时间试用新品的开发者，不要公文腔。\n"
-    "7. category 按项目最主要形态归类，只能取以下六个英文标识之一："
+    "你是一名资深工程师兼技术文档作者，要为一个开源 AI 开发工具/技能撰写一份中文「使用说明书」，"
+    "读者看完能快速判断它值不值得用、并完成安装试用。\n"
+    "一、事实与措辞\n"
+    "1. 全文使用中文。用户会给出仓库元信息、官方仓库说明、官网/文档正文、第三方介绍评测、Hacker News 社区讨论等多渠道资料，"
+    "事实只能来自这些资料；可交叉印证、互相补充。\n"
+    "2. 严禁编造版本号、命令、路径、指标；不同渠道说法冲突时，用一句话并列两种说法，不要自行裁决；"
+    "确无公开信息时，自然地写「官方未公开说明」或「暂无公开资料」。\n"
+    "3. 成文中严禁出现「README」「素材」「抓取」「资料中未提供」这类暴露信息来源方式的字眼，"
+    "不要写「根据 README」「官方文档指出」式的转述句，直接以产品说明书口吻陈述事实。\n"
+    "二、结构与排版（不要套固定模板）\n"
+    "4. 开头先用一个引用块（> ）给出一句话定位：这个产品是什么、解决什么问题、最适合谁用。\n"
+    "5. 后续标题按产品自身特点自由组织，禁止千篇一律套同一套标题；但以下内容必须覆盖到"
+    "（可合并、可换标题名、可调整顺序，没有相关内容的部分可不写）：适用场景与解决的问题、"
+    "核心概念或工作原理、环境与前置依赖、安装与配置、快速上手、如何确认安装/运行成功、"
+    "局限与风险（许可证、费用、成熟度、安全，有依据时）。\n"
+    "6. 安装与配置必须写成读者可照做的步骤：读者在 Windows 上用 Trae Work 开发、技术栈 Java / Spring。"
+    "除通用安装外，必须明确该产品如何融入其日常工作流（作为 MCP 服务接入、Skill 放入技能目录、"
+    "终端中作为 CLI 调用、或 Java/Spring 项目里以 SDK/HTTP 集成）；命令用 Windows PowerShell 写法；"
+    "官方确实没有该接入路径时，直接写「官方未提供与 Trae Work / Java 的集成方式」，严禁编造配置路径或命令。\n"
+    "7. 排版要清晰、重点突出：善用二/三级标题切分长文；关键结论、命令、注意事项用加粗；"
+    "提示与警告用引用块；成组的平行信息（版本要求、常用命令、优点与局限、不同渠道的评价）用表格；"
+    "操作步骤用有序列表。避免大段没有信息增量的套话。\n"
+    "8. 内容要详细准确：命令、参数、路径原样保留并解释作用；社区讨论中的真实评价可写入「社区评价」类小节，"
+    "并注明来自 Hacker News 讨论。\n"
+    "三、代码块硬约束\n"
+    "9. 全文有且仅有一个围栏代码块，且必须是 ```text：块内是读者可整段复制给 Trae Work 等 AI 编程助手的落地指令，"
+    "包含背景、目标、具体要求，贴合 Java 程序员的试用场景。\n"
+    "10. 除此之外全文不得出现任何围栏代码块（包括 ```bash、```shell、```json、```python 等）；"
+    "其他命令一律用行内反引号或编号步骤表达，命令再多也不例外。\n"
+    "四、输出\n"
+    "11. title 需包含项目名称、不超过 50 字；subtitle 不超过 80 字；面向想第一时间试用新品的开发者，不要公文腔。\n"
+    "12. category 按项目最主要形态归类，只能取六个英文标识之一："
     "skill（AI 技能/Skill 包）、mcp（MCP 服务与客户端）、harness（Agent Harness/智能体运行壳）、"
     "agent-cli（编码 Agent 与命令行 AI 编程工具）、ide-plugin（AI IDE 插件/扩展）、other（以上都不是）。\n"
-    "8. 只输出 JSON，不要输出 JSON 以外的任何文字，格式："
-    "{\"title\":\"...\",\"subtitle\":\"...\",\"category\":\"六个标识之一\",\"markdown\":\"完整文章正文(Markdown，注意转义换行与引号)\"}。\n"
+    "13. 只输出 JSON："
+    "{\"title\":\"...\",\"subtitle\":\"...\",\"category\":\"六个标识之一\",\"markdown\":\"完整正文 Markdown（注意转义换行与引号）\"}，"
+    "不要输出 JSON 以外的任何文字。\n"
     + READER_CONTEXT
 )
 
 NEWS_SYSTEM = (
-    "你是一名资深技术编辑，负责把一条 Hacker News「Show HN」新品发布的原文与讨论读透，用中文写一篇简短资讯。\n"
+    "你是一名资深技术编辑，要把一条 Hacker News「Show HN」新品的自帖、项目网页与社区讨论，"
+    "写成一份中文「新品说明书」短文，让读者快速看懂并能上手试。\n"
     "硬性要求：\n"
-    "1. 全文中文；事实只能来自用户给出的素材，素材不足处写“素材中未提供”，严禁编造。\n"
-    "2. 严格使用 3 个二级标题，顺序不变：## 是什么 / ## 为什么值得试 / ## 发给 AI 的落地指令。\n"
-    "3. 「为什么值得试」要站在 Java 程序员、日常用 Trae Work 开发的视角判断价值；"
-    "若该产品与 AI 辅助软件开发无关，直接如实说明它不属于开发者工具、读者可跳过。\n"
-    "4. 第三节给出一个且仅一个 ```text 代码块，块内是读者可整段复制给 Trae Work 等 AI 助手的试用/评估指令；"
-    "其他位置不得出现代码块。\n"
-    "5. title 不超过 40 字、subtitle 不超过 60 字，措辞简洁直接。\n"
-    "6. category 按产品最主要形态归类，只能取六个英文标识之一："
+    "1. 全文中文；事实只能来自用户给出的资料，严禁编造；没有公开信息的内容写「官方未公开说明」或「暂无公开资料」；"
+    "成文中不得出现「README」「素材」「抓取」等字眼。\n"
+    "2. 开头用引用块给一句话定位（是什么、适合谁）；正文结构按产品特点自由组织，不要套固定模板，"
+    "但必须讲清：它是什么、解决什么问题/为什么值得试、社区怎么评价（有讨论时）、怎么开始试用；"
+    "站在 Java 程序员、Windows 上日常用 Trae Work 的视角判断价值；若与 AI 辅助软件开发无关，直接如实说明读者可跳过。\n"
+    "3. 排版重点突出：善用加粗、引用块、列表，成组信息可用表格。\n"
+    "4. 文末必须有一个且仅一个 ```text 围栏块：读者可整段复制给 Trae Work 等 AI 助手的试用/评估指令"
+    "（含背景、目标、要求）；全文只能出现这一个围栏代码块，其他命令用行内代码或编号步骤。\n"
+    "5. title 不超过 50 字、subtitle 不超过 80 字，简洁直接。\n"
+    "6. category 只能取六个英文标识之一："
     "skill（AI 技能/Skill 包）、mcp（MCP 服务与客户端）、harness（Agent Harness/智能体运行壳）、"
-    "agent-cli（编码 Agent 与命令行 AI 编程工具）、ide-plugin（AI IDE 插件/扩展）、other（以上都不是或与 AI 辅助开发无关）。\n"
-    "7. 只输出 JSON：{\"title\":\"...\",\"subtitle\":\"...\",\"category\":\"六个标识之一\",\"markdown\":\"...\"}，不要输出 JSON 以外的文字。\n"
+    "agent-cli（编码 Agent 与命令行 AI 编程工具）、ide-plugin（AI IDE 插件/扩展）、"
+    "other（以上都不是，或与 AI 辅助开发无关）。\n"
+    "7. 只输出 JSON：{\"title\":\"...\",\"subtitle\":\"...\",\"category\":\"六个标识之一\",\"markdown\":\"...\"}，"
+    "不要输出 JSON 以外的文字。\n"
     + READER_CONTEXT
 )
 
@@ -499,6 +719,16 @@ def rule_filter(cfg, item):
 
 CATEGORIES = ["skill", "mcp", "harness", "agent-cli", "ide-plugin", "other"]
 
+# 类目 slug -> 子 tag 中文短名（与站点子页一一对应）
+CATEGORY_TAGS = {
+    "skill": "AI技能",
+    "mcp": "MCP服务",
+    "harness": "Agent Harness",
+    "agent-cli": "编码Agent",
+    "ide-plugin": "AI IDE插件",
+    "other": "其他",
+}
+
 # 规则兜底归类：顺序即优先级，命中即归（LLM 未返回合法 category 时使用）
 CATEGORY_RULES = [
     ("harness", ["harness"]),
@@ -528,7 +758,7 @@ def tool_prompt_block(item):
     return safe_code(
         "你是一名资深工程师助手。我想了解并评估下面这个 AI 开发工具/技能：\n\n"
         "名称：%s\n链接：%s\n官方简介：%s\nStars：%s\n\n"
-        "请先阅读它的 README 与官方文档，然后：\n"
+        "请查阅它的官方仓库、官网文档与公开评测，然后：\n"
         "1. 用中文说明它解决什么问题、核心概念与前置依赖；\n"
         "2. 结合我的环境（Windows、Java/Spring 技术栈、日常使用 Trae Work 开发）给出安装、配置步骤，"
         "并说明它如何融入我的 Trae Work 工作流（MCP 接入 / Skill 安装 / 终端 CLI / Java 集成等）；\n"
@@ -557,65 +787,61 @@ def fallback_tool(item, readme):
     sections = extract_readme_sections(readme)
     subtitle = clip_text(item.get("desc") or "近期值得关注的 AI 开发工具", SUBTITLE_HARD_LIMIT)
     lines = [
-        "> AI 生成服务本次不可用，以下内容由脚本按规则从 README 提取，可能不完整。",
+        "> %s：%s" % (item["name"], item.get("desc") or "近期值得关注的 AI 开发工具"),
         "",
-        "## 解决什么问题",
+        "## 它是什么",
         "",
-        item.get("desc") or "README 未提供项目描述，请直接查阅仓库。",
+        item.get("desc") or "官方暂无公开的项目描述，建议直接查看仓库：%s。" % item["url"],
         "",
-        "## 核心概念",
-        "",
-        "README 未提供专门的概念说明，请结合官方文档确认。",
-        "",
-        "## 前置依赖",
-        "",
-        "见下方 README 安装章节，或让 AI 助手协助确认。",
-        "",
-        "## 安装与配置",
+        "## 安装与试用",
         "",
     ]
     if sections:
         lines += [sections, ""]
     else:
-        lines += ["README 未提供标准安装章节，请参考仓库：%s" % item["url"], ""]
+        lines += ["公开资料中未提取到标准安装章节，请参考仓库：%s。" % item["url"], ""]
     lines += [
-        "## 最小可用示例",
+        "## 发给 AI 的落地指令",
         "",
-        "将下面指令整段复制给 Trae Work 等 AI 助手，让它结合你的环境给出可执行步骤：",
+        "把下面指令整段复制给 Trae Work 等 AI 助手，让它结合你的环境给出可执行步骤：",
         "",
         "```text",
         tool_prompt_block(item),
         "```",
         "",
-        "## 验证方法",
+        "## 注意事项",
         "",
-        "按安装章节执行后，以 README 中的用法示例运行验证；也可让 AI 助手根据你的实际环境给出验证命令。",
-        "",
-        "## 风险与注意事项",
-        "",
-        "新项目可能存在 API 变动、依赖冲突或安全风险，引入前请审查仓库与许可证。",
-        "",
-        "## 替代方案",
-        "",
-        "README 未提供替代方案对比，可让 AI 助手基于同类工具给出。",
+        "- AI 生成服务本次不可用，以上安装信息由脚本从项目公开资料中按规则提取，可能不完整，关键命令请以官方文档为准。",
+        "- 新项目可能存在版本变动、依赖冲突或安全风险，引入前请审查仓库与许可证。",
         "",
     ]
     return item["name"], subtitle, "\n".join(lines), False, rule_category(item)
 
 
 def build_tool_article(cfg, item):
-    max_material = cfg["llm"].get("max_material_chars", 30000)
-    readme = fetch_readme(item["name"], max_material)
-    user_prompt = (
-        "项目名称：%s\n仓库链接：%s\n官方简介：%s\nStars：%s\n主语言：%s\n创建时间：%s\n最近更新：%s\n\n"
-        "以下是该仓库 README 原文（可能已截断）：\n\n===== README 开始 =====\n%s\n===== README 结束 =====\n\n"
-        "请按系统提示要求输出 JSON。"
-    ) % (
-        item["name"], item["url"], item.get("desc") or "（仓库未提供描述）",
-        item.get("stars", "-"), item.get("language", "-"),
-        item.get("created", "-"), item.get("pushed", "-"),
-        readme or "（README 获取失败，请基于仓库元信息生成，并在不确定处明确标注）",
+    total_budget = cfg["llm"].get("max_material_chars", 30000)
+    rcfg = cfg.get("research", {})
+    research = research_tool(item, rcfg)
+    research_cap = (
+        rcfg.get("homepage_chars", 4000)
+        + rcfg.get("web_result_count", 2) * rcfg.get("web_result_chars", 4000)
+        + rcfg.get("hn_chars", 5000)
     )
+    readme_budget = max(6000, total_budget - research_cap)
+    readme = fetch_readme(item["name"], readme_budget)
+    blocks = [
+        "项目名称：%s\n仓库链接：%s\n官方简介：%s\nStars：%s\n主语言：%s\n创建时间：%s\n最近更新：%s"
+        % (
+            item["name"], item["url"], item.get("desc") or "（仓库未提供描述）",
+            item.get("stars", "-"), item.get("language", "-"),
+            item.get("created", "-"), item.get("pushed", "-"),
+        ),
+        "【官方仓库说明】\n"
+        + (readme or "（官方仓库说明获取失败，请仅依据仓库元信息与其他渠道资料撰写，不确定处明确写「官方未公开说明」）"),
+    ]
+    if research:
+        blocks.append(research)
+    user_prompt = "\n\n".join(blocks) + "\n\n请按系统提示要求输出 JSON。"
     parsed = call_llm(cfg, TOOL_SYSTEM, user_prompt)
     markdown = (parsed or {}).get("markdown", "").strip() if parsed else ""
     if markdown:
@@ -634,7 +860,7 @@ def fallback_news(item):
         "",
         "## 为什么值得试",
         "",
-        "该产品在 Hacker News「Show HN」获得 %s points 讨论，详细观点素材本次未能获取，请直接浏览项目页与讨论区。"
+        "该产品在 Hacker News「Show HN」获得 %s points 讨论，详细观点本次未能获取，请直接浏览项目页与讨论区。"
         % item.get("points", 0),
         "",
         "## 发给 AI 的落地指令",
@@ -658,10 +884,10 @@ def build_news_article(cfg, item):
     material = fetch_hn_material(item, cfg["llm"].get("max_material_chars", 30000))
     user_prompt = (
         "产品标题：%s\n项目链接：%s\nHN 讨论：%s（%s points）\n\n"
-        "以下是抓取到的素材（可能为空或已截断）：\n\n%s"
+        "以下是该产品的项目页原文与 Hacker News 社区讨论（可能为空或已截断）：\n\n%s"
     ) % (
         item["name"], item["url"], item["discussion"], item.get("points", 0),
-        material or "（素材抓取失败，请基于标题谨慎生成，不足处标注“素材中未提供”）",
+        material or "（项目页与讨论内容本次均未获取到，请仅依据标题谨慎生成，没有公开依据的内容写「官方未公开说明」）",
     )
     parsed = call_llm(cfg, NEWS_SYSTEM, user_prompt)
     markdown = (parsed or {}).get("markdown", "").strip() if parsed else ""
@@ -688,18 +914,18 @@ def render_post(cfg, item, title, subtitle, body, ai_used, category, now):
             "- 最近更新：%s" % item.get("pushed", "-"),
             "- 官方简介：%s" % (item.get("desc") or "（仓库未提供描述）"),
         ])
-        source = "GitHub README"
+        source = "官方仓库、项目官网与第三方公开资料"
     else:
         meta = "\n".join([
             "- 来源：Hacker News Show HN",
             "- 项目链接：%s" % item["url"],
             "- HN 讨论：%s（%s points）" % (item["discussion"], item.get("points", 0)),
         ])
-        source = "Show HN 原文与讨论"
+        source = "Show HN 原帖与社区讨论"
     if ai_used:
-        note = "本文由 AI 阅读官方素材（%s）后生成，已要求其仅依据素材撰写；关键命令请以官方文档为准。" % source
+        note = "本文由 AI 综合%s撰写，已要求其仅依据公开资料成文；关键命令请以官方文档为准。" % source
     else:
-        note = "本文 AI 生成服务本次不可用，由脚本规则提取/兜底生成，详情请查阅来源：%s。" % source
+        note = "本文 AI 生成服务本次不可用，由脚本按规则提取公开资料生成，详情请查阅来源：%s。" % source
     lines = [
         "---",
         "layout: post",
@@ -710,6 +936,7 @@ def render_post(cfg, item, title, subtitle, body, ai_used, category, now):
         'header-img: "%s"' % cfg["header_img"],
         "tags:",
         "    - %s" % cfg["post_tag"],
+        "    - %s" % CATEGORY_TAGS[category],
         "news_category: %s" % category,
         "---",
         "",
@@ -733,11 +960,65 @@ def post_slug(item):
     return slugify(item["name"], 60)
 
 
+def rewrite_existing(cfg):
+    # 按去重名单重抓多源资料并重写存量文章：覆盖原文件、保留原日期，不抓取新条目、不更新去重状态
+    state_path = os.path.join(ROOT, cfg["state_file"])
+    state = load_state(state_path)
+    posts_dir = os.path.join(ROOT, cfg["posts_dir"])
+    watchlist = {x.lower() for x in cfg.get("watchlist", {}).get("repos", [])}
+
+    # 以「- 仓库：URL」行建立旧文件索引，并取出原始 date
+    index = {}
+    for path in glob.glob(os.path.join(posts_dir, "*.markdown")):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                text = f.read()
+        except OSError:
+            continue
+        m_url = re.search(r"^- 仓库：(\S+)\s*$", text, re.M)
+        m_date = re.search(r"^date:\s*(.+?)\s*$", text, re.M)
+        if m_url and m_date:
+            index[m_url.group(1)] = (path, m_date.group(1).strip().strip('"'))
+
+    done = 0
+    for url, day in sorted(state.get("seen", {}).items(), key=lambda kv: (kv[1], kv[0])):
+        hit = index.get(url)
+        if not hit:
+            log("未找到旧文件，跳过：%s" % url)
+            continue
+        path, date_str = hit
+        if "github.com" not in url:
+            log("--rewrite 暂不支持非仓库条目，跳过：%s" % url)
+            continue
+        full_name = parse.urlparse(url).path.strip("/")
+        try:
+            repo = http_json(
+                "https://api.github.com/repos/" + full_name, headers=github_headers()
+            )
+        except Exception as e:
+            log("仓库信息获取失败(%s)：%s" % (full_name, e))
+            continue
+        item = repo_item(repo, "watchlist" if full_name.lower() in watchlist else "trending")
+        title, subtitle, body, ai_used, category = build_tool_article(cfg, item)
+        try:
+            old_now = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S +0800")
+        except ValueError:
+            old_now = datetime.strptime(day + " 01:00:00 +0800", "%Y-%m-%d %H:%M:%S +0800")
+        markdown = render_post(cfg, item, title, subtitle, body, ai_used, category, old_now)
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(markdown)
+        done += 1
+        log("已重写（%s）：%s" % ("AI" if ai_used else "兜底", os.path.basename(path)))
+        time.sleep(2)
+    log("重写完成，共 %d 篇，去重状态未改动" % done)
+
+
 def main():
     parser = argparse.ArgumentParser(description="抓取面向 Java + Trae Work 开发者的 AI 新品，每个条目独立生成一篇文章")
     parser.add_argument("--config", default=os.path.join(ROOT, "scripts", "ai_news_config.json"))
     parser.add_argument("--lookback", type=int, default=None, help="回溯天数，覆盖配置文件中的各来源窗口")
     parser.add_argument("--dry-run", action="store_true", help="只打印抓取与筛选结果，不写文件、不更新去重状态")
+    parser.add_argument("--rewrite", action="store_true", help="不抓取新条目，按去重名单重抓资料并重写存量文章，覆盖原文件并保留原日期")
     args = parser.parse_args()
 
     if hasattr(sys.stdout, "reconfigure"):
@@ -745,6 +1026,10 @@ def main():
 
     with open(args.config, "r", encoding="utf-8") as f:
         cfg = json.load(f)
+
+    if args.rewrite:
+        rewrite_existing(cfg)
+        return
 
     override = args.lookback
     if override is None and os.environ.get("LOOKBACK_DAYS"):

@@ -1,0 +1,41 @@
+<!-- Page Header -->
+<header class="intro-header" style="background-image: url('{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="site-heading">
+                    <p class="news-back"><a href="{{ site.baseurl }}/ai-news/">AI新资讯</a><span>/</span>{{ page.title }}</p>
+                    <h1>{{ page.title }}</h1>
+                    <span class="subheading">{{ page.description }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            {% assign cat = page.news_category %}
+            {% assign cat_posts = site.tags["AI新资讯"] | where_exp: "post", "post.news_category == cat" | sort: "date" | reverse %}
+            {% if cat_posts.size > 0 %}
+            <p class="news-cat-tip">共 {{ cat_posts.size }} 篇 · 按更新时间排列</p>
+            {% for post in cat_posts %}
+            <div class="post-preview">
+                <a href="{{ post.url | prepend: site.baseurl }}">
+                    <h2 class="post-title">{{ post.title }}</h2>
+                    {% if post.subtitle %}
+                    <h3 class="post-subtitle">{{ post.subtitle }}</h3>
+                    {% endif %}
+                </a>
+                <p class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</p>
+            </div>
+            <hr>
+            {% endfor %}
+            {% else %}
+            <p class="text-muted">该分类还没有文章，后续自动更新会出现在这里。<a href="{{ site.baseurl }}/ai-news/">返回 AI新资讯</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>

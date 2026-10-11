@@ -14,6 +14,13 @@
         "timeout": 120,
         "max_material_chars": 30000
     },
+    "research": {
+        "homepage_chars": 4000,
+        "web_result_count": 2,
+        "web_result_chars": 4000,
+        "hn_story_count": 3,
+        "hn_chars": 5000
+    },
     "trending": {
         "lookback_days": 30,
         "min_stars": 300,
