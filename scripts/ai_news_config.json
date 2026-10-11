@@ -3,7 +3,7 @@
     "posts_dir": "_posts",
     "post_tag": "AI新资讯",
     "header_img": "img/post-bg-ai-news.svg",
-    "max_items_total": 12,
+    "max_items_total": 5,
     "judge_batch_size": 25,
     "llm": {
         "base_url": "https://ark.cn-beijing.volces.com/api/coding/v3",
