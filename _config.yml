@@ -24,6 +24,7 @@ github_username:    windbellbj
 # GitHub Pages 当前使用 Jekyll 3.9.x，本地用 Gemfile 保持一致
 highlighter: rouge
 permalink: pretty
+timezone: Asia/Shanghai
 paginate: 10
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","Gemfile","Gemfile.lock","vendor","scripts"]
 anchorjs: true

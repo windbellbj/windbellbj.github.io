@@ -3,6 +3,14 @@
     "min_github_stars": 10,
     "max_items_per_source": 5,
     "hn_min_points": 10,
+    "llm": {
+        "base_url": "https://ark.cn-beijing.volces.com/api/coding/v3",
+        "model": "deepseek-v4-1-flash-260910",
+        "max_tokens": 16000,
+        "disable_thinking": true,
+        "timeout": 120,
+        "max_material_chars": 30000
+    },
     "github_queries": [
         "topic:claude-skills",
         "topic:mcp",
