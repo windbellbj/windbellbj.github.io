@@ -1,0 +1,184 @@
+---
+layout: post
+title: "RTK：给 AI 编程助手砍掉 90% 终端输出"
+subtitle: "单个 Rust 二进制、零依赖，Windows 一条 winget 命令装好，还能接进 Trae"
+date: 2026-10-12 04:44:19 +0800
+author: ""
+header-img: "img/post-bg-ai-news.svg"
+tags:
+    - AI新资讯
+news_category: agent-cli
+---
+
+- 来源：GitHub 近期爆火
+- 仓库：https://github.com/rtk-ai/rtk
+- Stars：82971
+- 语言：Rust
+- 创建时间：2026-01-22
+- 最近更新：2026-10-11
+- 官方简介：CLI proxy that reduces LLM token consumption by 60-90% on common dev commands. Single Rust binary, zero dependencies
+
+---
+
+## 解决什么问题
+
+RTK（Rust Token Killer）是一个 CLI 代理，它在 shell 命令的输出到达 LLM 上下文之前，先对输出做过滤和压缩。README 的定位是：**High-performance CLI proxy that cuts up to 90% of the bash output your agent reads**。
+
+对 Java 后端程序员来说，痛点很具体：你让 AI 助手跑一次 `git status`、`cargo test`、`docker ps`，返回的原始输出动辄几十上百行，其中大量是进度条、枚举对象、重复日志、样板信息。这些内容全部进入模型的输入 token，既占上下文窗口，也拉高成本。RTK 的做法是拦截这些命令，把输出压成紧凑格式再交给 agent。
+
+README 给出的典型对比：
+
+- `ls -la` 的 45 行 → `rtk ls` 的 12 行
+- `git push` 的 15 行 → `rtk git push` 的 1 行（`ok main`）
+- `cargo test` 失败时 200+ 行 → `rtk test cargo test` 约 20 行
+
+README 明确说明：RTK 减少的是 **bash 输出**，不等于把账单砍掉 90%。bash 输出只是输入 token 的一部分，输入 token 又只是账单的一部分，削减效果会逐层稀释。
+
+## 核心概念
+
+**CLI 代理（proxy）**：RTK 不是库，而是一个可执行程序。你（或你的 AI 工具）把命令交给它，它去执行原命令，再把输出压缩后返回。
+
+**单二进制、零依赖**：README 描述为 Single Rust binary, zero dependencies，支持 100+ 命令，开销 <10ms。
+
+**四种压缩策略**（README 原文）：
+
+1. Smart Filtering — 去掉噪音（注释、空白、样板）
+2. Grouping — 聚合同类项（按目录聚合文件、按类型聚合错误）
+3. Truncation — 保留相关上下文，砍掉冗余
+4. Deduplication — 把重复日志行折叠成计数
+
+**Auto-Rewrite Hook（自动改写钩子）**：README 称这是最有效的使用方式。钩子透明拦截 Bash 命令，在执行前改写成 rtk 等价命令，例如 `git status` → `rtk git status`。README 声称结果是 100% rtk adoption across all conversations and subagents，且没有逐命令的上下文开销。
+
+**重要范围限制**：钩子只作用于 Bash 工具调用。Claude Code 的内置工具 `Read`、`Grep`、`Glob` 不经过 Bash 钩子，因此不会被自动改写。要在这类工作流里获得紧凑输出，需要用 shell 命令（`cat`/`head`/`tail`、`rg`/`grep`、`find`）或直接调用 `rtk read`、`rtk grep`、`rtk find`。
+
+**Token 统计口径**：RTK 报告的 token 数按 `bytes / 4` 估算，因为它不内置 tokenizer。README 明确说：**百分比可靠，绝对 token 数字是近似值**。
+
+**Recall（召回）**：命令失败时，RTK 会保存完整的未过滤输出，让 LLM 无需重新执行就能取回，输出形如 `[full output: rtk recall 3f9c2a81d4e7]`。
+
+**Awareness level**：默认 `RTK.md` 不提 RTK 自身。在 `config.toml` 里设 `[awareness] level = "high"` 可让 agent 知道 `rtk gain` / `rtk proxy`；设 `"full"` 则用于不支持钩子的 agent，让它自己给命令加 `rtk` 前缀。
+
+## 前置依赖
+
+- **操作系统**：README 覆盖 macOS、Linux、Windows（原生与 WSL）。Windows 上 RTK 完全可用。
+- **ripgrep**：README 在 Windows 章节明确提示，部分过滤器会调用 ripgrep（`rg`）。需要安装并保持在 PATH 中，否则会出现 `Binary 'rg' not found on PATH` 警告。README 给出的安装方式是 `winget install BurntSushi.ripgrep.MSVC`。
+- **Windows 版本要求**：自 **v0.37.2** 起，自动改写钩子以原生二进制命令（`rtk hook claude`）运行，不再需要 Unix shell、bash 或 jq。
+- **AI 工具**：README 称支持 18 种 AI 编码工具，包括 Trae。
+- 关于 Java / Spring 相关的额外依赖，README 未提供。
+
+## 安装与配置
+
+以下步骤按 Windows + Trae Work 的读者视角组织。
+
+### 第一步：安装 RTK 本体
+
+README 推荐 Windows 用户使用 winget，理由是「一条命令，无需配置 PATH」：
+
+1. 打开 PowerShell 或 Windows Terminal。
+2. 执行 `winget install rtk-ai.rtk`。
+
+其他可选方式（README 提供）：
+
+- Homebrew（README 标注为 recommended）：`brew install rtk`
+- Cargo：`cargo install --git https://github.com/rtk-ai/rtk`
+- 预编译二进制：从 releases 下载 `rtk-x86_64-pc-windows-msvc.zip`，解压后把 `rtk.exe` 放到 PATH 中的某个目录（README 举例 `C:\Users\<you>\.local\bin`）。
+
+Windows 注意事项（README 原文）：
+
+- 从 **Command Prompt**、**PowerShell** 或 **Windows Terminal** 运行 RTK，**不要双击 `.exe`**，它会一闪而过。
+- 完整钩子系统在 Windows 原生可用，在 WSL 中同样可用。
+
+### 第二步：验证安装
+
+在终端执行 `rtk --version`，README 说明应显示 `rtk 0.28.2`；再执行 `rtk gain`，应显示节省统计面板。
+
+README 特别警告**名称冲突**：crates.io 上存在另一个名为 "rtk"（Rust Type Kit）的项目。如果 `rtk gain` 失败，说明装错了包，请改用上面的 `cargo install --git` 方式。
+
+### 第三步：接入 Trae Work
+
+README 的 Supported AI Tools 表格中列出了 Trae 的两条命令：
+
+- 项目级：`rtk init --agent trae`，方式为 Native `PreToolUse` hook in `.trae/hooks.json`（`RunCommand`）
+- 全局级：`rtk init -g --agent trae`，写入 `~/.trae/hooks.json`，当 `~/.trae-cn/hooks.json` 所在目录存在时也会一并写入
+
+因此对 Trae Work 的接入路径是**钩子（hook）方式**：RTK 通过 Trae 的 `PreToolUse` 钩子拦截 `RunCommand`，把 Bash 命令改写成 rtk 等价命令。
+
+建议步骤：
+
+1. 先做全局接入：在终端执行 `rtk init -g --agent trae`。
+2. 如果只想对某个 Java/Spring 项目生效，进入项目根目录后执行 `rtk init --agent trae`，会在项目内生成 `.trae/hooks.json`。
+3. 执行 `rtk init --show` 验证安装状态（README 在 Setup 一节给出该命令）。
+4. **重启你的 AI 工具**（README 在钩子安装后明确要求 restart）。
+
+### 融入日常工作流
+
+- **作为钩子自动生效**：这是 README 主推的方式。装好钩子并重启 Trae Work 后，你在 Trae Work 里触发的 Bash 命令会被自动改写，agent 直接拿到压缩输出，你不需要手动敲 `rtk`。
+- **在 Trae Work 终端里手动调用 CLI**：README 的 Commands 一节列出了大量可直接使用的子命令，例如 `rtk git status`、`rtk git log -n 10`、`rtk git diff`、`rtk docker ps`、`rtk kubectl pods`、`rtk json config.json`、`rtk env -f AWS`、`rtk log app.log`。这些都可以在 Trae Work 的终端里直接执行。
+- **注意内置工具不走钩子**：README 强调 `Read`、`Grep`、`Glob` 这类内置工具不经过 Bash 钩子。若想让这些场景也获得紧凑输出，改用 shell 命令或显式调用 `rtk read`、`rtk grep`、`rtk find`。
+- **MCP 接入方式**：README 未提供与 Trae Work / Java 的集成方式（未提及 MCP 服务形态）。
+- **Skill 目录方式**：README 未提供与 Trae Work / Java 的集成方式（未提及 Skill 包形态）。
+- **Java/Spring 项目内 SDK 或 HTTP 集成**：README 未提供与 Trae Work / Java 的集成方式。
+
+### 配置文件
+
+README 给出的配置文件路径为 `~/.config/rtk/config.toml`（macOS 为 `~/Library/Application Support/rtk/config.toml`）。README 中展示的配置片段包含 `[hooks]` 段的 `exclude_commands`（跳过改写的命令，README 举例 `["curl", "playwright"]`，并说明也会匹配 `npx playwright`）、`suppress_hook_warning`，以及 `[retriever]` 段的 `mode`（`sqlite` 默认 / `tee` 旧版文件 / `disabled`）。
+
+README 说明旧版 `[tee]` 配置段仍然被兼容：映射为 `mode = "tee"`，若原本 `enabled = false` 则映射为 `mode = "disabled"`；原 `mode = "always"` 保持行为并映射为 `tee_on_success = true`。
+
+### 卸载
+
+README 给出：`rtk init -g --uninstall` 移除钩子、RTK.md 和 settings.json 条目；`cargo uninstall rtk` 移除二进制；`brew uninstall rtk` 用于 Homebrew 安装的情况。
+
+## 最小可用示例
+
+把下面这段指令整段复制给 Trae Work，让它帮你在一个 Java/Spring 项目里试用 RTK。
+
+```text
+背景：我在 Windows 上用 Trae Work 开发 Java/Spring 项目，已经通过 winget 安装了 RTK（rtk-ai/rtk），并执行了 rtk init -g --agent trae 完成全局钩子接入，也重启过 Trae Work。
+
+目标：帮我验证 RTK 在当前 Java/Spring 项目里是否真的生效，并量化它省下了多少终端输出。
+
+要求：
+1. 先执行 rtk --version 和 rtk init --show，把输出原样贴给我，确认版本和钩子安装状态。
+2. 在项目根目录依次执行 rtk git status、rtk git log -n 10、rtk git diff，把三条命令的输出贴给我，并对比它们和原生 git 命令输出的行数差异。
+3. 执行 rtk gain，把节省统计面板的结果贴给我。
+4. 如果项目里有 Maven 相关构建，尝试执行 rtk mvnd verify（README 说明它与 rtk mvn 使用相同的过滤器），把输出贴给我；如果本机没有 mvnd，就跳过并明确告诉我跳过了。
+5. 全程不要修改任何项目源码或构建配置，只做只读的验证操作。
+6. 最后用一段话总结：在当前项目里，RTK 对哪几类命令的压缩效果最明显，哪几类几乎没有效果。
+```
+
+## 验证方法
+
+按 README 提供的信息，可执行以下验证步骤：
+
+1. **验证二进制可用**：执行 `rtk --version`，README 说明应显示 `rtk 0.28.2`。
+2. **验证统计面板可用**：执行 `rtk gain`，README 说明应显示节省统计面板。若失败，说明装到了 crates.io 上同名的 Rust Type Kit 包。
+3. **验证钩子安装状态**：执行 `rtk init --show`（README 在 Setup 一节给出该命令用于 Verify installation）。
+4. **验证自动改写生效**：README 的 Quick Start 给出的测试方式是——重启 AI 工具后执行 `git status`，它会被自动改写为 `rtk git status`。
+5. **查看节省数据**：README 提供 `rtk gain`（汇总统计）、`rtk gain --graph`（最近 30 天 ASCII 图）、`rtk gain --history`（最近命令历史）、`rtk gain --daily`（按天拆分）、`rtk gain --all --format json`（JSON 导出，可用于看板）。
+6. **发现遗漏的节省机会**：`rtk discover`，或 `rtk discover --all --since 7`（所有项目、最近 7 天）。
+7. **查看采纳情况**：`rtk session`，README 说明用于展示最近会话中的 RTK 采纳情况。
+8. **验证失败召回**：当命令失败时，输出中会出现形如 `[full output: rtk recall 3f9c2a81d4e7]` 的提示，可用 `rtk recall` 取回完整输出。
+
+## 风险与注意事项
+
+- **节省幅度不等于账单降幅**：README 明确说明，RTK 削减的是 bash 输出，而 bash 输出只是输入 token 的一部分，输入 token 又只是账单的一部分，削减效果会逐层稀释。不要按 90% 去预期成本下降。
+- **token 数字是估算值**：RTK 不内置 tokenizer，按 `bytes / 4` 估算。README 明确说百分比可靠、绝对 token 数近似。
+- **钩子只覆盖 Bash 工具调用**：`Read`、`Grep`、`Glob` 等内置工具不经过钩子，不会被自动改写。
+- **名称冲突**：crates.io 上存在另一个名为 "rtk"（Rust Type Kit）的项目。用 `cargo install rtk` 可能装错，README 建议改用 `cargo install --git https://github.com/rtk-ai/rtk`。
+- **Windows 不要双击 exe**：README 反复强调，双击 `rtk.exe` 会一闪而过，必须从终端运行。
+- **Windows 需要 ripgrep**：部分过滤器依赖 `rg`，缺失会出现 `Binary 'rg' not found on PATH` 警告。
+- **Windows 直接执行的语义差异**：README 说明 `rtk run`、`rtk err`、`rtk test`、`rtk summary` 默认保留位置参数边界，不展开 glob、变量或操作符。Windows 上 `cmd /C` 字符串过去会搜索工作目录并携带 `cmd` 内建命令（`echo`、`dir`、`type`、`set`、`copy`、`del` 等），现在直接执行只通过 `%PATH%` 和 `PATHEXT` 解析，因此 `rtk err dir`、`rtk summary echo hi` 以及位于当前目录的工具需要显式形式：`rtk run -c 'dir'` 或 `rtk err --shell cmd 'echo hi'`。另外，子进程在 `argv[0]` 中看到的是解析后的绝对路径，而非原样拼写。
+- **旧版 Windows 安装需重跑 init**：v0.37.2 之前，原生 Windows 上 `rtk init -g` 会退化为 CLAUDE.md 注入且不注册钩子。需要重跑 `rtk init -g` 并在询问是否 patch `settings.json` 时回答 `y`（或传 `--auto-patch`）。
+- **遥测默认关闭**：README 说明遥测默认禁用，需要显式 opt-in（GDPR Art. 6, 7），可在 `rtk init` 时或通过 `rtk telemetry enable` 开启。可用 `rtk telemetry status` / `disable` / `forget` 管理，也可用环境变量 `RTK_TELEMETRY_DISABLED=1` 强制阻断。README 列出了采集字段（设备哈希、版本/OS/架构、命令计数与估算节省、Top 5 无压缩命令、命令类别分布、留存、钩子类型、配置情况、功能使用、估算美元价值），并声明不采集源码、文件路径、命令参数、密钥、环境变量、个人数据或仓库内容。
+- **提示缓存**：README 明确回答「Does RTK break Claude's prompt cache?」为 No，理由是 RTK 每条命令只过滤一次，结果存入历史并按常规缓存。
+- **Java/Spring 专属风险**：README 未提供。
+
+## 替代方案
+
+README 未提供替代方案的相关说明。
+
+README 中与「替代」语义最接近的内容是：`rtk run <cmd> [args...]` 为原始直接执行（不做过滤和跟踪），`rtk proxy <command>` 为原始透传加跟踪，以及 `rtk run -c '<script>'` 通过 sh（Windows 上为 cmd）执行 shell 字符串。这些是 RTK 内部的旁路选项，而非竞品替代方案。
+
+---
+
+> 本文由 AI 阅读官方素材（GitHub README）后生成，已要求其仅依据素材撰写；关键命令请以官方文档为准。

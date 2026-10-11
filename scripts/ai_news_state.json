@@ -1,16 +1,28 @@
 {
   "seen": {
     "https://github.com/DietrichGebert/ponytail": "2026-10-11",
+    "https://github.com/Egonex-AI/Understand-Anything": "2026-10-12",
+    "https://github.com/Graphify-Labs/graphify": "2026-10-12",
+    "https://github.com/JuliusBrussee/caveman": "2026-10-12",
     "https://github.com/NousResearch/hermes-agent": "2026-10-11",
+    "https://github.com/addyosmani/agent-skills": "2026-10-12",
     "https://github.com/affaan-m/ECC": "2026-10-11",
     "https://github.com/anomalyco/opencode": "2026-10-11",
+    "https://github.com/anthropics/claude-code": "2026-10-12",
     "https://github.com/anthropics/skills": "2026-10-11",
+    "https://github.com/bytedance/deer-flow": "2026-10-12",
     "https://github.com/deepseek-ai/deepseek-harness": "2026-10-11",
+    "https://github.com/earendil-works/pi": "2026-10-12",
     "https://github.com/farion1231/cc-switch": "2026-10-11",
     "https://github.com/garrytan/gstack": "2026-10-11",
+    "https://github.com/google-gemini/gemini-cli": "2026-10-12",
     "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill": "2026-10-11",
     "https://github.com/obra/superpowers": "2026-10-11",
+    "https://github.com/openai/codex": "2026-10-12",
     "https://github.com/punkpeye/awesome-mcp-servers": "2026-10-11",
+    "https://github.com/rtk-ai/rtk": "2026-10-12",
+    "https://github.com/stablyai/orca": "2026-10-12",
+    "https://github.com/thedotmack/claude-mem": "2026-10-12",
     "https://github.com/yb2460/harness-anything": "2026-10-11"
   }
 }
