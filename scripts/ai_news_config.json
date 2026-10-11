@@ -1,0 +1,27 @@
+{
+    "lookback_days": 7,
+    "min_github_stars": 10,
+    "max_items_per_source": 5,
+    "hn_min_points": 10,
+    "github_queries": [
+        "topic:claude-skills",
+        "topic:mcp",
+        "topic:ai-agent",
+        "claude skills",
+        "mcp server",
+        "ai agent"
+    ],
+    "hn_queries": [
+        "claude skill",
+        "mcp server",
+        "ai agent"
+    ],
+    "community_repos": [
+        "anthropics/skills",
+        "punkpeye/awesome-mcp-servers"
+    ],
+    "state_file": "scripts/ai_news_state.json",
+    "posts_dir": "_posts",
+    "post_tag": "AI新资讯",
+    "header_img": "img/post-bg-ai-news.svg"
+}

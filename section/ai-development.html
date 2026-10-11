@@ -1,0 +1,44 @@
+---
+title: AI开发
+layout: default
+description: LLM 应用、Agent、Prompt 工程与落地实践
+permalink: /ai-development/
+header-img: "img/home-bg.svg"
+---
+
+<!-- Page Header -->
+<header class="intro-header" style="background-image: url('{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="site-heading">
+                    <h1>{{ page.title }}</h1>
+                    <span class="subheading">{{ page.description }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            {% assign posts = site.tags["AI开发"] %}
+            {% for post in posts %}
+            <div class="post-preview">
+                <a href="{{ post.url | prepend: site.baseurl }}">
+                    <h2 class="post-title">{{ post.title }}</h2>
+                    {% if post.subtitle %}
+                    <h3 class="post-subtitle">{{ post.subtitle }}</h3>
+                    {% endif %}
+                </a>
+                <p class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</p>
+            </div>
+            <hr>
+            {% else %}
+            <p class="text-muted">该板块还没有文章。</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>

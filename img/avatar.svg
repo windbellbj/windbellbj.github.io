@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1226"/>
+      <stop offset="1" stop-color="#163a6b"/>
+    </linearGradient>
+    <linearGradient id="bell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a5f3fc"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="56" fill="url(#bg)"/>
+  <circle cx="200" cy="330" r="150" fill="#0ea5e9" opacity="0.08"/>
+  <g fill="none" stroke="#67e8f9" stroke-linecap="round">
+    <path d="M118 176 q-26 24 0 48" stroke-width="7" opacity="0.55"/>
+    <path d="M100 156 q-46 44 0 88" stroke-width="6" opacity="0.3"/>
+    <path d="M282 176 q26 24 0 48" stroke-width="7" opacity="0.55"/>
+    <path d="M300 156 q46 44 0 88" stroke-width="6" opacity="0.3"/>
+  </g>
+  <circle cx="200" cy="92" r="13" fill="none" stroke="#7dd3fc" stroke-width="7"/>
+  <line x1="200" y1="105" x2="200" y2="138" stroke="#7dd3fc" stroke-width="7" stroke-linecap="round"/>
+  <path d="M148 150 Q200 126 252 150 L280 246 Q200 272 120 246 Z" fill="url(#bell)"/>
+  <path d="M148 150 Q200 172 252 150" fill="none" stroke="#ecfeff" stroke-width="5" opacity="0.7"/>
+  <line x1="200" y1="258" x2="200" y2="292" stroke="#a5f3fc" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="200" cy="302" r="13" fill="#a5f3fc"/>
+</svg>

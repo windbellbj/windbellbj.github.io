@@ -1,0 +1,50 @@
+name: AI 新资讯抓取
+
+on:
+  schedule:
+    # 每周一 09:00（北京时间）执行；改频率只需修改这一行的 cron 表达式
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: '回溯天数（留空使用配置文件中的 7 天）'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ai-news
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 抓取并生成周刊
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRODUCTHUNT_TOKEN: ${{ secrets.PRODUCTHUNT_TOKEN }}
+          LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days }}
+        run: python scripts/ai_news_fetch.py
+
+      - name: 提交生成的文章
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _posts scripts/ai_news_state.json
+          if git diff --staged --quiet; then
+            echo "本次没有新文章，无需提交"
+          else
+            git commit -m "chore(ai-news): 自动生成 AI 新资讯周刊"
+            git push
+          fi

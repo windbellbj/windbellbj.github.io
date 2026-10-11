@@ -1,0 +1,82 @@
+# Site settings
+title: XinLong Li
+SEOTitle: XinLong Li | Blog
+header-img: img/home-bg.svg
+email: ""
+description: "XinLong Li 的个人博客，一名程序员的技术记录与分享。"
+keyword: "XinLong Li, 程序员, 博客, Blog"
+url: "https://windbellbj.github.io"              # 个人主页站点，域名直接是根路径
+baseurl: ""                                      # 用户站点（username.github.io）baseurl 必须留空
+
+
+
+# SNS settings
+RSS: true
+github_username:    windbellbj
+#weibo_username:
+#zhihu_username:
+#twitter_username:
+#facebook_username:
+
+
+
+# Build settings
+# GitHub Pages 当前使用 Jekyll 3.9.x，本地用 Gemfile 保持一致
+highlighter: rouge
+permalink: pretty
+paginate: 10
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","Gemfile","Gemfile.lock","vendor","scripts"]
+anchorjs: true
+
+
+
+# Plugins
+plugins: [jekyll-paginate]
+
+
+
+# Markdown settings
+markdown: kramdown
+kramdown:
+  input: GFM                            # Github Flavored Markdown
+
+
+
+# Comment settings
+# giscus：基于 GitHub Discussions，先到 https://giscus.app 填写仓库信息，
+# 获取 data-repo-id 和 data-category-id 后填入下面两项，评论区才会显示
+giscus:
+  repo: windbellbj/windbellbj.github.io
+  repo-id: ""
+  category: Comments
+  category-id: ""
+  mapping: pathname
+  reactions-enabled: "1"
+  theme: preferred_color_scheme
+  lang: zh-CN
+
+
+
+# Analytics settings
+# 暂不启用，需要时填入 ID 即可
+#ba_track_id:
+#ga_track_id:
+#ga_domain:
+
+
+
+# Sidebar settings
+sidebar: true                           # whether or not using Sidebar.
+sidebar-about-description: "Programmer. 写代码，做东西，记录与分享。"
+sidebar-avatar: /img/avatar.svg
+
+
+
+# Featured Tags
+featured-tags: true                     # whether or not using Feature-Tags
+featured-condition-size: 1              # A tag will be featured if the size of it is more than this condition value
+
+
+
+# Friends
+friends: []
