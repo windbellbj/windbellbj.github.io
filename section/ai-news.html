@@ -1,7 +1,7 @@
 ---
 title: AI新资讯
 layout: default
-description: 每周自动汇总热门 AI Agent、Claude Skills 与 MCP 新工具
+description: 面向 Java / Trae Work 开发者的 AI 编程新品：Harness、Skill、MCP 与编码 Agent
 permalink: /ai-news/
 header-img: "img/post-bg-ai-news.svg"
 ---
@@ -24,10 +24,22 @@ header-img: "img/post-bg-ai-news.svg"
 <div class="container">
     <div class="row">
         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <p>本板块由 GitHub Actions 每周自动抓取 GitHub 新仓库、Hacker News、Product Hunt 及关注清单中的热门 AI Agent / Skills / MCP 工具与话题，每个项目/话题独立成篇，由 AI 阅读官方 README 与素材后生成中文介绍，含安装使用指南与可整段复制给任意 AI 的「落地指令」。</p>
+            <p>本板块由 GitHub Actions 每周自动抓取三类来源：重点跟踪清单（点名关注的新工具）、GitHub 近期爆火的 AI 编程工具（AI 编程助手 / CLI、Skill、MCP、Agent Harness、编码 Agent、AI IDE 插件）、Hacker News 的 Show HN 新品。所有候选先经关键词粗筛，再由 AI 按「Java 程序员、日常使用 Trae Work 开发」的视角逐条精判，每个入选项目独立成篇：AI 阅读官方 README 与素材后生成中文介绍，站在 Trae Work 集成视角讲清安装配置，并附一段可整段复制给 AI 助手的「落地指令」。</p>
             <hr>
-            {% assign posts = site.tags["AI新资讯"] %}
-            {% for post in posts %}
+            {% assign all_posts = site.tags["AI新资讯"] %}
+            {% if all_posts %}
+            {% assign groups = "skill|AI 技能 Skill*mcp|MCP 服务与工具*harness|Agent Harness*agent-cli|编码 Agent 与 CLI*ide-plugin|AI IDE 插件*other|其他" | split: "*" %}
+            {% for group in groups %}
+            {% assign parts = group | split: "|" %}
+            {% assign key = parts[0] %}
+            {% if key == "other" %}
+            {% assign cat_posts = all_posts | where_exp: "post", "post.news_category != 'skill'" | where_exp: "post", "post.news_category != 'mcp'" | where_exp: "post", "post.news_category != 'harness'" | where_exp: "post", "post.news_category != 'agent-cli'" | where_exp: "post", "post.news_category != 'ide-plugin'" | sort: "date" | reverse %}
+            {% else %}
+            {% assign cat_posts = all_posts | where_exp: "post", "post.news_category == key" | sort: "date" | reverse %}
+            {% endif %}
+            {% if cat_posts.size > 0 %}
+            <h2 class="news-cat-title">{{ parts[1] }}<span class="news-cat-count">{{ cat_posts.size }}</span></h2>
+            {% for post in cat_posts %}
             <div class="post-preview">
                 <a href="{{ post.url | prepend: site.baseurl }}">
                     <h2 class="post-title">{{ post.title }}</h2>
@@ -38,9 +50,12 @@ header-img: "img/post-bg-ai-news.svg"
                 <p class="post-meta">{{ post.date | date: "%Y-%m-%d" }}</p>
             </div>
             <hr>
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
             {% else %}
             <p class="text-muted">该板块还没有文章，第一次自动抓取执行后将出现在这里。</p>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
 </div>

@@ -2,8 +2,8 @@ name: AI 新资讯抓取
 
 on:
   schedule:
-    # 每周一 09:00（北京时间）执行；改频率只需修改这一行的 cron 表达式
-    - cron: '0 1 * * 1'
+    # 每周一、周四 01:00（北京时间）执行，即 UTC 周日、周三 17:00；改频率只需修改这一行的 cron 表达式
+    - cron: '0 17 * * 0,3'
   workflow_dispatch:
     inputs:
       lookback_days:

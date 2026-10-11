@@ -1,35 +1,114 @@
 {
-    "lookback_days": 7,
-    "min_github_stars": 10,
-    "max_items_per_source": 5,
-    "hn_min_points": 10,
+    "state_file": "scripts/ai_news_state.json",
+    "posts_dir": "_posts",
+    "post_tag": "AI新资讯",
+    "header_img": "img/post-bg-ai-news.svg",
+    "max_items_total": 12,
+    "judge_batch_size": 25,
     "llm": {
         "base_url": "https://ark.cn-beijing.volces.com/api/coding/v3",
         "model": "deepseek-v4-1-flash-260910",
         "max_tokens": 16000,
+        "judge_max_tokens": 4000,
         "disable_thinking": true,
         "timeout": 120,
         "max_material_chars": 30000
     },
-    "github_queries": [
-        "topic:claude-skills",
-        "topic:mcp",
-        "topic:ai-agent",
-        "claude skills",
-        "mcp server",
-        "ai agent"
-    ],
-    "hn_queries": [
-        "claude skill",
-        "mcp server",
-        "ai agent"
-    ],
-    "community_repos": [
-        "anthropics/skills",
-        "punkpeye/awesome-mcp-servers"
-    ],
-    "state_file": "scripts/ai_news_state.json",
-    "posts_dir": "_posts",
-    "post_tag": "AI新资讯",
-    "header_img": "img/post-bg-ai-news.svg"
+    "trending": {
+        "lookback_days": 30,
+        "min_stars": 300,
+        "per_query": 20,
+        "fetch_cap": 40,
+        "queries": [
+            "topic:claude-skills",
+            "topic:mcp",
+            "topic:mcp-server",
+            "topic:ai-agent",
+            "topic:ai-code-assistant",
+            "topic:coding-agent",
+            "topic:agentic-coding",
+            "harness in:name,description,topics",
+            "claude skill in:name,description,topics",
+            "coding agent in:name,description,topics",
+            "mcp server in:name,description,topics",
+            "claude code in:name,description,topics"
+        ]
+    },
+    "watchlist": {
+        "repos": [
+            "yb2460/harness-anything",
+            "deepseek-ai/deepseek-harness",
+            "anthropics/skills",
+            "punkpeye/awesome-mcp-servers"
+        ]
+    },
+    "show_hn": {
+        "lookback_days": 7,
+        "min_points": 25,
+        "per_query": 15,
+        "fetch_cap": 20,
+        "queries": [
+            "",
+            "MCP",
+            "Claude",
+            "coding agent",
+            "AI coding",
+            "CLI",
+            "developer tool",
+            "IDE"
+        ]
+    },
+    "filter": {
+        "include_keywords": [
+            "skill",
+            "skills",
+            "mcp",
+            "agent",
+            "agents",
+            "harness",
+            "claude",
+            "llm",
+            "copilot",
+            "cursor",
+            "trae",
+            "codex",
+            "coding",
+            "code assistant",
+            "ai code",
+            "ai programming",
+            "ide",
+            "cli",
+            "plugin",
+            "rag",
+            "genai",
+            "generative ai",
+            "智能体",
+            "大模型",
+            "编程"
+        ],
+        "exclude_keywords": [
+            "pentest",
+            "penetration",
+            "phishing",
+            "malware",
+            "ransomware",
+            "keylogger",
+            "ddos",
+            "esp32",
+            "arduino",
+            "raspberry pi",
+            "firmware",
+            "trading",
+            "stock analysis",
+            "casino",
+            "gambling",
+            "porn",
+            "nsfw",
+            "job search",
+            "interview",
+            "book",
+            "课程",
+            "教程"
+        ]
+    }
 }

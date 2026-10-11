@@ -927,3 +927,18 @@ body {
 .page-fullscreen footer .copyright a:hover {
   color: #ddd;
 }
+
+.news-cat-title {
+  margin: 36px 0 4px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #404040;
+  border-left: 4px solid #0085a1;
+  padding-left: 10px;
+}
+.news-cat-count {
+  margin-left: 8px;
+  color: #0085a1;
+  font-size: 14px;
+  font-weight: 400;
+}
