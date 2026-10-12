@@ -1,18 +1,19 @@
 ---
 layout: post
-title: "Caveman 实测：让编码 Agent 少说少读省 65% token"
-subtitle: "给 Trae Work 里的 Java 程序员：一个 Skill 加一个本地代理，代码照旧精确"
+title: "Caveman 使用说明：让编码 Agent 少说少读、省下 65% token"
+subtitle: "一个技能包加一个本地代理，压缩 Agent 的输出与输入；Windows + Trae Work 的 Java 程序员怎么装、怎么试、值不值"
 date: 2026-10-12 04:44:19 +0800
 author: ""
 header-img: "img/post-bg-ai-news.svg"
 tags:
     - AI新资讯
+    - AI技能
 news_category: skill
 ---
 
 - 来源：GitHub 近期爆火
 - 仓库：https://github.com/JuliusBrussee/caveman
-- Stars：111038
+- Stars：111058
 - 语言：Go
 - 创建时间：2026-04-04
 - 最近更新：2026-10-11
@@ -20,160 +21,173 @@ news_category: skill
 
 ---
 
-## 解决什么问题
+> Caveman 是一套给编码 Agent 用的「省 token」方案：一个技能包让 Agent 说话变短（代码、路径、数字原样不动），一个本地代理让它读进去的日志、CSV、JSON、测试输出大幅变小。最适合按 token 计费、又天天泡在 Claude Code / Codex / Cursor 这类 Agent 里的开发者；如果你在 Trae Work 里写 Java / Spring，它目前只能以「技能包」的形式间接用上，代理那条路走不通。
 
-Caveman 要解决的是编码 Agent 的 token 浪费问题。README 的说法是：**Caveman make your AI agent say less and read less. Code stay exact. Brain still big.**（让 AI Agent 说得更少、读得更少，代码保持精确，脑子照样好使）。
+## 它到底解决什么问题
 
-它从两个方向下手：
+Agent 的账单和等待时间，一半花在它**说**的话上，一半花在它**读**的东西上。Caveman 把这两块分开处理：
 
-- **说得少（Skill）**：让 Agent 的回答变成极简风格。README 给的例子是，同一个 React 重渲染问题的解释，普通 Agent 用 63 token，Caveman Agent 用 20 token，修复方案完全一样。
-- **读得少（Proxy）**：让 Agent 读取的日志、CSV、YAML、JSON、测试输出被压缩。README 给出的数据是：六类文件合计从 130,611 token 压到 22,994 token，文件层面减少 82.4%；整个 Claude Code 会话从 885,793 token 降到 591,673 token，**会话层面减少 33.2%**，且 18 个答案 18 个正确。
+| 方向 | 手段 | 官方给出的效果 |
+|---|---|---|
+| 输出（Agent 说的话） | 技能包，改变回答风格 | `/caveman` 在「Answer concisely.」基础上再省 3%，`/ultracave` 再省 35% |
+| 输入（Agent 读的东西） | 本地代理，压缩日志/CSV/YAML/JSON/测试输出 | 单文件缩小 98.5%–99.1%，整段会话输入 token 少 33.2% |
+| 网页内容 | `caveman browse` | 200 行表格页面 121 token，对比 Playwright 快照的 15,704 token，小 129.8 倍 |
+| 记忆文件（如 `CLAUDE.md`） | `/caveman-compress` | 五个样本从 6,198 token 降到 4,138 token |
 
-README 还引用了外部验证：Adobe Research 的 CAVEWOMAN 论文（八个模型、五个数据集）报告每个模型成本降低 1.4 到 2.4 倍、最高 3 倍；Elastic 在 Elasticsearch Labs 的改造版报告响应 token 减少 63.6% 且“零信息损失”；JetBrains 用 86 个真实编码任务做配对 A/B，报告**无可测量的质量损失**（p = 0.82），输出 token 减少 8.5%。
+官方反复强调一条边界：**代码、命令、路径、错误信息、你原有的注释，一个字符都不改**。压缩的是寒暄、铺垫、复述和冗余表达，不是技术内容。
 
-对 Java 程序员来说，痛点很具体：一次 `mvn test` 或 `gradle build` 的失败输出、一份巨大的 JSON 响应、一段几千行的日志，塞进上下文后既贵又挤占推理空间。Caveman 的 Proxy 正是冲这类“噪音文件”去的。
+## 核心概念：两种「石头」
 
-## 核心概念
+官方把功能分成两块，名字很直白：
 
-README 把 Caveman 分成“两块石头”：
+- **大石头（the proxy）**：本地代理，压缩 Agent 读进来的内容。跑在你自己的机器上，用你自己的密钥和 Claude Pro/Max 登录态。原始文件始终留在你磁盘上，Agent 随时可以取回原文。
+- **小石头（the skill）**：纯输出压缩，只让回答变短，不碰输入。安装最轻，兼容面最广。
 
-**大石头：the proxy（代理）**
+技能包本身有多个强度档位，官方与第三方资料都提到 `/caveman`、`/ultracave`、`/megacave` 三档（第三方 skills.sh 页面还列出 lite、full、ultra、wenyan-lite、wenyan-full、wenyan-ultra 六种强度，两处说法不完全一致，以实际安装后的技能说明为准）。同一道 React 重渲染问题，三档分别是 20 / 14 / 13 token。
 
-- 压缩 Agent **读进去**的内容：日志、测试输出、JSON、diff、网页。
-- 跑在你自己的机器上，用你自己的 key 和 Claude Pro/Max 登录。
-- 每个原始文件都留在你的磁盘上，Agent 随时可以把它拉回来。
-- README 强调：安装后第一次运行，之后直接敲 `claude` 就一直是 caveman 状态。
+技能包的行为规则里有几条值得注意：
 
-**小石头：the skill（技能）**
+- **先给答案**，不打招呼、不说「让我来」、不复述、不写「希望有帮助」。
+- **一句话一个意思**，参考航空维修手册用的受控英语标准 ASD-STE100：每句最多 20 词、主动语态、一个概念一个词。
+- **否定词永不删**。`not`、`never`、`no`、`only` 必须保留，数字和单位保持精确。
+- **安全场景自动退出压缩**：安全警告、不可逆操作确认、分步骤指令、反问用户、用户明显困惑时，恢复完整句子，之后再切回简短模式。
+- **不改写你的提示词**。官方引用 Adobe Research 的结论：把用户的提问也「穴居化」会让回答更长更差，所以 Caveman 从不碰你的输入。
 
-- 只压缩 Agent **说出来的**内容，不涉及代理。
-- 通过 `npx skills add JuliusBrussee/caveman -g` 安装。
-- README 称其可在 Claude Code、Codex、Gemini CLI、Cursor、Windsurf、Cline、Copilot 以及 30+ 更多工具中工作。
+## 环境与前置依赖
 
-**Caveman 的说话规则**（README 用表格列出，这里转述要点）：
+| 项目 | 要求 |
+|---|---|
+| Node.js | 22.13 及以上（代理与 CLI 需要） |
+| 操作系统 | Windows 可用，官方给出 PowerShell 5.1+ 的安装脚本 |
+| 账号 | 代理模式使用你自己的 API 密钥或 Claude Pro/Max 登录态 |
+| 许可证 | Apache-2.0 |
+| npm 版本 | npm 12 及以上会拦截 git 安装，官方从 v3.2.0 起的一行命令已自行处理 |
 
-- **Answer first**：`[thing] [action] [reason]. [next step].` 没有问候、没有“let me”、没有复述、没有“hope this helps”。
-- **One idea per sentence**：基于 ASD-STE100（为飞机维修手册写的受控英语），每句最多 20 词，主动语态，一个东西一个叫法。
-- **Meaning never dropped**：冠词可以省，但 *not*、*never*、*no*、*only* 永远不省；数字和单位保持精确。
-- **Payload verbatim**：代码、命令、路径、错误信息、你已有的代码注释，逐字符不动。小改动只显示改动行，不重贴整个文件。
-- **Quiet tool runs**：工具调用之间不闲聊，每个阶段一行，结果一行。
-- **Knows when to stop**：安全警告、不可逆操作、分步指令、反问用户、用户困惑时，恢复完整句子，之后继续省。
-- **Never performs**：不演“me think”，不加 caveman 前缀。如果 caveman 说法不更短，就用普通说法。
-- **Your prompts stay yours**：你的提示词永远不会被改写。README 引 Adobe 的研究说改写提示词会适得其反。
+> 官方明确说明：如果你是按**请求次数**付费（例如 GitHub Copilot 的 premium requests），回答变短并不会省钱，这种情况可以直接跳过。
 
-**三档语气**：`/caveman`（20 token）、`/ultracave`（14 token）、`/megacave`（13 token，README 示例里是文言文）。
+## 安装与配置（Windows / PowerShell）
 
-**其他能力**：`caveman browse` 把网页压成给 Agent 读的版本（200 行表格场景下 121 token 对比 Playwright 快照的 15,704 token，小 129.8 倍）；`/caveman-compress` 压缩 `CLAUDE.md` 这类记忆文件（五个样本合计 4,138 token 对比 6,198 token，每个文件小 22.8% 到 49.1%，标题、代码块、路径全部保留）。
+### 路线一：只装技能包（推荐 Trae Work 用户先走这条）
 
-## 前置依赖
+这是最轻的路径，只压缩输出，不涉及代理和密钥。
 
-README 明确提到的依赖只有两项：
+1. 确认 Node.js 版本不低于 22.13，在 PowerShell 里执行 `node -v` 查看。
+2. 执行 `npx skills add JuliusBrussee/caveman -g` 安装技能包。
+3. 官方列出的兼容宿主包括 Claude Code、Codex、Gemini CLI、Cursor、Windsurf、Cline、Copilot 等 30 多个。
+4. 如果技能没有自动生效，在对话里输入 `/caveman`（Codex 里是 `$caveman`）手动触发。
+5. 想关掉时说 `stop caveman` 或 `normal mode`。
 
-- **Node.js 22.13+**：出现在 Install 一节的代理说明中，也出现在“Every agent on your machine at once”的一行安装命令说明里。
-- **npm**：安装命令基于 npm；README 提到 npm 12 或更新版本会阻止 git 安装，v3.2.0 起的一行命令会自行处理这一点。
+### 路线二：装 CLI 与代理
 
-其他 README 提及的环境信息：
+1. 执行 `npm install -g @caveman-ai/cli && caveman setup --install`。
+2. 用 `caveman claude` 启动，官方同时列出 `codex`、`gemini`、`aider`、`kilo`、`qwen`、`opencode`、`hermes`、`openclaw`、`pi` 等入口。
+3. 首次运行之后，直接敲 `claude` 也会保持 Caveman 状态。
 
-- Windows 用户可用 PowerShell 5.1+ 执行一行安装。
-- 中间件/SDK 的 Python 版本要求为 Python 3.11+（这是给自建 Agent 的人用的，不是 Skill 本身）。
-- 代理使用你自己的 key 和 Claude Pro/Max 登录。
+### 路线三：Windows 一键脚本
 
-README 未提供 Java、JDK、Maven、Gradle 相关的任何依赖要求。
+在 PowerShell 5.1+ 中执行 `irm https://raw.githubusercontent.com/JuliusBrussee/caveman/v3.2.0/install.ps1 | iex`，会为机器上所有受支持的 Agent 装上，并附带 Claude Code 状态栏徽章。
 
-## 安装与配置
+### 卸载
 
-下面按“Windows + Trae Work 的 Java 程序员”视角组织。**注意：README 未提供与 Trae Work / Java 的集成方式**，因此凡是 README 没写的接入路径，本文一律不编造，只给出 README 中真实存在的安装方式，以及你需要自行确认的部分。
+执行 `npx -y github:JuliusBrussee/caveman -- --uninstall`；npm 12 及以上需要额外加 `--allow-git=root`。
 
-**第 1 步：确认 Node 版本**
+### 关于 Trae Work 与 Java / Spring
 
-在 Trae Work 的终端或 Windows PowerShell 中执行 `node -v`，确认不低于 22.13。README 未提供 Node 的安装方式。
+**官方未提供与 Trae Work 的集成方式，也未提供 Java / Spring 的 SDK 或 MCP 服务接入路径。** 官方列出的宿主清单里没有 Trae Work，官方给出的 SDK 只有 TypeScript 与 Python 两种（`npm install @caveman-ai/middleware @caveman-ai/sdk` 与 `pip install 'caveman-middleware[langchain]' caveman-sdk`，后者要求 Python 3.11+）。
 
-**第 2 步：安装 CLI 与代理（大石头）**
+因此对 Trae Work 用户来说，现实可行的做法只有一条：**把 Caveman 的技能文本作为规则内容引入 Trae Work 的自定义技能/规则机制**，让 Trae Work 里的助手按同样的风格回答。具体放置目录与配置方式取决于 Trae Work 自身的技能管理功能，官方未公开说明，需要按你本地 Trae Work 的版本自行确认。
 
-README 给出的命令是 `npm install -g @caveman-ai/cli && caveman setup --install`。随后用 `caveman claude` 启动，README 列出的可选目标还有 codex、gemini、aider、kilo、qwen、opencode、hermes、openclaw、pi。README 说明：第一次运行之后，直接敲 `claude` 就保持 caveman 状态。
+> 不要照搬 Claude Code 的插件路径或 MCP 配置到 Trae Work，官方没有为 Trae Work 提供任何配置样例。
 
-**第 3 步：只想要短回答就装 Skill（小石头）**
+## 快速上手：先看它省不省
 
-README 给出的命令是 `npx skills add JuliusBrussee/caveman -g`。README 说明：如果它没有自动启动，输入 `/caveman`（Codex 中是 `$caveman`）；想关掉就说 `stop caveman`。
+装好 CLI 之后，官方给了一组自检命令，建议按顺序跑：
 
-**第 4 步：Windows 专用一行安装（可选）**
+1. `caveman learn` —— 从磁盘上已有的 Agent 历史里，统计你的 token 都花在哪。
+2. `caveman learn implement` —— 一次一个 diff 地应用优化建议，只有你点同意才改。
+3. `caveman trial -- claude` —— 拿你自己的真实任务做 A/B 对比。
+4. `caveman shrink -- pnpm test` —— 压缩嘈杂的命令输出。
+5. `caveman browse <url>` —— 用压缩后的网页替代上万 token 的原始页面。
+6. `caveman stats` —— 查看你的 token 历史。
 
-README 给出 PowerShell 5.1+ 的命令：`irm https://raw.githubusercontent.com/JuliusBrussee/caveman/v3.2.0/install.ps1 | iex`。README 还提到，如果 npm 是 12 或更新版本，可以用 `npx --allow-git=root -y github:JuliusBrussee/caveman#v3.2.0`。
+### 怎么确认装成功了
 
-**第 5 步：卸载**
+- 技能包路线：在对话里输入 `/caveman status`，它会报告当前模式；官方说明这个命令只报告、不改变状态。如果宿主不支持 hook，会显示 `(not tracked by this host)`。
+- 代理路线：跑一次 `caveman stats`，能看到 token 历史记录即说明代理在工作。
+- 最直接的验证：问一个技术问题，看回答是否变成「先给结论、无寒暄、代码块原样」的短句风格。
 
-README 给出的命令是 `npx -y github:JuliusBrussee/caveman -- --uninstall`，npm 12+ 需要额外加 `--allow-git=root`。
+## 官方公布的实测数字
 
-**关于融入 Trae Work 日常工作流**
+### 代理：整段会话少 33.2% 输入 token
 
-README 列出的支持清单是 Claude Code、Codex、Gemini CLI、Cursor、Windsurf、Cline、Copilot 以及 30+ 更多（详见 INSTALL.md），**README 未提供与 Trae Work / Java 的集成方式**，也没有给出任何 MCP 服务配置、Skill 目录路径或 IDE 插件形态的说明。因此：
+| 文件类型 | 单文件压缩 | 整段会话节省 |
+|---|---:|---:|
+| CSV | 28,041 → 314（98.9%） | 55.1% |
+| 日志 | 22,810 → 348（98.5%） | 50.2% |
+| YAML | 20,447 → 178（99.1%） | 46.2% |
+| 测试输出 | 18,806 → 203（98.9%） | 27.8% |
+| JSON | 18,837 → 281（98.5%） | 26.4% |
+| HTML | 无压缩器 | 反而差 9.9% |
+| 六类合计 | 130,611 → 22,994（82.4%） | **33.2%** |
 
-- 不要假设它能作为 MCP 服务接入 Trae Work——README 未提供。
-- 不要假设存在固定的 Skill 目录路径——README 未提供。
-- 不要假设有 Java/Spring SDK——README 提供的中间件只有 TypeScript（`npm install @caveman-ai/middleware @caveman-ai/sdk`）和 Python（`pip install 'caveman-middleware[langchain]' caveman-sdk`）两条线，**没有 Java 版本**。
+官方注明：18 道题 18 道答对；会话数据来自 2026 年 8 月，当时的引擎把 JSON 只压到 8,106 token；HTML 还没有压缩器，所以只付出了开销没有收益。
 
-可以确认的只有一件事：README 说安装坏了的话，可以在该仓库里打开你的 Agent，说“Read CLAUDE.md and INSTALL.md, install caveman for me.”，让 Agent 自己修。这是 README 唯一给出的“通用兜底”路径。
+### 技能：十个开发问题上的输出 token
 
-## 最小可用示例
+| 指令 | 输出 token |
+|---|---:|
+| 无指令 | 6,983 |
+| `Answer concisely.` | 4,334 |
+| `/caveman` | 4,119 |
+| `/ultracave` | **2,693** |
 
-把下面这段整段复制给 Trae Work，让它先帮你判断 Caveman 在你的 Java 项目里值不值得装、怎么装。
+官方说明这组数据测的是 3.1.0 版技能文本，尚未在本版本上重跑。
+
+### 外部机构的验证
+
+| 来源 | 设置 | 结果 |
+|---|---|---|
+| Adobe Research（CAVEWOMAN 论文，引用了本仓库） | 穴居风格输出，8 个模型，5 个数据集 | 每个模型成本降低 1.4–2.4 倍，最高 3 倍 |
+| Elastic（Elasticsearch Labs） | 为 Elasticsearch 重做的穴居模式，8 个实时 MCP 场景 | 响应 token 少 63.6%，官方称「零信息损失」 |
+| JetBrains | 86 个真实编码任务，配对 A/B | 质量无可测损失（p = 0.82），输出 token 少 8.5% |
+
+## 社区评价（来自 Hacker News 讨论）
+
+主帖《Caveman: Why use many token when few token do trick》拿到 904 分、366 条评论。另一篇独立测评《I benchmarked Claude Code's caveman plugin against "be brief."》拿到 89 分、67 条评论，作者用 24 个提示、5 组对照、由另一个 Claude 按评分表打分，共 120 条回答：
+
+- 该测评作者的结论是：**「be brief.」在 token 数（419 对 401–449）和质量（0.985 对 0.970–0.976）上与 Caveman 基本打平**，Caveman 的额外价值在于输出结构一致、有强度档位、有自动退出压缩的安全机制。
+- 评论区有人指出该测评每个提示每组只跑了一次，考虑到模型逐次运行的波动，安全类别上的差异可能只是噪声；作者回应承认这一点，表示分数差在 0.02 以内属于评委噪声范围，但没把同样的保留意见用到逐题 token 波动上。
+- 也有评论从语言角度调侃，认为这种「去掉冠词和客套」的风格是把斯拉夫语系和日耳曼语系的优点合到了一起。
+
+## 局限与风险
+
+- **HTML 目前没有压缩器**，官方数据里这一类反而让会话变差 9.9%。
+- **技能文本本身约 1,160 token**（tiktoken 计数），这部分开销对账单的影响取决于缓存，官方称尚未测量。
+- **按请求计费的用户省不到钱**，官方直接建议跳过。
+- **压缩有边界**：官方承认存在 Caveman 会输的场景，并单独列在 HONEST-NUMBERS 文档里。
+- **第三方测评的样本量偏小**，单次运行、评委噪声、逐题波动等问题已被社区当面指出，作者也部分承认。
+- **Trae Work 与 Java 生态没有官方支持**，强行套用其他宿主的配置路径有风险。
+- **代理会接触你的密钥与登录态**，虽然官方强调全部在本机运行、原文留在本地磁盘，仍建议先在非敏感项目上试。
+- 第三方插件目录提醒：安装前应查看仓库源码、近期维护情况与许可证，从最小权限开始，在安全环境里验证行为。
+
+## 一句话结论
+
+如果你按 token 付费、且大量时间花在让 Agent 读日志和测试输出上，Caveman 的代理值得一试，官方数据扎实、外部也有 Adobe 与 JetBrains 的旁证；如果你只是想让回答短一点，先试试在提示词里加一句「be brief.」，社区实测它和 Caveman 技能包几乎打平。至于 Trae Work + Java 这条线，目前只能手动借用它的风格规则，官方没有现成集成。
 
 ```text
-背景：我在 Windows 上用 Trae Work 开发 Java / Spring 后端项目，构建工具是 Maven 或 Gradle。我最近看到开源项目 Caveman（GitHub: JuliusBrussee/caveman），它宣称通过“让编码 Agent 少说少读”来省 token：Skill 部分压缩 Agent 的输出，Proxy 部分压缩 Agent 读进去的日志、CSV、YAML、JSON、测试输出，README 声称六类文件合计减少 82.4%、整个会话减少 33.2% 的输入 token。
+背景：我在 Windows 上用 Trae Work 做 Java / Spring 后端开发，技术栈是 Spring Boot + Maven，日常需要让 AI 助手读日志、测试输出和 JSON 配置，token 消耗比较大。
 
-目标：帮我判断它是否适合我当前的工作流，并给出可执行的落地步骤。
+目标：请帮我把 Caveman 的输出压缩风格落地到我的 Trae Work 工作流里，并评估是否值得再装它的本地代理。
 
-要求：
-1. 先读 https://github.com/JuliusBrussee/caveman 的 README 和 INSTALL.md，只依据原文回答，不要凭印象补充。
-2. 明确告诉我：README 里有没有提到 Trae Work 的接入方式？如果没有，直接说“README 未提供”，不要猜配置路径或命令。
-3. 列出 README 中真实存在的安装命令，并标注每条命令对应的前置条件（例如 Node.js 版本要求）。
-4. 针对我的 Java 项目，指出哪一类文件最可能被 Proxy 压缩（参考 README 里 CSV / Logs / YAML / Test output / JSON / HTML 的对比数据），并说明 HTML 那一行 README 是怎么说的。
-5. 告诉我 README 里关于隐私和遥测的原文结论，以及关闭遥测的命令。
-6. 如果 README 明确写了 Caveman 在某些情况下会“输”（例如按请求计费而非按 token 计费），把这些情况列出来。
-7. 最后给一个建议：我是先只装 Skill，还是直接装 Proxy，理由基于 README 的事实。
+具体要求：
+1. 先检查我机器上的 Node.js 版本是否满足 22.13 及以上，如果不满足，告诉我 Windows 上最稳妥的升级方式。
+2. 用 PowerShell 命令帮我安装 Caveman 技能包（npx skills add JuliusBrussee/caveman -g），并说明安装后如何验证它已经生效。
+3. 官方没有提供 Trae Work 的集成方式，请根据我本地 Trae Work 的技能/规则管理功能，给出把 Caveman 风格规则引入的具体操作步骤；如果 Trae Work 当前版本不支持自定义技能，直接告诉我，不要编造配置路径。
+4. 帮我设计一个对比实验：选一个真实的 Spring Boot 任务（比如排查一次接口 500 错误），分别在开启和关闭 Caveman 风格的情况下让助手回答，记录回答长度、是否遗漏关键信息（异常类名、堆栈行号、配置项路径）。
+5. 评估阶段请明确告诉我：Caveman 的代理模式需要接触我的 API 密钥或登录态，是否值得在我当前项目上启用；如果我的用量是按请求次数计费而不是按 token 计费，直接建议我跳过代理。
+6. 全程不要修改我项目里的任何代码文件，只做安装、配置和对比记录。
 ```
-
-## 验证方法
-
-README 提供了若干可执行的验证路径，按从轻到重排列：
-
-1. **看 token 去向**：执行 `caveman learn`，README 说它会从磁盘上已有的 Agent 历史中，给你的 token 花在哪里做排名。
-2. **逐条应用优化**：执行 `caveman learn implement`，README 说它会一次一个 diff 地应用修复，且只在你同意时执行。
-3. **做真实 A/B**：执行 `caveman trial -- claude`，README 说这是在你自己的工作上对真实会话做 A/B。
-4. **压缩噪音命令输出**：执行 `caveman shrink -- pnpm test`（README 的示例用的是 pnpm，你可以换成自己的构建命令），验证压缩效果。
-5. **压缩网页**：执行 `caveman browse <url>`，README 说它给出压缩后的网页，而不是 15,000 token 的转储。
-6. **看历史统计**：执行 `caveman stats`，README 说是你的 token 历史。
-7. **看当前模式**：在 Agent 里输入 `/caveman status` 查看模式，`/caveman off` 停止；`/caveman-stats` 查看当前 Claude Code 会话的真实 token 用量；`/caveman-help` 一屏看全部模式和命令。
-8. **像素模式预演**：执行 `caveman convert --dry-run`，README 称其为“模型以图像方式读取 skill”的像素模式。
-
-README 未提供针对 Java 项目或 Trae Work 的专门验证步骤。
-
-## 风险与注意事项
-
-以下均基于 README 原文：
-
-- **HTML 目前是负收益**：README 的表格里，HTML 文件压缩前后都是 21,670 token（none yet），而整个会话反而从 140,687 涨到 154,641，**9.9% worse**。README 解释：HTML 还没有压缩器，所以 caveman 付了开销却没换回收益。
-- **按请求计费时省不到钱**：README 明确写道，如果你是按请求而不是按 token 付费（例如 GitHub Copilot premium requests），更短的答案成本相同，那就跳过它。
-- **Skill 本身有 token 开销**：README 说 `/caveman` 规则大约 1,160 token 文本（tiktoken 计数），这部分加到账单上多少取决于缓存，README 说**尚未测量**。
-- **不要改写用户提示词**：README 引 Adobe 研究发现，把用户的提示词 caveman 化会让回答更长更差，所以 caveman 从不碰你的提示词。
-- **遥测默认开启**：README 说 `caveman` CLI 默认发送使用统计：运行的命令、token 数量、随机安装 ID、操作系统、IP。README 强调**绝不发送**你的提示词、代码或文件路径。可用 `caveman telemetry off` 或 `DO_NOT_TRACK=1` 永久关闭。完整清单和删除已发送数据的方法在 SECURITY.md。Skill 本身在本机运行，不发送任何东西。
-- **Claude 网页/手机端路径未经端到端测试**：README 在“Claude on the web, the phone app, or Cowork”一节中明确写“Not tested end to end yet.”。
-- **基准数据的适用范围**：README 说明每个基准文件是在 61 到 72 KB 的噪音里藏一条记录，并提醒“your files will vary”；会话数据来自 2026 年 8 月，当时的引擎只能把 JSON 压到 8,106 token。
-- **Skill 数据未在本版本重跑**：README 说 skill 的十道开发题数据“Measured on the 3.1.0 skill text, not yet re-run on this release's.”。
-- **商标**：“Caveman”和石头 logo 是 Julius Brussee 的商标；代码本身是 Apache-2.0。
-
-README 未提供关于 Java 生态、Trae Work 兼容性或企业内网部署的风险说明。
-
-## 替代方案
-
-README 本身没有列出竞品或替代方案。README 中与“替代”最接近的内容是：
-
-- **只装 Skill 而不装 Proxy**：README 明确把这两者当作可选路径——“Only want shorter answers? Get just the skill”。
-- **自建 Agent 时用中间件替代 CLI**：README 提供 TypeScript 的 `@caveman-ai/middleware` + `@caveman-ai/sdk`，以及 Python 3.11+ 的 `caveman-middleware[langchain]` + `caveman-sdk`，作为包在 Vercel AI SDK、LangChain、OpenAI 或 Anthropic 调用外面的一层包装。README 还提到“One container for the whole team”的部署文档。
-- **README 提到的外部相关工作**：Adobe Research 的 CAVEWOMAN 论文、JetBrains 的博客、Elastic 的 elastic-caveman，这些是引用或改造 Caveman 的工作，不是竞品。
-
-除此之外，README 未提供其他替代方案的对比。对于 Java 程序员而言，README 未提供任何 Java 侧的替代实现或等价 SDK。
 
 ---
 
-> 本文由 AI 阅读官方素材（GitHub README）后生成，已要求其仅依据素材撰写；关键命令请以官方文档为准。
+> 本文由 AI 综合官方仓库、项目官网与第三方公开资料撰写，已要求其仅依据公开资料成文；关键命令请以官方文档为准。

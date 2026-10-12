@@ -1,18 +1,19 @@
 ---
 layout: post
-title: "claude-mem 上手：给编码 Agent 装上跨会话记忆"
-subtitle: "自动捕获会话、AI 压缩、下次会话注入上下文，Java 程序员也能快速试用"
+title: "claude-mem 使用说明书：给 AI 编程助手装上跨会话持久记忆"
+subtitle: "自动记录 Claude Code 等 Agent 的会话要点，压缩后注入下一次会话，Java 后端也能快速试用"
 date: 2026-10-12 04:44:19 +0800
 author: ""
 header-img: "img/post-bg-ai-news.svg"
 tags:
     - AI新资讯
-news_category: harness
+    - MCP服务
+news_category: mcp
 ---
 
 - 来源：GitHub 近期爆火
 - 仓库：https://github.com/thedotmack/claude-mem
-- Stars：99687
+- Stars：99742
 - 语言：TypeScript
 - 创建时间：2025-08-31
 - 最近更新：2026-10-11
@@ -20,110 +21,151 @@ news_category: harness
 
 ---
 
-## 解决什么问题
+> claude-mem 是一个开源的「持久记忆压缩系统」：它自动捕获 AI 编程 Agent 在会话中的工具调用与关键结论，用 AI 压缩成结构化记忆，再在后续会话中把相关上下文注入回去。最适合那些长期用 Claude Code / Codex / Cursor 等 Agent 写代码、又厌倦每次重开会话都要重新交代项目背景的开发者。
 
-README 指出，Claude-Mem 是一个为 Claude Code 打造的持久记忆压缩系统（Persistent memory compression system built for Claude Code）。它要解决的核心问题是：Agent 在会话结束后会丢失上下文。
+## 它到底解决什么问题
 
-按 README 描述，Claude-Mem 会自动捕获工具使用观察（tool usage observations）、生成语义摘要（semantic summaries），并让这些内容在未来的会话中可用，从而让 Claude 在会话结束或重连之后，仍能保持对项目的知识连续性。
+AI 编程助手最大的痛点之一是「失忆」：一次会话结束后，之前讨论过的架构决策、踩过的坑、修过的 bug，下一次全部归零。claude-mem 的思路是把这些内容从聊天记录里抽出来，变成独立于会话的结构化笔记，并在新会话开始时按需注入。
 
-官方简介也写明：它捕获 Agent 在会话中做的一切，用 AI 压缩，再把相关上下文注入到未来的会话中，支持 Claude Code、OpenClaw、Codex、Gemini、Hermes、Copilot、OpenCode 等。
+官方把它描述为「为 Claude Code 打造的持久记忆压缩系统」，同时声明可配合 Claude Code、OpenClaw、Codex、Gemini、Hermes、Copilot、OpenCode 等多种 Agent 使用。官网首页的定位语是「All your context. Everywhere. All at once.」——让上一次会话中的决策、发现和修复，能被下一次会话、另一台机器、另一个工具直接使用。
 
-## 核心概念
+典型适用场景：
 
-README 列出的核心组件包括：
+- 项目周期长、上下文多，每次新开会话都要重新解释项目结构和技术选型。
+- 团队里多人用 Agent 协作，希望关键决策有据可查。
+- 需要在多台电脑之间延续同一项目的记忆。
+- 想用自然语言检索「当时为什么这么改」。
 
-- 5 个生命周期 Hook：SessionStart、UserPromptSubmit、PostToolUse、Stop、SessionEnd（共 6 个 hook 脚本）。
-- Smart Install：缓存式依赖检查器（pre-hook 脚本，不是生命周期 hook）。
-- Worker Service：本地 HTTP API，带 Web 查看器 UI 和搜索端点，由 Bun 管理。
-- SQLite 数据库：存储 sessions、observations、summaries。
-- mem-search Skill：自然语言查询，配合渐进式披露（progressive disclosure）。
-- Chroma 向量数据库：语义 + 关键词的混合搜索，用于智能上下文检索。
+## 核心概念与工作原理
 
-README 还提到 4 个 MCP 搜索工具，遵循省 token 的 3 层工作流：
+claude-mem 由几个部件组成，理解它们有助于判断它是否适合你的工作流：
 
-1. `search`：拿到带 ID 的紧凑索引（约 50-100 tokens/条结果）。
-2. `timeline`：查看感兴趣结果前后的时间线上下文。
-3. `get_observations`：只对筛选后的 ID 拉取完整详情（约 500-1,000 tokens/条结果）。
+| 组件 | 作用 |
+| --- | --- |
+| 生命周期钩子 | 在会话开始、用户提交提示、工具调用后、停止、会话结束等时机自动捕获内容 |
+| Worker 服务 | 本地 HTTP API，提供 Web 查看界面与搜索端点，由 Bun 管理 |
+| SQLite 数据库 | 存储会话、观察记录与摘要 |
+| mem-search 技能 | 用自然语言查询项目历史，支持渐进式披露 |
+| Chroma 向量数据库 | 混合语义 + 关键词检索，用于智能召回上下文 |
+| MCP 搜索工具 | 通过 4 个 MCP 工具按「3 层工作流」检索记忆，控制 token 消耗 |
 
-README 称这种“先过滤再取详情”的方式可节省约 10 倍 token。
+工作流可以概括为：**捕获 → 压缩 → 存储 → 召回**。会话进行时钩子持续记录；会话结束后由 AI 压缩成结构化观察记录；新会话开始时，系统把与当前任务相关的记忆注入上下文。官网强调「渐进式召回」——先让 Agent 找到一条笔记的索引，需要时再读取详情，从而避免把整段对话塞回上下文。
 
-## 前置依赖
+隐私方面，官方提供 `<private>` 标签，可以把敏感内容排除在存储之外；另有自动脱敏（Auto-Redaction）相关文档。
 
-README 的 System Requirements 写明：
+## 环境与前置依赖
 
-- Node.js：20.0.0 或更高版本。
-- Claude Code：带插件支持的最新版本。
-- Bun：JavaScript 运行时与进程管理器（缺失时自动安装）。
-- uv：用于向量搜索的 Python 包管理器（缺失时自动安装）。
-- SQLite 3：用于持久化存储（已内置）。
+- **Node.js**：官方徽章标注 `>=20.0.0`。
+- **Bun 与 uv**：安装器会检查这两项运行时依赖。
+- **操作系统**：官方文档未限定平台，Windows 用户可参考下述 PowerShell 步骤；如遇脚本类问题，可优先考虑在 WSL 中执行。
+- **账号（可选）**：默认安装流程会引导登录 claude-mem 账号（邮箱魔法链接，无需信用卡），并附带 30 天免费试用。若不想登录，可显式指定 `--provider`、设置 `CLAUDE_MEM_ONLINEOPTIN=false`，或在 CI/非交互式终端中运行，安装器会跳过账号交互。
 
-Windows 相关：README 的 Windows Setup Notes 提到，如果出现 `npm : The term 'npm' is not recognized as the name of a cmdlet` 这类错误，需要确认 Node.js 和 npm 已安装并加入 PATH，从 https://nodejs.org 下载最新 Node.js 安装包，安装后重启终端。
+> 注意：`npm install -g claude-mem` 只安装 SDK/库，不会注册插件钩子，也不会启动 Worker 服务。官方明确要求通过 `npx claude-mem install` 或插件市场命令安装。
 
-## 安装与配置
+## 安装与配置（Windows + PowerShell）
 
-README 给出的通用安装方式（在终端中执行）：
+### 第一步：确认 Node 版本
 
-1. 最简安装：运行 `npx claude-mem install`。README 说明安装器会先完成全部配置，然后要求你在浏览器中登录 claude-mem（邮箱 magic link，无需信用卡）。登录会为你的账号分配 memory key，并解锁带 30 天免费试用的 claude-mem observer。免费试用结束后，除非订阅，记忆会自动回退到你的 Anthropic plan。登录后需要选择记忆提供方：claude-mem observer、你自己的 OpenRouter 或 Gemini key，或你的 Anthropic plan。
-2. 想跳过登录：传入显式 `--provider` 参数、设置 `CLAUDE_MEM_ONLINE_OPTIN=false`，或在 CI/非交互式 shell 中运行，安装器会在无账号交互的情况下完成。
-3. 在 Claude Code 内从插件市场安装：先执行 `/plugin marketplace add thedotmack/claude-mem`，再执行 `/plugin install claude-mem`，然后重启 Claude Code。README 称上一个会话的上下文会自动出现在新会话中。
-4. 其他 IDE 的安装命令（README 列出）：`npx claude-mem install --ide grok-bot`、`npx claude-mem install --ide opencode`（需 OpenCode 1.3.4 或更高，含 OpenCode 2，安装后重启 OpenCode）、`npx claude-mem install --ide t3code`、`npx claude-mem install --ide antigravity`、`npx claude-mem install --ide omp`、`npx claude-mem install --ide pi`、`npx claude-mem install --ide dsh --dsh-profile tui`。
-5. OpenClaw 网关：执行 `curl -fsSL https://install.cmem.ai/openclaw.sh | bash`。
+在 PowerShell 中执行 `node -v`，确认输出不低于 v20。若版本过低，先升级 Node.js。
 
-README 特别提醒：Claude-Mem 也发布在 npm 上，但 `npm install -g claude-mem` 只安装 SDK/库，不会注册插件 hook，也不会搭建 worker 服务。始终应通过 `npx claude-mem install` 或上面的 `/plugin` 命令安装。
+### 第二步：执行安装
 
-配置方面，README 说明设置保存在 `~/.claude-mem/settings.json`（首次运行时自动创建默认值），可配置 AI 模型、worker 端口、数据目录、日志级别和上下文注入设置。若要在 Claude Code 和 Codex 的 SessionStart 上下文中包含来自所有 harness 的观察，在该文件中设置 `"CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES": "true"`，或在查看器设置中开启 “Include all sources at session start”；默认是 `"false"`，即只包含当前 harness。
+在 PowerShell 中运行 `npx claude-mem install`。安装器分三个阶段：
 
-模式与语言：通过 `CLAUDE_MEM_MODE` 设置，同时控制工作流行为（如 code、chill、investigation）和生成观察所用语言。在 `~/.claude-mem/settings.json` 中写入 `"CLAUDE_MEM_MODE": "code--zh"` 即可使用简体中文模式。README 说明 `code--zh` 已内置，无需额外安装或更新插件；修改模式后需重启 Claude Code。可用模式可用 `ls ~/.claude/plugins/marketplaces/thedotmack/plugin/modes/` 在本地查看。
+1. **选择 Agent 并安装运行时**：自动预选检测到的 Agent（含 OpenCode、OMP、Cursor、Codex CLI 等），检查 Bun 与 uv，把插件文件复制到市场目录、注册插件并安装依赖。
+2. **登录**：启动 OAuth 配对，打印形如 `XXXX-XXXX` 的设备码，并在浏览器打开授权地址，轮询直到认证完成。若选择 `--provider claude`（使用自己的 Anthropic 套餐），此步跳过。
+3. **选择记忆提供方**：默认预选 CMEM Pro（托管记忆），也可选择自己的 OpenRouter、Gemini、Anthropic 套餐，或 `--provider host`（本地回环观察器）。选择后写入 `~/.claude-mem/settings.json` 并重启 Worker。
 
-关于融入你的日常工作流：README 未提供与 Trae Work / Java 的集成方式。README 中提到的接入形态是 Claude Code 插件、各 IDE 的 `--ide` 安装参数、OpenClaw 网关脚本，以及 MCP 搜索工具（`search`、`timeline`、`get_observations`），但未说明如何在 Trae Work 中作为 MCP 服务接入、作为 Skill 放入技能目录、在 Trae Work 终端中作为 CLI 调用，或在 Java/Spring 项目中通过 SDK/HTTP 集成。这些接入路径 README 未提供，请勿自行假设配置路径或命令。
+### 第三步：按目标 Agent 选择安装参数
 
-## 最小可用示例
+- Claude Code：`npx claude-mem install`，或在 Claude Code 内执行 `/plugin marketplace add thedotmack/claude-mem` 后再执行 `/plugin install claude-mem`，然后重启 Claude Code。
+- OpenCode：`npx claude-mem install --ide opencode`，要求 OpenCode 1.3.4 及以上（含 OpenCode 2），安装后重启 OpenCode。
+- T3 Code：`npx claude-mem install --ide t3code`，安装器会识别已启用的提供方并注册原生插件，重启后按提示信任钩子并新建线程。
+- Antigravity CLI：`npx claude-mem install --ide antigravity`。
+- OMP：`npx claude-mem install --ide omp`。
+- Pi / DeepSeek Harness：`npx claude-mem install --ide pi` 或 `npx claude-mem install --ide dsh --dsh-profile tui`。
+- Grok Bot：`npx claude-mem install --ide grok-bot`，默认使用 CMEM Pro，本地观察器需显式加 `--provider host`。
+- OpenClaw 网关：官方提供一键脚本 `curl -fsSL https://install.cmem.ai/openclaw.sh | bash`（该命令为官方给出的 shell 形式，Windows 下建议在 WSL 或 Git Bash 中执行）。
 
-下面这段指令可以直接整段复制给 Trae Work 等 AI 编程助手，用于在 Java 项目里试用 claude-mem 的记忆能力：
+### 第四步：融入 Trae Work 与 Java / Spring 工作流
+
+这里需要说清楚一件事：**官方未提供与 Trae Work 的直接集成方式，也未提供 Java / Spring 的 SDK 或 HTTP 集成路径。** 官方列出的集成对象是 Claude Code、OpenCode、T3 Code、Cursor、Codex、Grok Bot、Antigravity、OMP、Pi、DeepSeek Harness、OpenClaw 等，Trae Work 不在其中。
+
+因此对 Java 后端开发者而言，现实可行的路径是：
+
+1. **把 claude-mem 当作独立的记忆服务使用**：安装后它会启动本地 Worker 服务并提供 HTTP API 与 Web 查看界面。你可以在 Trae Work 中让 AI 助手通过 HTTP 调用该服务来检索历史记忆——但这属于自行接线，官方未提供现成配置。
+2. **把 MCP 搜索工具接入支持 MCP 的客户端**：claude-mem 提供 4 个 MCP 搜索工具。若你的 Trae Work 版本支持自定义 MCP 服务，可尝试把 claude-mem 的 MCP 端点加入配置；具体端点与配置格式官方未在公开资料中给出针对 Trae Work 的说明。
+3. **在终端中作为 CLI 使用**：安装后可在 PowerShell 中通过 `npx claude-mem` 相关子命令与记忆交互，适合脚本化或手动查询。
+4. **Java / Spring 项目本身无需改动**：claude-mem 不侵入你的代码库，它记录的是 Agent 的会话行为，而不是你的 Java 源码。你可以在 Spring 项目目录下正常使用已支持的 Agent，记忆会按项目维度沉淀。
+
+> 如果你的核心诉求是「在 Trae Work 里直接获得跨会话记忆」，目前需要自行验证可行性；官方公开资料中没有 Trae Work 集成章节。
+
+## 快速上手
+
+1. 在 PowerShell 中执行 `npx claude-mem install`，按提示选择 Agent、完成登录、选择记忆提供方。
+2. 重启你选择的 Agent（例如 Claude Code 或 OpenCode）。
+3. 正常开始一次编码会话，让 Agent 读代码、改代码、做决策。
+4. 结束会话，重新开一个会话，观察是否自动带入了此前的上下文。
+5. 需要主动检索时，使用 mem-search 技能或 MCP 搜索工具，用自然语言提问，例如「我们为什么把重试限制在三次」。
+
+## 如何确认安装成功
+
+官方文档给出了一组安装后验证动作，可逐项检查：
+
+1. **依赖自动安装**：安装器应自动完成依赖安装，无报错。
+2. **插件注册**：确认插件已注册到对应 Agent 的市场目录。
+3. **数据目录**：确认数据目录已生成，记忆数据落盘。
+4. **Worker 日志**：检查 Worker 服务日志，确认服务已启动。
+5. **上下文检索测试**：发起一次检索，确认能返回历史观察记录。
+6. **CMEM Pro / 同步**：若使用托管记忆，确认同步状态正常。
+
+启动时 Worker 会打印访问地址，浏览器打开即可看到实时记忆流界面。
+
+## 费用与授权
+
+- **开源引擎免费**：本地 claude-mem 引擎是开源的，许可证为 Apache 2.0。
+- **CMEM Pro 付费**：托管观察、云同步和私有 MCP 连接属于付费服务，30 天免费试用，之后官网标注为每月 30 美元。
+- **TeamBrain 试点**：面向团队共享记忆，官方表示试点范围与入驻方式需双方商定，公开的团队定价尚未公布。
+- **不影响其他订阅价格**：官网说明 CMEM Pro 不会改变其他订阅的价格或额度；托管观察把记忆生成从主 Agent 的订阅上移走，对 token 消耗的影响取决于工作负载和提供方。
+
+## 局限与风险
+
+- **捕获范围有限**：官网明确说明并非所有工具的所有内容都会被捕获，捕获取决于所安装的工具与集成方式。MCP 连接只提供召回；连接 ChatGPT 不会自动捕获 ChatGPT 对话。
+- **Trae Work 无官方支持**：如前所述，官方未提供 Trae Work 集成，Java / Spring 也没有官方 SDK。
+- **平台差异**：官方文档未针对 Windows 给出专门说明，部分安装脚本（如 OpenClaw 的一键脚本）为 shell 形式，Windows 下可能需要 WSL 或 Git Bash。
+- **数据敏感性**：记忆会被压缩并存储，涉及密钥、客户数据时应使用 `<private>` 标签或自动脱敏功能。
+- **成熟度**：项目创建于 2025-08-31，迭代非常活跃（仓库元信息显示最近更新为 2026-10-11，版本号 13.35.0），但快速迭代也意味着配置项和行为可能变化。
+- **版本号口径不一**：仓库徽章标注版本 13.35.0，而第三方插件目录页面显示为 11.0.1，两者不一致，使用时以实际安装版本为准。
+
+## 社区评价
+
+Hacker News 上关于 AI 记忆的讨论热度很高。在《Claude Memory》话题下（559 points，312 条评论），以及《Show HN: Recall: Give Claude memory with Redis-backed persistent context》（171 points，93 条评论）中，社区观点呈现明显分歧：
+
+- 有用户担心「旧代码渗进新代码」，认为对话式记忆更适合增强「Claude 懂你」的体验，而不适合编码场景。
+- 也有用户表示「不想要旧代码污染新代码，但很想要对话之间的记忆」。
+- 有实际使用者反馈，使用后上下文问题变少，在上下文压缩（context compact）之后也能轻松召回。
+- 还有人质疑：为什么不用 `.md` 形式的上下文文件，例如 SpecKit 项目的做法。
+
+这些讨论并非针对 claude-mem 本身，但反映了「AI 记忆」这一类工具共同的争议点：记忆的边界控制与注入精度，决定了它是助力还是噪音。
+
+## 一句话建议
+
+如果你主力使用 Claude Code、OpenCode、Codex 等官方支持的 Agent，且项目周期长、上下文负担重，claude-mem 值得花半小时装来试试；如果你坚持在 Trae Work 里完成全部工作，目前需要自行探索 HTTP 或 MCP 接线，官方没有现成答案。
 
 ```text
-背景：我在 Windows 上用 Trae Work 开发一个 Java / Spring Boot 后端项目，日常用 Maven 构建、JUnit 5 写测试。我了解到 claude-mem 是一个为编码 Agent 提供跨会话持久记忆的工具，会自动捕获会话中的工具使用观察、生成语义摘要，并在后续会话注入相关上下文。
+背景：我在 Windows 上用 Trae Work 开发一个 Java / Spring 后端项目，技术栈是 Spring Boot + MyBatis + MySQL，日常用 AI 助手读代码、改接口、排查线上问题。我听说 claude-mem 能给 AI 编程助手加跨会话持久记忆，但官方没有 Trae Work 集成说明。
 
-目标：帮我在本机把 claude-mem 跑起来，并验证它确实能在两次会话之间保留项目上下文。
+目标：帮我在不破坏现有项目的前提下，评估并尝试把 claude-mem 接入我的工作流，让它能记住项目里的架构决策、踩坑记录和修复方案。
 
-要求：
-1. 先检查我的环境：Node.js 是否 >= 20.0.0，npm 是否在 PATH 中（Windows 上如果报 'npm 不是可识别的命令'，先帮我确认 Node.js 安装与 PATH）。
-2. 只使用 claude-mem README 中明确给出的安装方式：npx claude-mem install，或 Claude Code 内的 /plugin marketplace add thedotmack/claude-mem 与 /plugin install claude-mem。不要使用 npm install -g claude-mem，README 说明它只装 SDK/库，不会注册 hook 和 worker。
-3. 安装过程中如果需要登录或选择记忆提供方，把选项和影响解释给我听，让我决定；如果我想跳过登录，告诉我可以用显式 --provider 参数或 CLAUDE_MEM_ONLINE_OPTIN=false。
-4. 安装后帮我确认 settings.json 的位置（README 说是 ~/.claude-mem/settings.json），并把 CLAUDE_MEM_MODE 设为 code--zh，让生成的观察使用简体中文。
-5. 告诉我如何验证：README 提到启动时会打印 worker URL，可以用 Web 查看器 UI 看实时记忆流；也提到有 mem-search skill 和 search / timeline / get_observations 三个 MCP 工具。请按 README 的说法指导我验证，不要编造 README 里没有的命令或路径。
-6. 最后明确告诉我：claude-mem 与 Trae Work 的集成方式 README 未提供，所以不要假设它已经接入 Trae Work，只把它当作独立安装并验证。
+具体要求：
+1. 先帮我确认本机 Node 版本是否满足 claude-mem 要求的 >=20，并列出需要预装的运行时依赖（Bun、uv）。
+2. 给出在 Windows PowerShell 中安装 claude-mem 的完整步骤，包括 npx claude-mem install 的交互流程说明，以及如何跳过登录、如何选择本地观察器。
+3. 分析 claude-mem 的本地 Worker HTTP API 和 4 个 MCP 搜索工具，判断我的 Trae Work 版本能否通过自定义 MCP 配置接入；如果不能，给出替代方案（例如在终端用 CLI 查询记忆）。
+4. 说明如何验证安装成功：插件注册、数据目录、Worker 日志、上下文检索测试分别怎么检查。
+5. 提醒我哪些内容不应该被记忆捕获，以及如何用 <private> 标签保护敏感信息。
+6. 最后给我一个最小试用计划：用一周时间在 Spring 项目上记录哪些类型的决策，如何评估记忆召回是否真的提升了效率。
 ```
-
-## 验证方法
-
-README 中可用于验证的事实点：
-
-1. 安装完成后重启对应工具。README 在 Claude Code 插件安装路径下写明“Restart Claude Code. Context from previous sessions will automatically appear in new sessions.”；在 OpenCode 路径下写明安装后重启 OpenCode。
-2. 查看 worker 的 Web 查看器 UI。README 在 Key Features 中写明 “Web Viewer UI - Real-time memory stream at the worker URL printed on startup”，即启动时会打印 worker URL，可在该地址看到实时记忆流。
-3. 使用 mem-search skill 查询项目历史。README 在 Key Features 中写明 “Skill-Based Search - Query your project history with mem-search skill”。
-4. 使用 MCP 搜索工具。README 说明有 `search`、`timeline`、`get_observations` 三个可用 MCP 工具，并给出示例用法：先 `search(query="authentication bug", type="bugfix", limit=10)`，再根据索引中的 ID（如 #123、#456）调用 `get_observations(ids=[123, 456])`。
-5. 排查问题：README 的 Troubleshooting 说明，把问题描述给 Claude，troubleshoot skill 会自动诊断并给出修复方案。
-
-## 风险与注意事项
-
-- 安装方式陷阱：README 明确警告 `npm install -g claude-mem` 只安装 SDK/库，不会注册插件 hook，也不会搭建 worker 服务，必须用 `npx claude-mem install` 或 `/plugin` 命令。
-- 账号与计费：README 说明安装器会引导登录 claude-mem（邮箱 magic link，无需信用卡），登录后解锁带 30 天免费试用的 claude-mem observer；试用结束后，除非订阅，记忆会自动回退到你的 Anthropic plan。
-- 隐私：README 提到可用 `<private>` 标签把敏感内容排除在存储之外。
-- 默认上下文范围：`CLAUDE_MEM_SESSION_START_INCLUDE_ALL_SOURCES` 默认为 `"false"`，即启动上下文只包含当前 harness；设为 `"true"` 才会包含所有 harness 的观察。
-- 模式切换需重启：README 说明修改 `CLAUDE_MEM_MODE` 后需要重启 Claude Code 才能生效。
-- Windows 环境：README 提示若出现 `npm` 不是可识别命令的错误，需确认 Node.js 与 npm 已安装并加入 PATH，安装后重启终端。
-- 与 Trae Work / Java 的集成风险：README 未提供与 Trae Work / Java 的集成方式，因此无法基于 README 判断在 Trae Work 工作流中的兼容性与配置方式。
-- 版本与更新：README 徽章显示版本 13.35.0、Node >= 20.0.0；仓库元信息显示最近更新时间为 2026-10-11。除此之外的版本细节 README 未提供。
-
-## 替代方案
-
-README 未提供替代方案的相关说明。
-
-README 中与“替代”最接近的内容是：安装时可选择不同的记忆提供方——claude-mem observer、你自己的 OpenRouter 或 Gemini key，或你的 Anthropic plan；以及可通过 `--provider` 参数或 `CLAUDE_MEM_ONLINE_OPTIN=false` 跳过登录。这些是同一工具内的提供方选择，不是替代产品。
-
-README 还提到 Claude-Mem 采用 Apache-2.0 许可，理由是“durable agentic memory should be easy to embed in developer tools, local agents, MCP servers, enterprise systems, robotics stacks, and production agent harnesses”，但未列出具体的替代项目。
 
 ---
 
-> 本文由 AI 阅读官方素材（GitHub README）后生成，已要求其仅依据素材撰写；关键命令请以官方文档为准。
+> 本文由 AI 综合官方仓库、项目官网与第三方公开资料撰写，已要求其仅依据公开资料成文；关键命令请以官方文档为准。

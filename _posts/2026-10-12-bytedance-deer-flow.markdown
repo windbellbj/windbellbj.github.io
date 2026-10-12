@@ -1,18 +1,19 @@
 ---
 layout: post
-title: "DeerFlow 2.0 上手：字节开源的超级智能体运行壳"
-subtitle: "用沙箱、记忆、子智能体和技能，把分钟级到小时级任务交给它跑"
+title: "DeerFlow 2.0 使用说明书：字节开源的 SuperAgent 运行壳"
+subtitle: "一个自带沙箱、记忆、技能与子智能体的长任务智能体运行壳，Java 后端也能把它当 MCP 服务接进 Trae Work"
 date: 2026-10-12 04:44:19 +0800
 author: ""
 header-img: "img/post-bg-ai-news.svg"
 tags:
     - AI新资讯
+    - Agent Harness
 news_category: harness
 ---
 
 - 来源：GitHub 近期爆火
 - 仓库：https://github.com/bytedance/deer-flow
-- Stars：83693
+- Stars：83699
 - 语言：Python
 - 创建时间：2025-05-07
 - 最近更新：2026-10-11
@@ -20,148 +21,195 @@ news_category: harness
 
 ---
 
-## 解决什么问题
+> DeerFlow 2.0 是字节跳动开源的「SuperAgent 运行壳」（harness）：它把子智能体、长期记忆、Docker/K8s 沙箱、技能与消息网关编排在一起，用来跑几分钟到几小时的长任务（深度调研、写代码、产出报告）。最适合想在自己机器上跑一个「能动手干活」的智能体中枢、并愿意用 Docker 起服务的开发者；如果你只想在 IDE 里补全代码，它不是同类工具。
 
-DeerFlow（**D**eep **E**xploration and **E**fficient **R**esearch **Flow**）是一个开源的 **super agent harness**（超级智能体运行壳），它编排 **sub-agents（子智能体）**、**memory（记忆）** 和 **sandboxes（沙箱）**，并依靠**可扩展的技能（extensible skills）**来完成几乎任何任务。
+## 它到底是什么
 
-README 明确说明它处理的是「不同层级的任务，耗时可能从几分钟到几小时」（handles different levels of tasks that could take minutes to hours）。也就是说，它面向的不是单轮问答，而是长周期（long-horizon）的调研、编码与创作类任务。
+DeerFlow 全称 **D**eep **E**xploration and **E**fficient **R**esearch **Flow**，官方定位是「开源的长时程 SuperAgent 运行壳」，借助沙箱、记忆、工具、技能、子智能体与消息网关，处理从几分钟到几小时的不同量级任务。
 
-需要特别注意：**DeerFlow 2.0 是一次彻底重写（ground-up rewrite），与 v1 不共享任何代码**。如果你要找最初的 Deep Research 框架，它在 `1.x` 分支上维护，但活跃开发已经转移到 2.0。
+需要先分清两件事：
 
-## 核心概念
+- **DeerFlow 2.0 是一次彻底重写**，与 1.x 不共享代码。1.x 是早期的 Deep Research 框架，仍在 `main-1.x` 分支维护；活跃开发已全部转到 2.0。
+- 2.0 的形态更接近「运行时」而不是「框架库」。第三方评测（SOTAAZ Lab）把它和 LangGraph、CrewAI、AutoGen 对比后给出的说法是：CrewAI、AutoGen 更像组装套件，DeerFlow 更像一台配齐装备的工作站——沙箱、持久记忆、技能系统、消息网关都是内置的，而其他框架需要你自己搭。
 
-README 中反复出现、构成这套 harness 的关键概念包括：
+社区热度方面，官方说明称 2026 年 2 月 28 日 DeerFlow 在 2.0 发布后登上 GitHub Trending 第一名；第三方评测称其 24 小时内登顶 Trending、不到一个月突破 4 万 star。仓库当前显示约 8.3 万 star，两个数字口径不同，以仓库页面为准即可。
 
-- **Super Agent Harness**：整个项目的自我定位，负责编排各类能力去完成长周期任务。
-- **Sub-Agents（子智能体）**：README 目录中单列了 Sub-Agents 章节，说明它是任务分解与并行执行的核心机制。
-- **Sandbox & File System（沙箱与文件系统）**：提供隔离的执行环境与文件操作能力。
-- **Skills & Tools（技能与工具）**：可扩展的技能体系，README 还提到「Exporting Custom Skills」（导出自定义技能）与「Claude Code Integration」（Claude Code 集成）。
-- **Long-Term Memory（长期记忆）** 与 **DeerMem extraction prompts**：记忆与上下文工程的一部分。
-- **Context Engineering（上下文工程）**、**Manual Context Compaction（手动上下文压缩）**、**Current Task Notes（当前任务笔记）**：用于管理长任务的上下文窗口。
-- **Agentic Browser Control（智能体浏览器控制）**：让智能体操作浏览器。
-- **MCP Server**：README 的 Advanced 章节列出了 MCP Server。
-- **IM Channels（IM 渠道）** 与 **message gateway**：官方简介提到 message gateway，README 中有 IM Channels 章节。
-- **Scheduled Tasks（定时任务）**：支持 cron 形式的计划任务。
-- **Terminal Workbench (TUI)**：终端工作台。
-- **Projects（项目）**：包含 Project instructions、Document shelf、Archive read semantics、Trash 等子概念。
-- **Private Knowledge Retrieval (RAGFlow)**：私有知识检索。
-- **Embedded Python Client**：嵌入式 Python 客户端。
+## 核心概念与工作原理
 
-## 前置依赖
+### 两层架构
 
-根据 README 顶部的徽章与说明，可以确认的依赖要求是：
+- **Harness（核心引擎）**：可发布的核心运行时，第三方评测提到其包名为 `deerflow-harness`。负责智能体编排（基于 LangGraph StateGraph）、工具系统、沙箱、记忆、技能、MCP 连接。
+- **App（应用层）**：包住 harness 的服务层。第三方评测给出的端口分布是：LangGraph Server `2024`、Gateway API（FastAPI）`8001`、前端（Next.js）`3000`、Nginx `80`。
 
-- **Python 3.12+**（徽章链接指向 `./backend/pyproject.toml`）
-- **Node.js 22+**（徽章链接指向 `./Makefile`）
-- **License: MIT**
+### 多智能体工作流
 
-README 中提到的运行方式包括 Docker（推荐）与本地开发（Local Development），因此 Docker 是可选但被推荐的环境。
+第三方评测称 2.0 基于 LangGraph StateGraph 构建了 9 个专用节点，包括 Supervisor（分析任务、生成结构化计划、派发子任务）、Researcher（带引用的深度检索）、Coder（在沙箱里执行 Python/Bash）、Reporter（汇总成交付物）、Analyst、Planner、Human Feedback（通过 `interrupt()` 暂停等待人工确认）、Background Investigation、Podcast Generator。
 
-README 未提供关于操作系统支持范围的完整说明，也未提供针对 Windows 的专门依赖清单。
+官方对「子智能体」的描述是：由主智能体派生、各自承担一段独立工作的执行单元；「技能」是可扩展的能力包，官方支持**导出自定义技能**，并提供 **Claude Code 集成**。
 
-## 安装与配置
+### 工具来源与沙箱
 
-README 提供了「One-Line Agent Setup」和「Quick Start」两条路径。
+- 工具从 **5 个来源**加载（第三方评测口径），并支持 **MCP** 接入外部工具服务器。
+- 沙箱支持 **Local / Docker / Kubernetes** 三种模式，官方推荐 Docker。
+- 记忆为**持久化存储**，第三方评测称其基于 JSON 实现，支持跨会话学习。
 
-**路径一：把安装交给编码智能体（README 原文方式）**
+### 其他能力（官方说明）
 
-README 说明，如果你使用 Claude Code、Codex、Cursor、Windsurf 或其他编码智能体，可以用一句话把安装说明交给它。README 给出的原句是让智能体在需要时克隆 DeerFlow，然后按照 `https://raw.githubusercontent.com/bytedance/deer-flow/main/Install.md` 引导本地开发环境；该提示词面向编码智能体，会告诉智能体在需要时克隆仓库、在可用时选择 Docker，并在最后停下来给出确切的下一步命令以及用户仍需提供的缺失配置。
+私有知识检索（RAGFlow）、聊天归档、会话目标、手动上下文压缩、智能体浏览器控制、上下文工程、长期记忆、项目与文档架、定时任务（cron）、终端工作台（TUI）、嵌入式 Python 客户端。
 
-**路径二：手动 Quick Start**
+## 适用场景与它解决的问题
 
-1. 克隆 DeerFlow 仓库：`git clone https://github.com/bytedance/deer-flow.git`，然后 `cd deer-flow`。
-2. 在项目根目录（`deer-flow/`）运行 `make setup`。README 说明这会启动一个交互式向导，引导你选择 LLM provider、可选的 web search，以及执行/安全偏好（例如 sandbox mode、bash access、file-write tools）。它会生成一个最小的 `config.yaml` 并把你的密钥写入 `.env`，大约耗时 2 分钟。向导也允许你配置可选的 web search provider，或者暂时跳过。
-3. 随时运行 `make doctor` 来验证配置并获得可操作的修复提示。
-4. 如果你更愿意直接编辑 `config.yaml`，README 建议改为运行 `make config` 来复制完整模板；完整参考见 `config.example.yaml`。
+| 场景 | DeerFlow 提供什么 |
+| --- | --- |
+| 需要跑几十分钟以上的调研/写作任务 | 多节点编排 + 子智能体 + 人工反馈中断 |
+| 需要让智能体真的执行代码 | 内置 Docker/K8s 沙箱，隔离执行 Python/Bash |
+| 需要跨会话记住偏好与结论 | 内置持久记忆 |
+| 需要接外部工具 | MCP 服务接入 |
+| 需要从 IM 触发任务 | 消息网关（第三方评测列出 Slack / Telegram / 飞书） |
+| 需要定时跑任务 | 定时任务（cron），并可通过 API 预览 cron 触发时间 |
 
-**运行应用**
+反过来，如果你的需求只是「在 IDE 里补全 Java 代码」，DeerFlow 属于重型方案，起一套 Docker 服务的成本明显高于收益。
 
-README 的 Running the Application 章节给出两种方式：
+## 环境与前置依赖
 
-- **Option 1: Docker（推荐）**
-- **Option 2: Local Development（本地开发）**
+| 项目 | 要求 | 来源 |
+| --- | --- | --- |
+| Python | 3.12+ | 官方徽章 |
+| Node.js | 22+ | 官方徽章 |
+| 内存 | 最低 4GB，推荐 8GB | 第三方评测 |
+| 磁盘 | 2GB+ | 第三方评测 |
+| 包管理器 | uv（Python）、pnpm（前端） | 第三方评测 |
+| 容器 | Docker（官方推荐路径） | 官方说明 |
+| 许可证 | MIT | 官方徽章 |
 
-此外还有 Startup Modes、LangGraph Studio（可选）、Docker Production Deployment 等小节。README 还提到 `make dev` 这一命令（在讨论相对路径解析时提及「as in `make dev`」）。
+**推荐模型**：官方强烈推荐使用 Doubao-Seed-2.0-Code、DeepSeek v3.2 与 Kimi 2.5 来运行 DeerFlow，并给出了字节火山引擎 Coding Plan 的入口（中国大陆开发者有单独链接）。
 
-**关于 Trae Work 与 Java 的集成**
+## 在 Windows + Trae Work 环境下的安装与配置
 
-README 未提供与 Trae Work / Java 的集成方式。README 中提到的集成相关内容仅有：Claude Code Integration、MCP Server、IM Channels、Embedded Python Client，以及可配置的 CLI-backed providers（Codex CLI、Claude Code OAuth）与 ACP agents（例如 MiniMax Code 的 `mcode`）。README 未提供任何 Trae Work 技能目录、Trae Work MCP 配置路径或 Java/Spring SDK 的说明。
+> 官方未提供与 Trae Work / Java 的集成方式。以下步骤是通用安装流程在 Windows PowerShell 下的写法；与 Trae Work 的结合方式见本节最后一段。
 
-**Windows 相关提示（README 中确有提及的部分）**
+### 第一步：准备基础环境
 
-README 在 ACP agent 部分提到，裸命令或绝对路径的 ACP agent `command` 会在 agent 启动前解析，因此 npm 安装的启动器在 Windows 上也能工作：`npx` 或 `mcode` 会被作为 `npx.cmd`/`mcode.cmd` shim 启动，而不是报 command-not-found；像 `C:\Users\me\AppData\Roaming\npm\mcode` 这样的绝对路径会解析到 npm 无扩展名 shell 脚本旁边的 `mcode.cmd` shim，而不是报 `WinError 193`。这是 README 中唯一明确涉及 Windows 的说明。
+1. 安装 Python 3.12 或更高版本，并确认 `python --version` 输出符合要求。
+2. 安装 Node.js 22 或更高版本，确认 `node --version`。
+3. 安装 Docker Desktop for Windows 并启动，确认 `docker version` 能正常返回。
+4. 安装 uv（Python 包管理器）。官方与第三方给出的安装脚本是 Unix 写法（`curl -LsSf https://astral.sh/uv/install.sh | sh`），在 PowerShell 中请改用官方 Windows 安装方式或 `pip install uv`，安装后确认 `uv --version`。
+5. 安装 pnpm（前端依赖），确认 `pnpm --version`。
 
-**模型配置要点**
+### 第二步：获取代码
 
-- README 强烈推荐使用 Doubao-Seed-2.0-Code、DeepSeek v3.2 和 Kimi 2.5 来运行 DeerFlow。
-- 管理员可以打开 **Settings → Models**，在不编辑 `config.yaml` 的情况下添加、编辑、测试和启用/禁用共享的 OpenAI-compatible Chat Completions 模型。需要填写唯一名称、base URL、model ID 和可选 API key；保存后会刷新 chat model 列表。连接测试会发送一个短的流式 tool-call 请求，可能产生 provider 费用。
-- 官方 DeepSeek 模型（`https://api.deepseek.com` 或 `https://api.deepseek.com/v1`）会自动使用 DeerFlow 的 DeepSeek adapter。
-- 加密的 catalog 和生成的本地加密密钥存放在 `$DEER_FLOW_HOME/managed-models/`（默认 `.deer-flow/managed-models/`）。
+在 PowerShell 中执行：
 
-## 最小可用示例
+1. `git clone https://github.com/bytedance/deer-flow.git`
+2. `cd deer-flow`
 
-下面这段指令可以直接整段复制给 Trae Work 等 AI 编程助手，用于在你的 Windows + Java/Spring 环境里试用 DeerFlow。
+### 第三步：运行配置向导
+
+在项目根目录（`deer-flow/`）执行 `make setup`。
+
+官方说明：这会启动一个交互式向导，引导你选择 LLM 提供方、可选的网页搜索，以及执行/安全偏好（沙箱模式、bash 访问、文件写入工具等），生成一份最小化的 `config.yaml` 并把密钥写入 `.env`，大约耗时 2 分钟。向导也允许你配置可选的网页搜索提供方，或先跳过。
+
+> Windows 上若没有 `make`，可先安装 GNU Make（例如通过 Chocolatey 或 MSYS2），或参照向导脚本手动完成同样的配置项。官方未公开说明 Windows 原生无 make 时的替代命令。
+
+配置完成后，随时可以运行 `make doctor` 校验环境并获得可执行的修复提示。如果准备提 GitHub issue，官方建议先运行 `make support-bundle`，它会打印上报步骤，并写出一个 `*-issue-summary.md` 文件供粘贴到 issue 中。
+
+### 第四步：启动应用
+
+官方给出两条路径：
+
+- **Docker（推荐）**：按官方 Quick Start 的 Docker 路径启动整套服务。
+- **本地开发**：按 Local Development 路径分别起后端与前端。
+
+启动模式（Startup Modes）与 LangGraph Studio（可选）在官方说明中单列小节；生产部署另有 Docker Production Deployment 一节。
+
+### 第五步：可选能力配置
+
+- **沙箱模式**：Local / Docker / Kubernetes。
+- **MCP Server**：官方在 Advanced 下设有 MCP Server 小节，用于把外部工具服务器接进来。
+- **IM 通道**：官方在 Advanced 下设有 IM Channels 小节。
+- **链路追踪**：支持 LangSmith、Langfuse、Monocle 三种追踪，以及请求链路关联（Request Trace Correlation）。
+- **多提供方**：支持同时使用多个模型提供方（Using Multiple Providers）。
+- **个人访问令牌**：Personal Access Tokens。
+
+### 关于 Trae Work 与 Java 项目
+
+官方未提供与 Trae Work / Java 的集成方式，也没有公开的 Java SDK。可确认的接入面是：DeerFlow 自身提供 **Gateway API（FastAPI，第三方评测称端口 8001）** 与 **嵌入式 Python 客户端**，并支持作为 **MCP 服务** 对外提供能力。
+
+因此对 Java 后端而言，现实路径只有两条：一是把 DeerFlow 当作独立服务跑起来，Java/Spring 侧通过 HTTP 调用它的 Gateway API；二是如果它暴露 MCP 端点，再考虑在支持 MCP 的客户端里挂载。**具体端点路径、鉴权方式与 MCP 挂载配置，官方未公开说明，请以启动后服务的实际暴露情况为准，不要凭猜测填写配置。**
+
+## 如何确认安装成功
+
+1. `make doctor` 无阻断性报错，并给出可执行的修复提示（若有）。
+2. Docker 路径下，`docker ps` 能看到 DeerFlow 相关容器处于运行状态。
+3. 浏览器访问前端端口（第三方评测口径为 `3000`），能看到 Web UI。
+4. 访问 Gateway API 端口（第三方评测口径为 `8001`），服务有响应。
+5. 在 Web UI 里跑一个最小任务（例如让它做一次简单检索并输出结论），观察是否有节点流转与最终产出。
+
+> 端口号来自第三方评测，官方说明中未逐条列出端口，实际以你本机启动日志为准。
+
+## 快速上手：跑通第一个任务
+
+1. 打开 Web UI。
+2. 在输入框里给一个**边界清晰、可验证**的任务，例如「检索某开源项目最近的发布说明，整理成一份带来源链接的简报」。
+3. 观察 Supervisor 拆解计划、Researcher/Coder 分工执行、Reporter 汇总的过程。
+4. 若流程触发 Human Feedback 中断，按提示确认或修正后继续。
+5. 任务结束后，检查产出物与沙箱中生成的文件。
+
+官方官网（deerflow.tech）提供了多个真实案例回放，包括「埃菲尔铁塔与最高建筑的高度对比」（会用 Python 计算倍数）、「GitHub 上最热门的仓库」（使用 MCP 服务识别并用搜索引擎整理）、「南京传统菜肴」（图文并茂）、「小户型出租房如何装修」、「《这个杀手不太冷》介绍」、「如何看待中国的外卖大战」（中文）、「超加工食品是否与健康相关」、「你会为你的 AI 分身投保吗」。这些案例以白名单只读形式展示，无需登录即可打开，适合先看效果再决定是否安装。
+
+## 局限与风险
+
+### 安全
+
+官方设有专门的 Security Notice 章节，明确几条：
+
+- **部署不当会引入安全风险**。
+- **Gateway 管理员权限等同于代码执行权限**。
+- 外部聊天消息的角色需要谨慎处理。
+- 部署默认值需要按官方安全建议逐条核对。
+
+此外，官方在配置说明中要求：自托管的 Browserless、Crawl4AI、Firecrawl、fastCRW 抓取后端，必须在设置 `network_isolation_confirmed: true` 之前完成对私有、回环、链路本地与云元数据网络的出站隔离；DeerFlow 默认拒绝私有或无法验证的后端，因为这些服务自行处理重定向、DNS 解析与子资源。`allow_private_addresses` 只允许有意的内部目标 URL，不会绕过后端检查。`make doctor` 会报告会被拒绝的后端配置。
+
+### 成熟度与版本
+
+- 2.0 是彻底重写，与 1.x 无代码共享，生态与文档仍在快速演进。
+- 仓库创建于 2025-05-07，最近更新 2026-10-11，迭代节奏很快，升级前建议先看官方 Upgrade Notes。
+
+### 费用
+
+- 软件本身为 MIT 许可，可商用。
+- 但运行成本取决于你选的模型提供方与用量；官方推荐 Doubao-Seed-2.0-Code、DeepSeek v3.2、Kimi 2.5，并链接到火山引擎 Coding Plan。
+- 官方提到可选的 `request_admission` 用于按模型对请求限速，以控制在提供方的每分钟请求上限内；默认关闭。启用后会关闭已暴露的 SDK 重试以及 Claude、Codex 适配器的内部重试循环。
+- 官方还提到 Jina 抓取支持可选的 `max_retries`（默认 `0`）与 `retry_budget_seconds`（默认 `30`），并明确提示**重试可能增加上游请求与成本**。
+
+### 其他已知约束
+
+- InfoQuest 的 reader、web search、image search 使用 **30 秒**的 HTTP 连接/读取空闲超时；抓取的 `timeout` 与 `navigation_timeout` 是独立的服务端选项，不控制本地 HTTP 超时。
+- Jina 抓取可选的 `max_response_bytes` 会在抽取前拦截超大解码响应，不产生部分成功也不重试；4096 字符的输出上限不变，且不限制 HTTPX 解压分配或线路带宽。
+
+## 社区评价（来自 Hacker News 讨论）
+
+本次可用的公开资料中，未包含 Hacker News 讨论的具体内容，因此暂无来自该渠道的社区评价可引用。
+
+## 一句话结论
+
+如果你想要一个**能自己动手、能记住事、能跑长任务**的智能体中枢，并且不介意在 Windows 上多装一套 Docker + Python + Node 环境，DeerFlow 2.0 值得花半小时试一次；如果你只想在 Trae Work 里补全 Java 代码，先别装它。
 
 ```text
-背景：我是 Java 后端程序员，日常在 Windows 上用 Trae Work 开发，技术栈以 Java / Spring 为主。我想试用字节开源的 DeerFlow 2.0（https://github.com/bytedance/deer-flow），它是一个 super agent harness，用子智能体、记忆和沙箱处理从几分钟到几小时的长周期任务。
+背景：我在 Windows 上用 Trae Work 开发 Java / Spring 后端项目，想试用字节开源的 DeerFlow 2.0（一个 SuperAgent 运行壳，自带沙箱、记忆、技能与子智能体）。
 
-目标：在我的 Windows 机器上把 DeerFlow 2.0 跑起来，并完成一次最小验证。
+目标：在不破坏我现有 Java 项目的前提下，把 DeerFlow 在本机跑起来，并让我能用 Java 侧调用它。
 
-要求：
-1. 先阅读仓库 README 和 Install.md，确认前置依赖（README 标注 Python 3.12+、Node.js 22+），并检查我本机是否满足；不满足的地方逐条告诉我怎么装。
-2. 按 README 的 Quick Start 走：克隆仓库后运行 make setup，向导里帮我选择 LLM provider、可选的 web search，以及 sandbox mode、bash access、file-write tools 这些执行/安全偏好。
-3. 运行 make doctor 验证配置，把它的输出和修复建议解释给我听。
-4. 运行应用时优先用 README 推荐的 Docker 方式；如果 Docker 不可用，再走本地开发方式，并说明两者的差别。
-5. 全程用中文解释每一步在做什么，遇到 Windows 特有的问题（例如命令解析、路径问题）要指出原因。
-6. 如果 README 没有提供某个信息（例如与 Trae Work 或 Java/Spring 的集成方式），直接告诉我 README 未提供，不要自行编造配置路径或命令。
+具体要求：
+1. 先检查我的环境：Python 是否 3.12+、Node.js 是否 22+、Docker Desktop 是否可用、uv 与 pnpm 是否已安装。缺什么就告诉我 Windows PowerShell 下的安装命令。
+2. 用 PowerShell 命令帮我完成：git clone https://github.com/bytedance/deer-flow.git，进入目录，运行 make setup 配置向导。如果 Windows 上没有 make，请给出可行的替代做法，不要编造不存在的命令。
+3. 配置向导里我需要选择 LLM 提供方、是否启用网页搜索、沙箱模式与文件写入权限。请用表格列出每个选项的含义与推荐值，并说明安全影响。
+4. 启动后，告诉我如何验证安装成功：包括 make doctor 的输出该怎么看、docker ps 该看到什么、Web UI 与 Gateway API 分别在哪个端口。端口号如果不确定，请说明以启动日志为准，不要猜。
+5. 给我一个最小可验证任务，让我在 Web UI 里跑通一次，并说明怎么判断它是真的执行了而不是只输出了一段文字。
+6. 最后回答：DeerFlow 官方是否提供 Java SDK 或与 Trae Work 的集成方式？如果没有，请明确说没有，并给出通过 HTTP 调用其 Gateway API 的可行思路（只写思路，不要编造端点路径和鉴权方式）。
+7. 全程不要修改我现有 Java 项目的任何文件。
 ```
-
-## 验证方法
-
-README 中给出的可执行验证手段：
-
-1. **运行 `make doctor`**：README 明确说明「Run `make doctor` at any time to verify your setup and get actionable fix hints」，即随时运行它来验证配置并获得可操作的修复提示。
-2. **运行 `make support-bundle`**：如果你要开 GitHub issue 反馈本地配置或运行时问题，README 说明该命令会打印 reporter 的后续步骤，写出一个 `*-issue-summary.md` 文件用于粘贴到 issue，一个 `*-issue-draft.md` 文件用于 AI 辅助提 issue，以及在 `.deer-flow/support-bundles/` 下可选的证据 zip。README 强调如果由 AI 助手提 issue，要从 draft 出发并替换每一个 REQUIRED 占位符，而不是编造缺失的事实；只有在维护者要求、或 summary 本身不够时才附上 zip。
-3. **模型连接测试**：在 **Settings → Models** 中保存模型时会做连接测试，发送一个短的流式 tool-call 请求。README 提醒这可能产生 provider 费用，并且它不保存草稿、也不验证图片支持。
-4. **DeepSeek 真实 provider 回归测试**：在环境中设置 `DEEPSEEK_TEST_API_KEY`，然后在 `backend/` 下运行 `DEER_FLOW_RUN_LIVE_TESTS=1 uv run --no-sync pytest tests/test_managed_deepseek_live.py -q`。README 说明这些测试会向 DeepSeek 发送短请求并可能产生费用，使用临时状态、绝不把凭据保存到部署 catalog，且在 CI 中会被跳过。可选地用 `DEEPSEEK_TEST_MODEL` 选择不同的 DeepSeek 模型 ID（默认 `deepseek-flash`）。
-5. **官方 Demo**：README 提到可以在官网 deerflow.tech 查看 real demos，落地页的案例研究以 allowlisted、只读的 showcase 形式打开，无需登录。
-
-## 风险与注意事项
-
-README 专门设有 **⚠️ Security Notice** 章节，其中列出的要点包括：
-
-- **不当部署可能引入安全风险（Improper Deployment May Introduce Security Risks）**。
-- **Gateway Admin 等价于代码执行（Gateway Admin Is Equivalent to Code Execution）**。
-- **外部聊天消息角色（External Chat Message Roles）**。
-- **部署默认值（Deployment Defaults）**。
-- **安全建议（Security Recommendations）**。
-
-其他 README 中明确提到的风险与限制：
-
-- **自托管 fetch 后端需要出站隔离**：自托管的 Browserless、Crawl4AI、Firecrawl 和 fastCRW fetch 后端，在给每个工具设置 `network_isolation_confirmed: true` 之前，需要与私有、loopback、link-local 和云元数据网络做出站隔离。DeerFlow 默认拒绝私有或无法验证的后端，因为这些服务自己处理重定向、DNS 解析和子资源。`allow_private_addresses` 允许有意的内部目标 URL，但不会绕过后端检查。
-- **重试可能增加成本**：Jina fetch 支持通过 `max_retries`（默认 `0`）和 `retry_budget_seconds`（默认 `30`）选择性开启有界重试。README 明确提醒「Retries may increase upstream requests and cost」。
-- **模型连接测试可能产生费用**，且不验证图片支持。
-- **DeepSeek 实时测试可能产生费用**。
-- **托管模型的加密密钥风险**：本地密钥由文件系统权限保护；加密并不能防止能同时读取两个文件的人。丢失密钥需要从备份恢复。catalog 无法解密时读写会失败，而不是替换它。
-- **禁用模型的影响**：禁用一个模型会把它从未来的选择/解析中移除，因此在禁用前要更新任何显式引用它的自定义 agent 或定时任务定义。
-- **定价货币必须统一**：可选的按模型定价必须在所有已定价模型中使用同一种货币。当货币混用时，DeerFlow 会禁用 Console 成本估算，而不是给出无效的聚合值。
-- **ACP agent 超时**：每个 ACP agent 的 `timeout_seconds`（默认 1800）是初始化、会话创建和 prompt 共享的一个预算，从子进程启动后开始计算。超时后 DeerFlow 会中止调用并在返回错误前关闭子进程。
-- **`auto_approve_permissions`**：对不可信任务应保持 `false`；只有当 mcode 必须编辑文件或运行命令且你信任该任务时才启用。
-
-README 未提供关于数据合规、许可证之外的商业使用限制等方面的额外说明。
-
-## 替代方案
-
-README 中提到的相关或可替代项目与路径：
-
-- **DeerFlow 1.x**：README 说明 2.0 是彻底重写，与 v1 不共享代码；如果你要找最初的 Deep Research 框架，它在 `1.x` 分支（`main-1.x`）上维护，仍然欢迎贡献，但活跃开发已转移到 2.0。
-- **LLM Space**：README 的 Sister Projects 中列出，描述为 DeerFlow 背后的秘密武器——一个桌面工具，用于原型化 agent 想法、检查每个 harness 步骤、重放失败并做性能基准测试。
-- **InfoQuest**：README 说明 DeerFlow 新集成了 BytePlus 独立开发的智能搜索与爬取工具集 InfoQuest，支持免费在线体验。
-- **RAGFlow**：README 的 Core Features 中列出 Private Knowledge Retrieval (RAGFlow)，作为私有知识检索方案。
-- **CLI-backed providers**：README 提到 Codex CLI、Claude Code OAuth 等 CLI 支持的 provider，以及 MiniMax Code（`mcode`）这类直接讲 ACP 的 agent。
-
-README 未提供与其他 agent harness 或编码智能体的横向对比说明。
 
 ---
 
-> 本文由 AI 阅读官方素材（GitHub README）后生成，已要求其仅依据素材撰写；关键命令请以官方文档为准。
+> 本文由 AI 综合官方仓库、项目官网与第三方公开资料撰写，已要求其仅依据公开资料成文；关键命令请以官方文档为准。
