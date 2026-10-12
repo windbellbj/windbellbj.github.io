@@ -1,0 +1,46 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需留意的四点",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "许可证类型未明确，需自行确认",
+          "桌面版为 BETA，命令可能变动",
+          "Windows 支持说法存在矛盾",
+          "Claude 订阅使用有账号风险"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装（Windows PowerShell）",
+      "language": "powershell",
+      "content": "scoop install opencode\nchoco install opencode\nnpm i -g opencode-ai@latest"
+    }
+  ],
+  "xhs": {
+    "product": "OpenCode 开源编码代理",
+    "one_liner": "在终端用自然语言驱动代码编写、分析与重构",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "双代理模式切换",
+        "mermaid": "flowchart LR\n  U[用户] -->|Tab| B[build 代理]\n  U -->|Tab| P[plan 代理]\n  B --> C[改代码]\n  P --> A[只读分析]\n  U -->|@general| G[general 子代理]"
+      },
+      {
+        "type": "card",
+        "heading": "四大卖点",
+        "points": [
+          "模型自由：支持 75+ LLM 提供商",
+          "多形态：终端、桌面、Web、IDE",
+          "多会话：同项目并行多个代理",
+          "隐私优先：不存储代码与上下文"
+        ]
+      }
+    ]
+  }
+}

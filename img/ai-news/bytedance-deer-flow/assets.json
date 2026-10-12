@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "两层架构与端口分布",
+      "mermaid": "flowchart TD\n  A[App 应用层] --> B[Harness 核心引擎]\n  A --> C[前端 Next.js 3000]\n  A --> D[Gateway API 8001]\n  A --> E[Nginx 80]\n  B --> F[LangGraph Server 2024]\n  B --> G[智能体编排]\n  B --> H[工具系统]\n  B --> I[沙箱]\n  B --> J[记忆]\n  B --> K[技能]\n  B --> L[MCP 连接]"
+    },
+    {
+      "type": "card",
+      "anchor": "适用场景与它解决的问题",
+      "caption": "DeerFlow 适用场景",
+      "card": {
+        "heading": "它适合解决什么",
+        "points": [
+          "跑几十分钟以上的调研/写作任务",
+          "让智能体真的执行代码",
+          "跨会话记住偏好与结论",
+          "接外部工具与从 IM 触发任务"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "在 Windows + Trae Work 环境下的安装与配置",
+      "language": "powershell",
+      "content": "git clone https://github.com/bytedance/deer-flow.git\ncd deer-flow\nmake setup\nmake doctor\nmake support-bundle"
+    }
+  ],
+  "xhs": {
+    "product": "DeerFlow 2.0",
+    "one_liner": "字节开源的 SuperAgent 运行壳，能跑长任务",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "两层架构",
+        "mermaid": "flowchart TD\n  A[App 应用层] --> B[Harness 核心引擎]\n  A --> C[前端 3000]\n  A --> D[Gateway API 8001]\n  A --> E[Nginx 80]\n  B --> F[LangGraph Server 2024]"
+      },
+      {
+        "type": "card",
+        "heading": "核心能力",
+        "points": [
+          "多智能体工作流编排",
+          "Local/Docker/K8s 沙箱",
+          "持久化记忆跨会话学习",
+          "MCP 接入外部工具"
+        ]
+      }
+    ]
+  }
+}

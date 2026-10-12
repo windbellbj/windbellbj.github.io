@@ -1,0 +1,46 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "CC Switch 工作方式示意",
+      "mermaid": "flowchart TD\n  A[桌面界面 Tauri + React] --> B[Tauri 命令层]\n  B --> C[供应商模式控制与实时配置更新]\n  B --> D[本地代理 Local Proxy]\n  C --> E[改写目标客户端配置文件]\n  D --> F[转发请求到所选供应商]\n  B --> G[持久化与洞察 SQLite]\n  G --> H[备份同步服务]"
+    },
+    {
+      "type": "card",
+      "anchor": "它到底解决什么问题",
+      "caption": "CC Switch 解决的四个痛点",
+      "card": {
+        "heading": "它到底解决什么问题",
+        "points": [
+          "供应商切换靠手改文件",
+          "MCP 服务器配置分散",
+          "Skills 与提示词无处安放",
+          "用量与花费看不清"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [],
+  "xhs": {
+    "product": "CC Switch",
+    "one_liner": "把多个 AI 编程工具的供应商、MCP、Skills 集中到一个桌面窗口管理",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "CC Switch 工作方式",
+        "mermaid": "flowchart TD\n  A[桌面界面 Tauri + React] --> B[Tauri 命令层]\n  B --> C[供应商模式控制与实时配置更新]\n  B --> D[本地代理 Local Proxy]\n  C --> E[改写目标客户端配置文件]\n  D --> F[转发请求到所选供应商]\n  B --> G[持久化与洞察 SQLite]\n  G --> H[备份同步服务]"
+      },
+      {
+        "type": "card",
+        "heading": "值不值得试",
+        "points": [
+          "多工具多供应商切换值得装",
+          "只用 Trae Work 一家价值有限",
+          "官方未提供 Trae Work 集成",
+          "官方未提供 Java / Spring 集成"
+        ]
+      }
+    ]
+  }
+}

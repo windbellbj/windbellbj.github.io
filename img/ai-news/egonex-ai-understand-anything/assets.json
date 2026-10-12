@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它到底解决什么问题",
+      "caption": "Understand Anything 三步工作流",
+      "mermaid": "flowchart LR\n  A[代码仓库] --> B[扫描 Scan]\n  B --> C[结构骨架]\n  C --> D[映射 Map]\n  D --> E[语义补充]\n  E --> F[教学 Teach]\n  F --> G[交互式仪表盘]"
+    },
+    {
+      "type": "card",
+      "anchor": "如何确认安装成功",
+      "caption": "安装成功的四个信号",
+      "card": {
+        "heading": "如何确认安装成功",
+        "points": [
+          "~/.understand-anything/repo 目录存在",
+          "重启 Trae Work 后 /understand 能被识别",
+          "项目下出现 .ua/knowledge-graph.json",
+          "/understand-dashboard 能打开仪表盘"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "在 Windows + Trae Work 上安装",
+      "language": "powershell",
+      "content": "iwr -useb https://raw.githubusercontent.com/Egonex-AI/Understand-Anything/main/install.ps1 | iex\n& \"$HOME/.understand-anything/repo/install.ps1\" -Update\n& \"$HOME/.understand-anything/repo/install.ps1\" -Uninstall trae"
+    }
+  ],
+  "xhs": {
+    "product": "Understand Anythi…",
+    "one_liner": "把任意代码库变成可探索、可搜索、可提问的交互式知识图谱",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "三步看懂陌生代码库",
+        "mermaid": "flowchart LR\n  A[代码仓库] --> B[扫描 Scan]\n  B --> C[映射 Map]\n  C --> D[教学 Teach]\n  D --> E[交互式仪表盘]"
+      },
+      {
+        "type": "card",
+        "heading": "核心能力速览",
+        "points": [
+          "结构图谱：文件函数类可点击可搜索",
+          "业务域视图：代码映射真实业务流程",
+          "引导式导览：按依赖顺序走查架构",
+          "变更影响分析：提交前看清波及范围"
+        ]
+      }
+    ]
+  }
+}

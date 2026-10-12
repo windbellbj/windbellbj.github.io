@@ -1,0 +1,11 @@
+flowchart LR
+  A[一条提示词] --> B[Agent 1]
+  A --> C[Agent 2]
+  A --> D[Agent 3]
+  B --> E[worktree 1]
+  C --> F[worktree 2]
+  D --> G[worktree 3]
+  E --> H[对比 diff]
+  F --> H
+  G --> H
+  H --> I[合并胜出分支]

@@ -36,6 +36,13 @@ news_category: harness
 
 > 一句话：它不是又一个聊天式编程助手，而是**给一堆 CLI Agent 用的调度台 + 工作区管理器**。
 
+<!-- asset:blog-1 start -->
+![Orca 并行 worktree 工作流](/img/ai-news/stablyai-orca/blog-1.png)
+
+*图：Orca 并行 worktree 工作流*
+<!-- asset:blog-1 end -->
+
+
 ## 支持哪些 Agent
 
 官方口径是「任何 CLI Agent，只要能在终端里跑，就能在 Orca 里跑」，并点名了一批：
@@ -93,12 +100,26 @@ Orca 不内置模型，需要你本机已有能跑的 Agent。以 Claude Code �
 - 手机端：iOS 从 App Store 搜索 Orca 安装；Android 使用官方发布的 APK（仓库中给出的版本为 0.0.52）。
 - 远程：官方支持 SSH worktree，可在远程机器上跑 Agent，并带自动重连与端口转发。
 
+<!-- asset:code-1 start -->
+```powershell
+git --version
+```
+<!-- asset:code-1 end -->
+
+
 ## 如何确认装好了
 
 - Orca 能正常启动并进入主界面，能看到项目 / worktree 列表。
 - 能成功为一个 git 仓库创建 worktree，且该 worktree 在文件系统中真实存在、分支名正确。
 - 在 Orca 的终端里能正常启动你的 Agent CLI，并看到它开始输出。
 - 在 Orca 内能看到该 worktree 的 diff 视图，且改动内容与 Agent 实际修改一致。
+
+<!-- asset:blog-2 start -->
+![装好后的四个确认点](/img/ai-news/stablyai-orca/blog-2.png)
+
+*图：装好后的四个确认点*
+<!-- asset:blog-2 end -->
+
 
 ## 融入 Trae Work 与 Java 工作流的现实情况
 

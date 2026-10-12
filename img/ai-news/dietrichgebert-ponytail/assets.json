@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念：决策阶梯",
+      "caption": "决策阶梯：从跳过到最小实现",
+      "mermaid": "flowchart TD\n  A[需求真的需要吗] -->|不需要| B[跳过]\n  A -->|需要| C[代码库已有吗]\n  C -->|有| D[复用]\n  C -->|没有| E[标准库能做吗]\n  E -->|能| F[用标准库]\n  E -->|不能| G[平台原生能力有吗]\n  G -->|有| H[用原生能力]\n  G -->|没有| I[已装依赖能解决吗]\n  I -->|能| J[用已有依赖]\n  I -->|不能| K[一行能写完吗]\n  K -->|能| L[写一行]\n  K -->|不能| M[写最小实现并补测试]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需知的四点风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "仅指令型适配无命令与模式切换",
+          "收益因任务而异，极简代码可能接近于零",
+          "可能诱发过度重构，进入重构兔子洞",
+          "为最少行数优化或损害可读性"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置",
+      "language": "powershell",
+      "content": "/plugin marketplace add DietrichGebert/ponytail\n/plugin install ponytail@ponytail\ncodex plugin marketplace add DietrichGebert/ponytail\ncodex plugin add ponytail@ponytail\ncopilot plugin install ponytail@ponytail\ngemini extensions install github.com/DietrichGebert/ponytail\npi install git:github.com/DietrichGebert/ponytail\npi install npm:@dietrichgebert/ponytail"
+    }
+  ],
+  "xhs": {
+    "product": "Ponytail",
+    "one_liner": "让 AI 编程助手像最懒的资深工程师一样思考",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "决策阶梯",
+        "mermaid": "flowchart TD\n  A[需求真的需要吗] -->|不需要| B[跳过]\n  A -->|需要| C[代码库已有吗]\n  C -->|有| D[复用]\n  C -->|没有| E[标准库能做吗]\n  E -->|能| F[用标准库]\n  E -->|不能| G[平台原生能力有吗]\n  G -->|有| H[用原生能力]\n  G -->|没有| I[已装依赖能解决吗]\n  I -->|能| J[用已有依赖]\n  I -->|不能| K[一行能写完吗]\n  K -->|能| L[写一行]\n  K -->|不能| M[写最小实现并补测试]"
+      },
+      {
+        "type": "card",
+        "heading": "使用前需知",
+        "points": [
+          "仅指令型适配无命令与模式切换",
+          "收益因任务而异，极简代码可能接近于零",
+          "可能诱发过度重构，进入重构兔子洞",
+          "为最少行数优化或损害可读性"
+        ]
+      }
+    ]
+  }
+}

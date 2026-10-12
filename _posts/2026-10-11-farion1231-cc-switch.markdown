@@ -34,6 +34,13 @@ news_category: mcp
 
 CC Switch 把这些统一收进一个桌面窗口：**一键切换供应商**，**集中管理 MCP / Skills / Prompts**，并附带会话查看、用量看板、备份同步等能力。
 
+<!-- asset:blog-2 start -->
+![CC Switch 解决的四个痛点](/img/ai-news/farion1231-cc-switch/blog-2.png)
+
+*图：CC Switch 解决的四个痛点*
+<!-- asset:blog-2 end -->
+
+
 ## 核心概念与工作原理
 
 从公开的架构信息看，CC Switch 的组成大致如下：
@@ -47,6 +54,13 @@ CC Switch 把这些统一收进一个桌面窗口：**一键切换供应商**，
 | 持久化与洞察 | SQLite 存配置与会话记录，备份同步服务负责配置备份 |
 
 一句话概括工作方式：**你在图形界面里选好供应商，CC Switch 去改写对应 AI 工具的配置文件（或经本地代理转发请求），让该工具立刻用上新的 API 端点。**
+
+<!-- asset:blog-1 start -->
+![CC Switch 工作方式示意](/img/ai-news/farion1231-cc-switch/blog-1.png)
+
+*图：CC Switch 工作方式示意*
+<!-- asset:blog-1 end -->
+
 
 ## 支持的工具与平台
 

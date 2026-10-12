@@ -45,6 +45,13 @@ news_category: agent-cli
 - **检查点（Checkpointing）**：保存并恢复复杂会话。
 - **非交互模式**：`-p` 直接拿文本结果，`--output-format json` 拿结构化输出，`--output-format stream-json` 拿逐行 JSON 事件流，适合脚本与监控。
 
+<!-- asset:blog-1 start -->
+![Gemini CLI 六大核心概念](/img/ai-news/google-gemini-gemini-cli/blog-1.png)
+
+*图：Gemini CLI 六大核心概念*
+<!-- asset:blog-1 end -->
+
+
 ## 环境与前置依赖
 
 - **Node.js 20 或更高版本**（官方系统要求）。
@@ -105,6 +112,23 @@ news_category: agent-cli
 
 > 官方示例用的是 `export`（macOS/Linux 写法），Windows PowerShell 下对应 `$env:变量名="值"`。若希望长期生效，可用系统环境变量界面或 `setx` 持久化。
 
+<!-- asset:code-1 start -->
+```powershell
+$env:GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
+$env:GEMINI_API_KEY="YOUR_API_KEY"
+$env:GOOGLE_API_KEY="YOUR_API_KEY"
+$env:GOOGLE_GENAI_USE_VERTEXAI=true
+```
+<!-- asset:code-1 end -->
+
+
+<!-- asset:blog-2 start -->
+![三条认证路线](/img/ai-news/google-gemini-gemini-cli/blog-2.png)
+
+*图：三条认证路线*
+<!-- asset:blog-2 end -->
+
+
 ## 融入 Trae Work + Java / Spring 的日常工作流
 
 先说结论：**官方未提供与 Trae Work 的集成方式**，也没有针对 Java / Spring 的专用 SDK 或插件。它是以「终端里的独立 Agent」形态存在的，因此最自然的用法是**与 Trae Work 并行**：Trae Work 负责 IDE 内的编辑与重构，Gemini CLI 在旁边的 PowerShell 里做代码库问答、批量脚本、跑构建与测试。
@@ -119,6 +143,16 @@ news_category: agent-cli
 6. **GitHub 侧**：接入 Gemini CLI GitHub Action，做 PR 自动评审与 Issue 分类；在 Issue / PR 里 @gemini-cli 触发按需协助。
 
 > 注意：Gemini CLI 不是 Trae Work 的插件，也不会出现在 Trae Work 的侧边栏里。把它当成「另一个窗口里的结对程序员」来用，而不是 IDE 内的功能。
+
+<!-- asset:code-2 start -->
+```powershell
+gemini --include-directories ../lib,../docs
+gemini -m gemini-2.5-flash
+gemini -p "Explain the architecture of this codebase"
+gemini -p "你的问题"
+```
+<!-- asset:code-2 end -->
+
 
 ## 快速上手
 

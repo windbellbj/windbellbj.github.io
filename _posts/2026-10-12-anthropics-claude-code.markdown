@@ -44,6 +44,13 @@ Claude Code 是一个 **agentic coding tool（智能体编码工具）**：它�
 - **插件与市场（Marketplace）**：插件是扩展 Claude Code 功能的包，市场是插件的目录。Anthropic 维护三个通用市场：官方（`claude-plugins-official`）、社区（`claude-community`）、演示（`claude-code-plugins`）。安装插件时在 `@` 后写市场名，例如 `/plugin install commit-commands@claude-plugins-official`。
 - **数据收集**：使用过程中会收集反馈，包括使用数据（如代码被接受或拒绝）、相关对话数据，以及通过 `/bug` 命令提交的反馈。官方声明有隐私保护措施，包括对敏感信息限制保留期限、限制对用户会话数据的访问，以及明确不将反馈用于模型训练。
 
+<!-- asset:blog-1 start -->
+![Claude Code 核心概念](/img/ai-news/anthropics-claude-code/blog-1.png)
+
+*图：Claude Code 核心概念*
+<!-- asset:blog-1 end -->
+
+
 ## 环境与前置依赖
 
 | 项目 | 要求 |
@@ -70,6 +77,15 @@ Claude Code 是一个 **agentic coding tool（智能体编码工具）**：它�
 
 原生安装会在后台自动更新，保持最新版本。
 
+<!-- asset:code-1 start -->
+```powershell
+irm https://claude.ai/install.ps1 | iex
+winget install Anthropic.ClaudeCode
+claude --version
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手
 
 1. 在终端中进入你的 Spring 项目目录，例如 `cd D:\workspace\my-spring-service`。
@@ -93,6 +109,13 @@ Claude Code 是一个 **agentic coding tool（智能体编码工具）**：它�
 4. 涉及 Git 的操作（查看改动、整理提交）也可以交给它处理。
 
 > 如果你希望以插件形式扩展能力，可在会话内用 `/plugin marketplace add <owner>/<repo>` 添加市场，再用 `/plugin install <插件名>@<市场名>` 安装插件。官方未公开说明这些插件能否被 Trae Work 直接复用。
+
+<!-- asset:blog-2 start -->
+![与 Trae Work 并行使用](/img/ai-news/anthropics-claude-code/blog-2.png)
+
+*图：与 Trae Work 并行使用*
+<!-- asset:blog-2 end -->
+
 
 ## 局限与风险
 

@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "RTK 命令重写与压缩流程",
+      "mermaid": "flowchart LR\n  A[AI 工具 Bash 调用] --> B[hook 重写]\n  B --> C[rtk 前缀命令]\n  C --> D[执行原命令]\n  D --> E[过滤 聚合 截断 去重]\n  E --> F[压缩后输出]\n  F --> G[进入 AI 上下文]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用 RTK 的四个风险点",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "削减的是 bash 输出，不等于账单降 90%",
+          "crates.io 有同名项目，cargo install 易装错",
+          "hook 只作用于 Bash，Read/Grep/Glob 不生效",
+          "Java 生态覆盖偏薄，Gradle 暂无公开说明"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "在 Windows 上安装",
+      "language": "powershell",
+      "content": "winget install rtk-ai.rtk\nrtk --version\nrtk gain"
+    },
+    {
+      "anchor": "接入 Trae Work 与 Java / Spring 工作流",
+      "language": "powershell",
+      "content": "rtk init --agent trae\nrtk init -g --agent trae\nrtk git status\nrtk mvnd verify"
+    }
+  ],
+  "xhs": {
+    "product": "RTK（Rust Token Ki…",
+    "one_liner": "单文件 Rust CLI 代理，压缩命令输出省 token",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "RTK 怎么压缩输出",
+        "mermaid": "flowchart LR\n  A[AI 工具 Bash 调用] --> B[hook 重写]\n  B --> C[rtk 前缀命令]\n  C --> D[过滤 聚合 截断 去重]\n  D --> E[压缩后输出]\n  E --> F[进入 AI 上下文]"
+      },
+      {
+        "type": "card",
+        "heading": "Windows 快速上手",
+        "points": [
+          "winget install rtk-ai.rtk 安装",
+          "rtk --version 与 rtk gain 验证",
+          "项目根目录 rtk init --agent trae",
+          "重启 Trae Work 让 hook 生效"
+        ]
+      }
+    ]
+  }
+}

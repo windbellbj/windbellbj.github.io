@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "怎么用：从目录到 Trae Work",
+      "caption": "从目录到 Trae Work 的接入流程",
+      "mermaid": "flowchart TD\n  A[打开仓库页面] --> B[搜索或按分类浏览]\n  B --> C[读懂条目信息]\n  C --> D[PowerShell 准备环境]\n  D --> E[Trae Work 登记服务器]\n  E --> F[确认接入成功]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "接入前必须注意的风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "它只是目录，不是工具本身",
+          "条目质量不齐，未做成熟度分级",
+          "许可证因条目而异，商用需逐个确认",
+          "Windows 支持不普遍，可能无法直接运行"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么用：从目录到 Trae Work",
+      "language": "powershell",
+      "content": "node -v\nnpm -v\npython --version\nuv --version\ngit clone <仓库地址>"
+    }
+  ],
+  "xhs": {
+    "product": "awesome-mcp-serve…",
+    "one_liner": "一份按用途分类的 MCP 服务器总目录，解决 AI 助手能连什么工具的选型问题",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "从目录到 Trae Work",
+        "mermaid": "flowchart TD\n  A[打开仓库页面] --> B[搜索或按分类浏览]\n  B --> C[读懂条目信息]\n  C --> D[PowerShell 准备环境]\n  D --> E[Trae Work 登记服务器]\n  E --> F[确认接入成功]"
+      },
+      {
+        "type": "card",
+        "heading": "接入前必看风险",
+        "points": [
+          "它只是目录，不是工具本身",
+          "条目质量不齐，未做成熟度分级",
+          "许可证因条目而异，商用需逐个确认",
+          "Windows 支持不普遍，可能无法直接运行"
+        ]
+      }
+    ]
+  }
+}

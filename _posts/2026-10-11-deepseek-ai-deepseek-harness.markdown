@@ -33,6 +33,13 @@ DeepSeek Harness 由 DeepSeek AI 开源，基于 Cordis 的「一切皆插件（
 
 它可以作为桌面应用运行（官网提供 macOS Apple 芯片版与 Windows 64 位版下载），也可以通过代码启动为网页。
 
+<!-- asset:blog-1 start -->
+![Agent 与 Harness 的关系](/img/ai-news/deepseek-ai-deepseek-harness/blog-1.png)
+
+*图：Agent 与 Harness 的关系*
+<!-- asset:blog-1 end -->
+
+
 ## 能帮你做什么
 
 官网列出的能力范围包括：
@@ -55,6 +62,13 @@ DeepSeek Harness 由 DeepSeek AI 开源，基于 Cordis 的「一切皆插件（
 - **自动化任务**：实验性插件，支持按计划触发任务。官网示例中通过 `schedule_create` 创建了「每周五 17:00（北京时间）整理本周项目记录生成周报」的定时任务。
 - **开发者工具**：可查看执行轨迹与详细运行信息，排查工具调用和任务执行问题，包括时长、轮次、调用次数、系统提示词、上下文、工具参数与结果、Schema、计时等。
 - **其他实验性插件**：智能体团队、自动授权审查、语音输入、终端、Agent 循环、子智能体等。
+
+<!-- asset:blog-2 start -->
+![核心概念速览](/img/ai-news/deepseek-ai-deepseek-harness/blog-2.png)
+
+*图：核心概念速览*
+<!-- asset:blog-2 end -->
+
 
 ## 环境与前置依赖
 
@@ -96,6 +110,26 @@ DeepSeek Harness 由 DeepSeek AI 开源，基于 Cordis 的「一切皆插件（
 ### 开发调试
 
 `pnpm run dev:web` 会在一个终端里完成构建、服务与源码改动后的客户端包重建；`make help` 会列出 Web 与 Desktop 对应的 Make 目标。
+
+<!-- asset:code-2 start -->
+```powershell
+git clone https://github.com/deepseek-ai/deepseek-harness.git
+cd deepseek-harness
+pnpm install
+pnpm run build
+pnpm dsh web
+```
+<!-- asset:code-2 end -->
+
+
+<!-- asset:code-1 start -->
+```powershell
+cd D:\work\my-spring-project
+npx @deepseek-ai/dsh web
+npx @deepseek-ai/dsh web --no-open
+```
+<!-- asset:code-1 end -->
+
 
 ## 如何确认启动成功
 

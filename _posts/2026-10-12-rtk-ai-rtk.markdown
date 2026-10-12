@@ -48,6 +48,13 @@ RTK 是一个「薄代理层」，本身不改变你的工作流，只把噪声�
 
 关于「省 token」的口径，官方特意做了澄清：RTK 削减的是 **bash 输出**，这不等于账单降低 90%。bash 输出只是输入 token 的一部分，输入 token 又只是账单的一部分，削减比例会逐层稀释。另外 RTK 不内置 tokenizer，token 数按 `bytes / 4` 估算，**百分比可信，绝对 token 数只是近似值**。
 
+<!-- asset:blog-1 start -->
+![RTK 命令重写与压缩流程](/img/ai-news/rtk-ai-rtk/blog-1.png)
+
+*图：RTK 命令重写与压缩流程*
+<!-- asset:blog-1 end -->
+
+
 ## 环境与前置依赖
 
 | 项目 | 说明 |
@@ -91,6 +98,15 @@ RTK 是一个「薄代理层」，本身不改变你的工作流，只把噪声�
 
 两条都通过即安装成功。若 `rtk gain` 失败，先卸载误装的包再重装。
 
+<!-- asset:code-1 start -->
+```powershell
+winget install rtk-ai.rtk
+rtk --version
+rtk gain
+```
+<!-- asset:code-1 end -->
+
+
 ## 接入 Trae Work 与 Java / Spring 工作流
 
 RTK 官方明确提供了 Trae 的接入路径，这是它对本读者群最直接的价值点。
@@ -127,6 +143,16 @@ RTK 的命令清单里没有 `mvn` 之外的 Java 专属条目，但提供了 Ma
 | Maven Daemon | `rtk mvnd verify` |
 | 节省面板 | `rtk gain` |
 
+<!-- asset:code-2 start -->
+```powershell
+rtk init --agent trae
+rtk init -g --agent trae
+rtk git status
+rtk mvnd verify
+```
+<!-- asset:code-2 end -->
+
+
 ## 快速上手
 
 1. 用 winget 装好 RTK，确认 `rtk --version` 与 `rtk gain` 都正常。
@@ -157,6 +183,13 @@ RTK 的命令清单里没有 `mvn` 之外的 Java 专属条目，但提供了 Ma
 **许可证**：Apache 2.0，可商用。
 
 **安全**：官方仓库带 Security Check CI 徽章；遥测为选择性加入且不含个人数据。
+
+<!-- asset:blog-2 start -->
+![使用 RTK 的四个风险点](/img/ai-news/rtk-ai-rtk/blog-2.png)
+
+*图：使用 RTK 的四个风险点*
+<!-- asset:blog-2 end -->
+
 
 ## 社区评价（来自 Hacker News 讨论）
 

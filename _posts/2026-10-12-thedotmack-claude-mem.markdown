@@ -53,6 +53,13 @@ claude-mem 由几个部件组成，理解它们有助于判断它是否适合你
 
 隐私方面，官方提供 `<private>` 标签，可以把敏感内容排除在存储之外；另有自动脱敏（Auto-Redaction）相关文档。
 
+<!-- asset:blog-1 start -->
+![claude-mem 记忆工作流](/img/ai-news/thedotmack-claude-mem/blog-1.png)
+
+*图：claude-mem 记忆工作流*
+<!-- asset:blog-1 end -->
+
+
 ## 环境与前置依赖
 
 - **Node.js**：官方徽章标注 `>=20.0.0`。
@@ -100,6 +107,21 @@ claude-mem 由几个部件组成，理解它们有助于判断它是否适合你
 
 > 如果你的核心诉求是「在 Trae Work 里直接获得跨会话记忆」，目前需要自行验证可行性；官方公开资料中没有 Trae Work 集成章节。
 
+<!-- asset:code-1 start -->
+```powershell
+node -v
+npx claude-mem install
+npx claude-mem install --ide opencode
+npx claude-mem install --ide t3code
+npx claude-mem install --ide antigravity
+npx claude-mem install --ide omp
+npx claude-mem install --ide pi
+npx claude-mem install --ide dsh --dsh-profile tui
+npx claude-mem install --ide grok-bot
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手
 
 1. 在 PowerShell 中执行 `npx claude-mem install`，按提示选择 Agent、完成登录、选择记忆提供方。
@@ -136,6 +158,13 @@ claude-mem 由几个部件组成，理解它们有助于判断它是否适合你
 - **数据敏感性**：记忆会被压缩并存储，涉及密钥、客户数据时应使用 `<private>` 标签或自动脱敏功能。
 - **成熟度**：项目创建于 2025-08-31，迭代非常活跃（仓库元信息显示最近更新为 2026-10-11，版本号 13.35.0），但快速迭代也意味着配置项和行为可能变化。
 - **版本号口径不一**：仓库徽章标注版本 13.35.0，而第三方插件目录页面显示为 11.0.1，两者不一致，使用时以实际安装版本为准。
+
+<!-- asset:blog-2 start -->
+![使用前需注意的风险](/img/ai-news/thedotmack-claude-mem/blog-2.png)
+
+*图：使用前需注意的风险*
+<!-- asset:blog-2 end -->
+
 
 ## 社区评价
 

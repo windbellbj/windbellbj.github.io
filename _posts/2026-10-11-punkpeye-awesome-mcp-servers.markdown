@@ -106,6 +106,24 @@ Trae Work 作为 AI IDE，接入 MCP 服务器的通用路径是**在 IDE 的 MC
 2. 在对话里让助手调用其中一个工具，例如「列出当前数据库的所有表」，能返回真实结果即接入成功。
 3. 若连接失败，优先检查：命令路径是否在系统 PATH 中、环境变量是否填全、该服务器是否支持 Windows。
 
+<!-- asset:code-1 start -->
+```powershell
+node -v
+npm -v
+python --version
+uv --version
+git clone <仓库地址>
+```
+<!-- asset:code-1 end -->
+
+
+<!-- asset:blog-1 start -->
+![从目录到 Trae Work 的接入流程](/img/ai-news/punkpeye-awesome-mcp-servers/blog-1.png)
+
+*图：从目录到 Trae Work 的接入流程*
+<!-- asset:blog-1 end -->
+
+
 ## 社区评价
 
 来自 Hacker News 讨论的常见反馈集中在两点：
@@ -121,6 +139,13 @@ Trae Work 作为 AI IDE，接入 MCP 服务器的通用路径是**在 IDE 的 MC
 - **安全风险**：MCP 服务器可能获得数据库、文件系统、云平台的访问权限，接入前应确认其权限范围，避免把生产凭据交给来源不明的服务器。
 - **Windows 支持不普遍**：不少条目只标了 🍎 或 🐧，在 Windows 上可能无法直接运行。
 - **版本与数量信息**：仓库 Star 数在不同渠道显示不一致（仓库元信息显示约 9.6 万，第三方站点显示约 3.68 万），网页版目录的服务器总数也在持续变化，引用时建议以实时页面为准。
+
+<!-- asset:blog-2 start -->
+![接入前必须注意的风险](/img/ai-news/punkpeye-awesome-mcp-servers/blog-2.png)
+
+*图：接入前必须注意的风险*
+<!-- asset:blog-2 end -->
+
 
 ## 给 Java / Spring 开发者的试用建议
 

@@ -1,0 +1,15 @@
+{
+  "title": "AI助手接工具总踩坑？这份清单救了我",
+  "body": "AI 助手想连数据库、Git、云平台，最头疼的不是配置，是根本不知道该装哪个。\n\n我最近翻到一份按用途分类的 MCP 服务器清单，专门解决这个选型问题。\n\n它本身不是软件，而是一份精选目录。\n把社区里可用的 MCP 服务器按用途归类，每条标出实现语言、运行范围、支持系统。\n\nMCP 是让 AI 模型安全访问本地和远程资源的开放协议。\n清单收录的，就是这些把文件、数据库、API 能力暴露给 AI 的服务器实现。\n\n🎯 对 Java 后端最实用的几个分类：\nDatabases 连 PostgreSQL、MySQL，让助手直接查表结构。\nVersion Control 接 Git，补齐代码仓库操作。\nCloud Platforms 接入云平台 API。\nAggregators 把多个服务器合成一个入口。\n\n每条条目后面有一组图标，含义固定。\n带官方标记的优先选，同时标了 Windows 的才明确支持 Windows。\n\n⚡️ 适合谁：\n想在 AI IDE 里给助手接上数据库、代码仓库、云平台的后端开发者。\n尤其是 Java / Spring 方向，不用再从零搜该接哪个。\n\n🧩 上手门槛和费用：\n清单本身不用安装、没有运行时依赖，免费。\n真正要准备环境的是你挑中的那个具体服务器。\n多数需要 Node.js 或 Python，部分需要 Git 和对应凭据。\n\n⚠️ 几个要留意的点：\n它只是目录，不提供运行时能力。\n条目质量参差不齐，有生产可用的也有实验性的。\n许可证因条目而异，商用前逐个确认。\n不少条目只支持 macOS 或 Linux，Windows 支持不普遍。\n\n✅ 值不值得试：\n如果你正在给 AI 助手接工具，值得先翻一遍再动手。\n先从 Databases 分类挑一个支持 Windows 的 PostgreSQL 或 MySQL 服务器，收益最直接。\n每接入一个，先在测试库验证，再考虑连开发库。\n\n完整版图文教程在我主页。",
+  "tags": [
+    "#AI编程",
+    "#AI工具",
+    "#MCP",
+    "#后端开发",
+    "#Java"
+  ],
+  "category": "mcp",
+  "category_name": "MCP服务",
+  "slug": "punkpeye-awesome-mcp-servers",
+  "date": "2026-10-11"
+}

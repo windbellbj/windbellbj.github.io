@@ -1,0 +1,15 @@
+{
+  "title": "AI总写垃圾代码？试试这招",
+  "body": "你是不是也受够了AI写的代码像一坨？\n\n明明说了要加个功能，结果它只会照字面实现，从不问「这该做吗」。\n\n⚡️ 最近发现一个开源技能包 gstack，专门治这种「AI通用模式病」。\n\n它把单个AI助手变成一支虚拟工程团队，用23个专家角色和8个工具，覆盖产品、架构、设计、评审、QA、安全、发布全流程。\n\n每个角色都是一个斜杠命令，比如 /plan-ceo-review 让AI用CEO视角重新思考产品，/review 结构化审计代码，/qa 开真实浏览器测UI，/cso 做安全审计。\n\n🎯 核心解决什么？\n\n- 没有产品思维：AI只会执行，不会反问。\n- 评审质量不稳：每次review深度随机。\n- 发布靠手工：同步分支、跑测试、开PR一条龙。\n- 看不见界面：AI能写代码但看不到UI。\n- QA是瓶颈：人工点页面，bug溜进生产。\n\n🧩 适合谁？\n\n主要面向Claude Code用户，官方认证的只有它。其他宿主如Codex、Cursor、OpenCode等处于实验阶段。\n\n对Java/Spring开发者，最值得试的是 /review、/qa、/cso 和 /autoplan。\n\n⚠️ 注意：官方没有Trae Work集成，也没有Java SDK或MCP服务。如果你的工作流绑定Trae Work，得先确认它能否读取Claude技能目录。\n\n上手门槛：需要Claude Code、Git、Bun v1.4.2+，Windows还要Node.js。安装脚本约30秒，全部免费，MIT许可证。\n\n✅ 值不值得试？\n\n如果你用Claude Code，强烈建议。它把模糊提示词拆成明确认知档位，避免四不像的平庸输出。\n\n但如果你依赖其他宿主，先等等，官方支持还很不完整。\n\n完整版图文教程在我主页。",
+  "tags": [
+    "#AI编程",
+    "#ClaudeCode",
+    "#开源工具",
+    "#程序员效率",
+    "#AI工具"
+  ],
+  "category": "skill",
+  "category_name": "AI技能",
+  "slug": "garrytan-gstack",
+  "date": "2026-10-11"
+}

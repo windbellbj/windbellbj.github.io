@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念：一个助手，多个专家角色",
+      "caption": "gstack 组件分层结构",
+      "mermaid": "graph TD\nA[Agent 宿主] --> B[规划与交付]\nB --> C[实现]\nC --> D[评审与保障]\nD --> E[浏览器与文档]\nE --> F[记忆与集成]\nF --> G[共享运行时]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "gstack 主要局限",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "宿主覆盖有限，仅 Claude Code 为 full",
+          "安全技能仅 Claude Code 强制阻断",
+          "/cso 依赖特定 Bun 与原生工具链",
+          "多宿主安装会做文件清理"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "在 Windows + Trae Work 上安装",
+      "language": "powershell",
+      "content": "git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git $HOME\\gstack\ncd $HOME\\gstack\n./setup"
+    },
+    {
+      "anchor": "在 Windows + Trae Work 上安装",
+      "language": "powershell",
+      "content": "./setup --host auto\n./setup --host codex\n./setup --status"
+    }
+  ],
+  "xhs": {
+    "product": "gstack",
+    "one_liner": "用 23 个专家角色把 AI 助手变成虚拟工程团队",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "gstack 组件分层",
+        "mermaid": "graph TD\nA[Agent 宿主] --> B[规划与交付]\nB --> C[实现]\nC --> D[评审与保障]\nD --> E[浏览器与文档]\nE --> F[记忆与集成]\nF --> G[共享运行时]"
+      },
+      {
+        "type": "card",
+        "heading": "gstack 局限",
+        "points": [
+          "仅 Claude Code 为 full 层级",
+          "安全技能仅 Claude Code 强制",
+          "/cso 依赖原生工具链",
+          "多宿主安装会做文件清理"
+        ]
+      }
+    ]
+  }
+}

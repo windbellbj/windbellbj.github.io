@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "在 Windows 上安装",
+      "caption": "Windows 上安装 Codex CLI 的四种方式",
+      "mermaid": "flowchart TD\n  A[安装 Codex CLI] --> B[官方脚本安装]\n  A --> C[强制走 GitHub Releases]\n  A --> D[npm 安装]\n  A --> E[手动下载二进制]\n  B --> F[运行 codex]\n  C --> F\n  D --> F\n  E --> F"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用 Codex CLI 需注意的风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "许可证分叉：CLI 为 Apache-2.0，桌面应用专有",
+          "账号依赖：推荐 ChatGPT 订阅，API key 需额外配置",
+          "成熟度：产品迭代快，行为可能随版本变化",
+          "安全：执行命令修改文件有风险，建议受控使用"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "在 Windows 上安装",
+      "language": "powershell",
+      "content": "powershell -ExecutionPolicy ByPass -c \"irm https://chatgpt.com/codex/install.ps1 | iex\"\n$env:CODEX_INSTALLER_USE_RELEASES_OPENAI_COM='false'; irm https://chatgpt.com/codex/install.ps1 | iex\nnpm install -g @openai/codex"
+    }
+  ],
+  "xhs": {
+    "product": "OpenAI Codex CLI",
+    "one_liner": "跑在本机终端里的轻量编码 Agent，能读写代码、执行命令、操作文件",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "Windows 安装方式",
+        "mermaid": "flowchart TD\n  A[安装 Codex CLI] --> B[官方脚本安装]\n  A --> C[强制走 GitHub Releases]\n  A --> D[npm 安装]\n  A --> E[手动下载二进制]\n  B --> F[运行 codex]\n  C --> F\n  D --> F\n  E --> F"
+      },
+      {
+        "type": "card",
+        "heading": "局限与风险",
+        "points": [
+          "许可证分叉：CLI 为 Apache-2.0，桌面应用专有",
+          "账号依赖：推荐 ChatGPT 订阅，API key 需额外配置",
+          "成熟度：产品迭代快，行为可能随版本变化",
+          "安全：执行命令修改文件有风险，建议受控使用"
+        ]
+      }
+    ]
+  }
+}

@@ -53,6 +53,13 @@ Agent 的账单和等待时间，一半花在它**说**的话上，一半花在�
 - **安全场景自动退出压缩**：安全警告、不可逆操作确认、分步骤指令、反问用户、用户明显困惑时，恢复完整句子，之后再切回简短模式。
 - **不改写你的提示词**。官方引用 Adobe Research 的结论：把用户的提问也「穴居化」会让回答更长更差，所以 Caveman 从不碰你的输入。
 
+<!-- asset:blog-1 start -->
+![两种石头：代理压输入，技能压输出](/img/ai-news/juliusbrussee-caveman/blog-1.png)
+
+*图：两种石头：代理压输入，技能压输出*
+<!-- asset:blog-1 end -->
+
+
 ## 环境与前置依赖
 
 | 项目 | 要求 |
@@ -99,6 +106,18 @@ Agent 的账单和等待时间，一半花在它**说**的话上，一半花在�
 
 > 不要照搬 Claude Code 的插件路径或 MCP 配置到 Trae Work，官方没有为 Trae Work 提供任何配置样例。
 
+<!-- asset:code-1 start -->
+```powershell
+node -v
+npx skills add JuliusBrussee/caveman -g
+npm install -g @caveman-ai/cli && caveman setup --install
+caveman claude
+irm https://raw.githubusercontent.com/JuliusBrussee/caveman/v3.2.0/install.ps1 | iex
+npx -y github:JuliusBrussee/caveman -- --uninstall
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手：先看它省不省
 
 装好 CLI 之后，官方给了一组自检命令，建议按顺序跑：
@@ -115,6 +134,25 @@ Agent 的账单和等待时间，一半花在它**说**的话上，一半花在�
 - 技能包路线：在对话里输入 `/caveman status`，它会报告当前模式；官方说明这个命令只报告、不改变状态。如果宿主不支持 hook，会显示 `(not tracked by this host)`。
 - 代理路线：跑一次 `caveman stats`，能看到 token 历史记录即说明代理在工作。
 - 最直接的验证：问一个技术问题，看回答是否变成「先给结论、无寒暄、代码块原样」的短句风格。
+
+<!-- asset:code-2 start -->
+```powershell
+caveman learn
+caveman learn implement
+caveman trial -- claude
+caveman shrink -- pnpm test
+caveman browse <url>
+caveman stats
+```
+<!-- asset:code-2 end -->
+
+
+<!-- asset:blog-2 start -->
+![官方自检命令顺序](/img/ai-news/juliusbrussee-caveman/blog-2.png)
+
+*图：官方自检命令顺序*
+<!-- asset:blog-2 end -->
+
 
 ## 官方公布的实测数字
 

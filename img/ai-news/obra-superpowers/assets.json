@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "快速上手",
+      "caption": "官方完整基础工作流顺序",
+      "mermaid": "flowchart TD\n  A[brainstorming] --> B[using-git-worktrees]\n  B --> C[writing-plans]\n  C --> D[subagent-driven-development 或 executing-plans]\n  D --> E[test-driven-development]\n  E --> F[requesting-code-review]\n  F --> G[finishing-a-development-branch]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需注意的几点",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "官方支持列表里没有 Trae Work",
+          "强制风格可能不合口味",
+          "subagent 路径最彻底也最贵",
+          "长会话可能丢失引导"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置",
+      "language": "powershell",
+      "content": "/plugin marketplace add obra/superpowers-marketplace\n/plugin install superpowers@superpowers-marketplace"
+    }
+  ],
+  "xhs": {
+    "product": "Superpowers",
+    "one_liner": "面向编码 Agent 的技能框架 + 软件开发方法论",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "官方基础工作流",
+        "mermaid": "flowchart TD\n  A[brainstorming] --> B[using-git-worktrees]\n  B --> C[writing-plans]\n  C --> D[subagent-driven-development 或 executing-plans]\n  D --> E[test-driven-development]\n  E --> F[requesting-code-review]\n  F --> G[finishing-a-development-branch]"
+      },
+      {
+        "type": "card",
+        "heading": "局限与风险",
+        "points": [
+          "官方支持列表里没有 Trae Work",
+          "强制风格可能不合口味",
+          "subagent 路径最彻底也最贵",
+          "长会话可能丢失引导"
+        ]
+      }
+    ]
+  }
+}

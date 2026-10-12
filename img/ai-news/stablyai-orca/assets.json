@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它到底解决什么问题",
+      "caption": "Orca 并行 worktree 工作流",
+      "mermaid": "flowchart LR\n  A[一条提示词] --> B[Agent 1]\n  A --> C[Agent 2]\n  A --> D[Agent 3]\n  B --> E[worktree 1]\n  C --> F[worktree 2]\n  D --> G[worktree 3]\n  E --> H[对比 diff]\n  F --> H\n  G --> H\n  H --> I[合并胜出分支]"
+    },
+    {
+      "type": "card",
+      "anchor": "如何确认装好了",
+      "caption": "装好后的四个确认点",
+      "card": {
+        "heading": "如何确认装好了",
+        "points": [
+          "Orca 能启动并看到项目 / worktree 列表",
+          "能为 git 仓库创建 worktree 且分支名正确",
+          "在 Orca 终端里能启动 Agent CLI 并输出",
+          "diff 视图改动与 Agent 实际修改一致"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置（Windows + PowerShell）",
+      "language": "powershell",
+      "content": "git --version"
+    }
+  ],
+  "xhs": {
+    "product": "Orca Agent 开发环境",
+    "one_liner": "把多个 CLI 编码 Agent 放进独立 git worktree 并行跑的调度台",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "并行 worktree 工…",
+        "mermaid": "flowchart LR\n  A[一条提示词] --> B[Agent 1]\n  A --> C[Agent 2]\n  A --> D[Agent 3]\n  B --> E[worktree 1]\n  C --> F[worktree 2]\n  D --> G[worktree 3]\n  E --> H[对比 diff]\n  F --> H\n  G --> H\n  H --> I[合并胜出分支]"
+      },
+      {
+        "type": "card",
+        "heading": "值不值得试",
+        "points": [
+          "已在用 Claude Code / Codex 等 CLI Agent",
+          "经常需要同时推进多条改动线",
+          "想把 Agent 跑在远程机器上",
+          "期待 MCP / Skill 集成则不建议"
+        ]
+      }
+    ]
+  }
+}

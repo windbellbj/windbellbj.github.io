@@ -1,0 +1,7 @@
+flowchart LR
+  A[AI 工具 Bash 调用] --> B[hook 重写]
+  B --> C[rtk 前缀命令]
+  C --> D[执行原命令]
+  D --> E[过滤 聚合 截断 去重]
+  E --> F[压缩后输出]
+  F --> G[进入 AI 上下文]

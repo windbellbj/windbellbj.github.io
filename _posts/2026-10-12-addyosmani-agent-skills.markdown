@@ -86,6 +86,13 @@ Agent Skills 的作者把这件事讲得很直白：资深工程师的工作大�
 
 如果规格已经存在、想减少手工步骤，`/build auto` 会生成计划并在一次批准后实现每个任务。它去掉的是任务之间的人工切换，不是验证：每个任务仍然是测试驱动、单独提交，遇到失败或高风险步骤会暂停。
 
+<!-- asset:blog-1 start -->
+![开发阶段与斜杠命令映射](/img/ai-news/addyosmani-agent-skills/blog-1.png)
+
+*图：开发阶段与斜杠命令映射*
+<!-- asset:blog-1 end -->
+
+
 ## 环境与前置依赖
 
 - **宿主 Agent**：技能是纯 Markdown，任何接受系统提示或指令文件的 Agent 都能用。官方明确列出原生集成或适配路径的包括 Claude Code、Cursor、Antigravity CLI、Gemini CLI、Windsurf、OpenCode、GitHub Copilot、Kiro、Codex、Command Code 等，官方称可通过 skills CLI 安装进 70+ 个 Agent。
@@ -133,6 +140,17 @@ Agent Skills 的作者把这件事讲得很直白：资深工程师的工作大�
 
 Agent Skills 本身不是库，不提供 Maven/Gradle 依赖，也没有 Java SDK 或 HTTP 服务。**官方未提供与 Java/Spring 的集成方式**。它对 Java 项目的价值在于：把 `spec-driven-development`、`test-driven-development`、`code-review-and-quality`、`security-and-hardening` 这些工作流注入你的 AI 助手，让它在写 Spring 代码时先出规格、先写 JUnit 测试、按五轴标准自评、按 OWASP Top 10 检查输入校验与认证逻辑。
 
+<!-- asset:code-1 start -->
+```powershell
+npx skills add addyosmani/agent-skills --list
+npx skills add addyosmani/agent-skills
+npx skills add addyosmani/agent-skills --skill code-review-and-quality
+npx skills add addyosmani/agent-skills --skill interview-me
+npx skills add addyosmani/agent-skills --skill test-driven-development
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手：确认它真的生效
 
 1. 在 Trae Work 里新建或打开一个 Spring 项目。
@@ -141,6 +159,13 @@ Agent Skills 本身不是库，不提供 Maven/Gradle 依赖，也没有 Java SD
 4. 引入 `test-driven-development`，让它实现规格里的第一个任务。**成功信号**：它先写一个会失败的测试，运行并展示失败，再写最少代码让它通过，然后重构。
 5. 引入 `code-review-and-quality`，让它评审刚才的改动。**成功信号**：输出按五个轴组织，给出严重度标签，并指出改动规模是否超过约 100 行。
 6. 如果它开始说「我稍后再补测试」，检查技能里的反合理化表是否被正确加载——这是判断技能有没有真正注入上下文的最直接标志。
+
+<!-- asset:blog-2 start -->
+![确认技能生效的成功信号](/img/ai-news/addyosmani-agent-skills/blog-2.png)
+
+*图：确认技能生效的成功信号*
+<!-- asset:blog-2 end -->
+
 
 ## 局限与风险
 

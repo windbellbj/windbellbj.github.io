@@ -1,0 +1,8 @@
+flowchart TD
+  A[桌面界面 Tauri + React] --> B[Tauri 命令层]
+  B --> C[供应商模式控制与实时配置更新]
+  B --> D[本地代理 Local Proxy]
+  C --> E[改写目标客户端配置文件]
+  D --> F[转发请求到所选供应商]
+  B --> G[持久化与洞察 SQLite]
+  G --> H[备份同步服务]

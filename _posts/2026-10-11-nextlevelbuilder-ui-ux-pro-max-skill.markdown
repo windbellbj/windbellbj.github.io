@@ -68,6 +68,13 @@ UI UX Pro Max 的思路是：**在生成代码之前，先让助手去查一份�
 
 技能包还包含一个 **Design System Generator**（v2.0 的旗舰能力），可以一次性输出结构、风格、配色、字体、效果与反模式清单。
 
+<!-- asset:blog-1 start -->
+![技能包的多域检索与推理流程](/img/ai-news/nextlevelbuilder-ui-ux-pro-max-skill/blog-1.png)
+
+*图：技能包的多域检索与推理流程*
+<!-- asset:blog-1 end -->
+
+
 ## 环境与前置依赖
 
 - **Node.js 与 npm**：官方安装方式通过 `npx` 分发，需要本机可用的 Node 环境
@@ -105,6 +112,18 @@ UI UX Pro Max 的思路是：**在生成代码之前，先让助手去查一份�
 - **官方未提供 MCP 服务形态**，无法作为 MCP Server 接入 Trae Work 的 MCP 配置。
 - **官方未提供 Java / Spring SDK 或 HTTP 接口**，无法在 Spring 项目里以依赖或接口方式调用。
 - 因此对 Java 程序员而言，可行的接入路径只有两条：**让 AI 助手加载该技能**，或**在终端里用 CLI 查询后手动落地到代码**。
+
+<!-- asset:code-1 start -->
+```powershell
+node -v
+npm -v
+npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max
+npx skills add nextlevelbuilder/ui-ux-pro-max-skill --all -g -y
+git clone https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git
+python --version
+```
+<!-- asset:code-1 end -->
+
 
 ## 快速上手
 
@@ -147,6 +166,13 @@ UI UX Pro Max 的思路是：**在生成代码之前，先让助手去查一份�
 **安全**：第三方技能索引显示该技能通过了 Gen Agent Trust Hub、Socket、Snyk 三项安全审计，结果均为通过。这属于第三方审计结论，不代表对所有使用场景的安全保证。
 
 **内容边界**：技能明确说明不适用于纯后端逻辑、API 与数据库设计、非视觉性能工作与基础设施运维。
+
+<!-- asset:blog-2 start -->
+![使用前需注意的局限与风险](/img/ai-news/nextlevelbuilder-ui-ux-pro-max-skill/blog-2.png)
+
+*图：使用前需注意的局限与风险*
+<!-- asset:blog-2 end -->
+
 
 ## 社区评价
 

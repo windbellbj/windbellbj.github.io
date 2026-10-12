@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "Graphify 一次运行的五个步骤",
+      "mermaid": "flowchart TD\n  A[本地 AST 解析] --> B[跨文件关系解析]\n  B --> C[社区检测 Leiden]\n  C --> D[语义补充 可选]\n  D --> E[落盘 graphify-out/]"
+    },
+    {
+      "type": "card",
+      "anchor": "如何确认安装与运行成功",
+      "caption": "五步确认装好了",
+      "card": {
+        "heading": "安装成功检查清单",
+        "points": [
+          "graphify --help 能正常输出",
+          "graphify install 打印注册文件清单",
+          "项目根目录出现 graphify-out/",
+          "graph.html 能看到力导向图"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置（Windows PowerShell）",
+      "language": "powershell",
+      "content": "uv tool install graphifyy\nuv tool update-shell\npipx install graphifyy\npip install graphifyy"
+    },
+    {
+      "anchor": "快速上手",
+      "language": "powershell",
+      "content": "cd D:\\work\\my-spring-service\ngraphify install\ngraphify query \"<你的问题>\"\ngraphify path A B\ngraphify explain \"<概念>\""
+    }
+  ],
+  "xhs": {
+    "product": "Graphify",
+    "one_liner": "把代码库连同文档配置解析成可查询知识图谱的 AI 助手技能",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "一次运行做五件事",
+        "mermaid": "flowchart TD\n  A[本地 AST 解析] --> B[跨文件关系解析]\n  B --> C[社区检测 Leiden]\n  C --> D[语义补充 可选]\n  D --> E[落盘 graphify-out/]"
+      },
+      {
+        "type": "card",
+        "heading": "它给出的核心能力",
+        "points": [
+          "God nodes 一眼看出谁最核心",
+          "Communities 按子系统切分",
+          "跨文件 calls/imports 链接",
+          "Query/Path/Explain 查图"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "它到底解决什么问题",
+      "caption": "Hermes Agent 的四个核心卖点",
+      "card": {
+        "heading": "它到底解决什么问题",
+        "points": [
+          "技能自生成：复杂任务后固化为技能",
+          "技能自改进：使用中持续优化",
+          "跨会话记忆：FTS5 检索 + LLM 摘要",
+          "不绑本机：可跑 VPS 或 serverless"
+        ]
+      }
+    },
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "Hermes Agent 核心概念",
+      "mermaid": "graph TD\nA[学习闭环] --> B[技能系统]\nA --> C[跨会话记忆]\nB --> D[终端后端]\nC --> E[消息网关]\nD --> F[子智能体]\nE --> G[定时自动化]\nF --> H[模型无关]\nG --> H"
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置（Windows + PowerShell）",
+      "language": "powershell",
+      "content": "iex (irm https://hermes-agent.nousresearch.com/install.ps1)\nhermes setup\nhermes setup --portal\nhermes model\nhermes tools\nhermes config set\nhermes config get\nhermes\ngateway setup\nhermes gateway start"
+    },
+    {
+      "anchor": "如何确认安装成功",
+      "language": "powershell",
+      "content": "source ~/.bashrc\nsource ~/.zshrc\nhermes doctor\nhermes\nhermes portal info\nAdd-MpPreference -ExclusionPath \"$env:LOCALAPPDATA\\hermes\\bin\""
+    }
+  ],
+  "xhs": {
+    "product": "Hermes Agent",
+    "one_liner": "自带学习闭环的开源自主 AI 智能体，越用越懂你",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "核心概念与工作原理",
+        "mermaid": "graph TD\nA[学习闭环] --> B[技能系统]\nA --> C[跨会话记忆]\nB --> D[终端后端]\nC --> E[消息网关]\nD --> F[子智能体]\nE --> G[定时自动化]\nF --> H[模型无关]\nG --> H"
+      },
+      {
+        "type": "card",
+        "heading": "它到底解决什么问题",
+        "points": [
+          "技能自生成：复杂任务后固化为技能",
+          "技能自改进：使用中持续优化",
+          "跨会话记忆：FTS5 检索 + LLM 摘要",
+          "不绑本机：可跑 VPS 或 serverless"
+        ]
+      }
+    ]
+  }
+}

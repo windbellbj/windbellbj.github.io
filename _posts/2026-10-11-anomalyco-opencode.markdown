@@ -83,6 +83,15 @@ OpenCode 内置两个可切换的代理，用 `Tab` 键在它们之间切换：
 
 > 安装脚本的安装目录优先级为：`$OPENCODE_INSTALL_DIR` → `$XDG_BIN_DIR` → `$HOME/bin` → `$HOME/.opencode/bin`。Windows 上主要走包管理器或独立二进制，这套优先级主要针对类 Unix 环境。
 
+<!-- asset:code-1 start -->
+```powershell
+scoop install opencode
+choco install opencode
+npm i -g opencode-ai@latest
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手
 
 1. 安装完成后，在 PowerShell 里执行 `opencode` 启动终端界面。
@@ -117,6 +126,13 @@ OpenCode 内置两个可切换的代理，用 `Tab` 键在它们之间切换：
 - **Windows 支持存在矛盾**：仓库说明给了 Scoop / Chocolatey，官方文档却写「Windows package managers are not supported」，实际体验可能不稳定。
 - **与 Anthropic 的冲突**：Hacker News 上有两条高热度讨论——《Anthropic blocks third-party use of Claude Code subscriptions》（625 分，513 条评论）和《Anthropic takes legal action against OpenCode》（483 分，398 条评论）。社区高赞评论认为，这是 Anthropic 对第三方客户端复用 Claude Code 凭证/订阅的打击，属于灰色地带；也有评论认为 Anthropic 在推理上亏钱，所以想尽量封禁这类用户。**如果你打算用 Claude 订阅跑 OpenCode，需要留意账号风险。**
 - **费用**：OpenCode 本身开源免费，但模型调用可能产生费用；官方提供 OpenCode Go（$10/月）订阅，以及 OpenCode Zen 精选模型服务。
+
+<!-- asset:blog-1 start -->
+![使用前需留意的四点](/img/ai-news/anomalyco-opencode/blog-1.png)
+
+*图：使用前需留意的四点*
+<!-- asset:blog-1 end -->
+
 
 ## 社区评价（来自 Hacker News 讨论）
 

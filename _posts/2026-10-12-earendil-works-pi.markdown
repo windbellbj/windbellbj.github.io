@@ -41,6 +41,13 @@ Pi 的官方定位是「minimal, extensible agent harness that you can make your
 
 官方明确说明：Pi 自带强大的默认能力，但**刻意不做 sub-agents（子智能体）和 plan mode（计划模式）**。想要这些功能，要么让 Pi 自己给你写，要么装一个按你想法实现的包。
 
+<!-- asset:blog-1 start -->
+![Pi 的 npm 包组成](/img/ai-news/earendil-works-pi/blog-1.png)
+
+*图：Pi 的 npm 包组成*
+<!-- asset:blog-1 end -->
+
+
 ## 适用场景与它解决的问题
 
 Pi 面向的是「一个开发者在终端里驱动一个编码 Agent」这种工作方式。官方对它的定位说得很直白：Pi 编码 Agent 是为在你的（远程）机器上、终端里、由一个人驱动而设计的；如果进程挂了，你看一眼发生了什么，然后让它继续。
@@ -105,6 +112,19 @@ Pi 面向的是「一个开发者在终端里驱动一个编码 Agent」这种�
 | `@mariozechner/pi-ai` | `@earendil-works/pi-ai` |
 | `@mariozechner/pi-tui` | `@earendil-works/pi-tui` |
 | `@mariozechner/pi-web-ui` | `@earendil-works/pi-web-ui` |
+
+<!-- asset:code-1 start -->
+```powershell
+powershell -c "irm https://pi.dev/install.ps1 | iex"
+node -v
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+nix run github:earendil-works/pi/stable
+nix profile add github:earendil-works/pi/stable
+nix profile upgrade pi
+pi update
+```
+<!-- asset:code-1 end -->
+
 
 ## 快速上手
 
@@ -171,6 +191,13 @@ Pi 面向的是「一个开发者在终端里驱动一个编码 Agent」这种�
 - **许可证**：MIT。
 - **费用**：Pi 本身是 MIT 开源，但你需要自备模型供应商的订阅或 API key，这部分费用取决于你选的供应商，官方未公开说明 Pi 自身的收费模式。
 
+<!-- asset:blog-2 start -->
+![使用 Pi 前需知的风险](/img/ai-news/earendil-works-pi/blog-2.png)
+
+*图：使用 Pi 前需知的风险*
+<!-- asset:blog-2 end -->
+
+
 ## 社区评价（来自 Hacker News 讨论）
 
 - 正面：有评论称「它毫无疑问是我最喜欢的 harness」。
@@ -185,6 +212,20 @@ Pi 面向的是「一个开发者在终端里驱动一个编码 Agent」这种�
 想在 monorepo 之外使用本地包，可以 `npm run pack:packages -- --out .artifacts/pi-packages` 把所有公开包构建成一套连贯的本地产物；模型数据已就绪时加 `--offline-model-data` 避免联网。随后用 `node scripts/use-local-packages.mjs` 配合 `--manifest`、`--consumer`、`--package` 参数把外部项目指向这套产物，每个直接依赖重复一次 `--package`。该命令会把消费方的 `package.json` 更新为内容寻址的本地 `file:` 引用，并把传递覆盖写到 npm 的 `package.json` 或 pnpm 的 `pnpm-workspace.yaml`。安装或更新消费方期间要保持产物目录可用，改动 Pi 源码后两条命令都要重跑。
 
 从发布源码构建独立二进制：GitHub release 附带一个带版本号的源码归档，由该 release 的 `SHA256SUMS` 覆盖。解压后运行与官方独立二进制相同的构建脚本 `./scripts/build-binaries.sh --offline-model-data --platform linux-x64 --out "$PWD/out"`。归档内含发布模型数据与原生预构建产物，`--offline-model-data` 表示用这些数据而不刷新供应商目录；脚本会安装依赖并连同运行时资源一起构建可执行文件，依赖已备好时可传 `--skip-install`。
+
+<!-- asset:code-2 start -->
+```powershell
+npm install --ignore-scripts
+npm run build
+npm run build:offline
+npm run check
+./test.sh
+./pi-test.sh
+npm run pack:packages -- --out .artifacts/pi-packages
+node scripts/use-local-packages.mjs
+```
+<!-- asset:code-2 end -->
+
 
 ## 分享你的开源编码会话
 

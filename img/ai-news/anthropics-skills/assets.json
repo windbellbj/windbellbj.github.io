@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "安装与配置",
+      "caption": "四条安装路线",
+      "mermaid": "flowchart TD\n  A[安装与配置] --> B[Claude Code 插件市场]\n  A --> C[Claude 应用]\n  A --> D[Claude API]\n  A --> E[skills.sh CLI 安装单个技能]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "四个主要风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "成熟度：官方定位演示与教育用途，关键任务前必须自测",
+          "许可证：四个文档技能是 source-available，不是开源",
+          "费用：Claude 应用侧面向付费计划，API 侧按用量计费",
+          "安全：技能可含可执行代码，来源不明不要在生产运行"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置",
+      "language": "powershell",
+      "content": "/plugin marketplace add anthropics/skills\n/plugin install document-skills@anthropic-agent-skills\n/plugin install example-skills@anthropic-agent-skills\nnpx skills add https://github.com/anthropics/skills --skill skill-creator"
+    }
+  ],
+  "xhs": {
+    "product": "anthropics/skills",
+    "one_liner": "把指令、脚本和资源打包成文件夹，让 Claude 按需加载",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "四条安装路线",
+        "mermaid": "flowchart TD\n  A[安装与配置] --> B[Claude Code 插件市场]\n  A --> C[Claude 应用]\n  A --> D[Claude API]\n  A --> E[skills.sh CLI 安装单个技能]"
+      },
+      {
+        "type": "card",
+        "heading": "局限与风险",
+        "points": [
+          "成熟度：官方定位演示与教育用途，关键任务前必须自测",
+          "许可证：四个文档技能是 source-available，不是开源",
+          "费用：Claude 应用侧面向付费计划，API 侧按用量计费",
+          "安全：技能可含可执行代码，来源不明不要在生产运行"
+        ]
+      }
+    ]
+  }
+}

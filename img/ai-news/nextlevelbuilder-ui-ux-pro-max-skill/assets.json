@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "技能包的多域检索与推理流程",
+      "mermaid": "flowchart TD\n  A[接收需求] --> B[五路并行检索]\n  B --> B1[产品类型匹配]\n  B --> B2[风格推荐]\n  B --> B3[配色选择]\n  B --> B4[落地页结构]\n  B --> B5[字体搭配]\n  B1 --> C[推理引擎]\n  B2 --> C\n  B3 --> C\n  B4 --> C\n  B5 --> C\n  C --> D[输出完整设计系统]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需注意的局限与风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "成熟度：创建于2025-11-30，更新于2026-10-10，迭代较快…",
+          "平台适配：官方支持列表中没有Trae Work，也没有Spring…",
+          "许可证：仓库带有LICENSE文件，但公开渠道未给出具体许可…",
+          "费用：技能通过npm与GitHub分发，官方页面提供PayPal捐…"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置（Windows PowerShell）",
+      "language": "powershell",
+      "content": "node -v\nnpm -v\nnpx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max\nnpx skills add nextlevelbuilder/ui-ux-pro-max-skill --all -g -y\ngit clone https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git\npython --version"
+    }
+  ],
+  "xhs": {
+    "product": "UI UX Pro Max",
+    "one_liner": "一个把UI风格库、配色库、字体搭配、UX规范打包成可检索数据库的AI技能",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "技能工作原理",
+        "mermaid": "flowchart TD\n  A[接收需求] --> B[五路并行检索]\n  B --> B1[产品类型匹配]\n  B --> B2[风格推荐]\n  B --> B3[配色选择]\n  B --> B4[落地页结构]\n  B --> B5[字体搭配]\n  B1 --> C[推理引擎]\n  B2 --> C\n  B3 --> C\n  B4 --> C\n  B5 --> C\n  C --> D[输出完整设计系统]"
+      },
+      {
+        "type": "card",
+        "heading": "适合与不适合场景",
+        "points": [
+          "适合：为Spring Boot项目做管理后台、数据看板、报表页",
+          "适合：做产品官网、落地页、活动页",
+          "适合：重构已有页面，希望统一视觉规范",
+          "适合：需要无障碍、响应式、动效等质量把关"
+        ]
+      }
+    ]
+  }
+}

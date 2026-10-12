@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它到底解决什么问题",
+      "caption": "ECC 固化的工程流程",
+      "mermaid": "flowchart LR\n  A[plan] --> B[test]\n  B --> C[implement]\n  C --> D[review]\n  D --> E[verify]\n  E --> F[remember]\n  F --> G[improve]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用 ECC 需注意的风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "平台成熟度不均，仅 Claude Code 配合最好",
+          "供应链风险，第三方镜像可能含恶意代码",
+          "权限面较大，会介入 hooks 与 MCP 配置",
+          "对 Trae Work 用户收益有限，需手动搬运"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "环境与前置依赖",
+      "language": "powershell",
+      "content": "node --version\ngit --version\nclaude --version"
+    },
+    {
+      "anchor": "安装：推荐走引导式安装",
+      "language": "powershell",
+      "content": "node --version\ngit --version\nclaude --version\nnpx ecc-universal@2.2.3 setup"
+    }
+  ],
+  "xhs": {
+    "product": "ECC",
+    "one_liner": "面向编码 Agent 的运行壳操作系统，固化工程流程",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "ECC 核心工作流",
+        "mermaid": "flowchart LR\n  A[plan] --> B[test]\n  B --> C[implement]\n  C --> D[review]\n  D --> E[verify]\n  E --> F[remember]\n  F --> G[improve]"
+      },
+      {
+        "type": "card",
+        "heading": "快速上手清单",
+        "points": [
+          "确认 Node.js 18+、Git、Claude Code 2.1+",
+          "执行 npx ecc-universal@2.2.3 setup",
+          "选择 Global user 与 Standard hooks",
+          "新开会话执行 /plugin list 验证"
+        ]
+      }
+    ]
+  }
+}

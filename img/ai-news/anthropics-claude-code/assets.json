@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "核心概念与工作原理",
+      "caption": "Claude Code 核心概念",
+      "card": {
+        "heading": "核心概念与工作原理",
+        "points": [
+          "终端优先：命令行程序，进入项目目录运行",
+          "理解整个代码库：读取文件、搜索代码再决定改动",
+          "多端可用：终端、IDE、桌面、网页、Slack、GitHub",
+          "插件与市场：官方、社区、演示三个通用市场"
+        ]
+      }
+    },
+    {
+      "type": "mermaid",
+      "anchor": "融入 Trae Work 与 Java/Spring 工作流",
+      "caption": "与 Trae Work 并行使用",
+      "mermaid": "flowchart TD\n  A[Trae Work 编写调试 Spring 代码] --> B[切到 PowerShell 运行 claude]\n  B --> C[Claude Code 直接修改工作区文件]\n  C --> D[回到 Trae Work 查看 diff]\n  D --> E[运行 Maven/Gradle 构建与测试]"
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "在 Windows 上安装",
+      "language": "powershell",
+      "content": "irm https://claude.ai/install.ps1 | iex\nwinget install Anthropic.ClaudeCode\nclaude --version"
+    }
+  ],
+  "xhs": {
+    "product": "Claude Code",
+    "one_liner": "常驻终端、理解整个代码库的智能体编码工具",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "它能解决什么问题",
+        "points": [
+          "跨多个文件定位并修复 Bug",
+          "为已有模块补测试、写迁移脚本",
+          "解释陌生仓库的结构与关键流程",
+          "在终端里直接完成 Git 相关操作"
+        ]
+      },
+      {
+        "type": "mermaid",
+        "heading": "Windows 安装步骤",
+        "mermaid": "flowchart TD\n  A[打开 PowerShell] --> B[执行官方安装脚本]\n  B --> C[新开终端窗口]\n  C --> D[运行 claude --version]\n  D --> E[打印版本号即成功]"
+      }
+    ]
+  }
+}

@@ -65,6 +65,22 @@ Codex 是 OpenAI 推出的 AI 编码 Agent，用于写代码、修 bug 等软件
 
 安装完成后，直接运行 `codex` 即可开始。
 
+<!-- asset:code-1 start -->
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+$env:CODEX_INSTALLER_USE_RELEASES_OPENAI_COM='false'; irm https://chatgpt.com/codex/install.ps1 | iex
+npm install -g @openai/codex
+```
+<!-- asset:code-1 end -->
+
+
+<!-- asset:blog-1 start -->
+![Windows 上安装 Codex CLI 的四种方式](/img/ai-news/openai-codex/blog-1.png)
+
+*图：Windows 上安装 Codex CLI 的四种方式*
+<!-- asset:blog-1 end -->
+
+
 ## 登录与配置
 
 1. 运行 `codex`。
@@ -96,6 +112,13 @@ Codex 是 OpenAI 推出的 AI 编码 Agent，用于写代码、修 bug 等软件
 - **成熟度**：Codex CLI 于 2025 年 4 月发布，到 2026 年 3 月 Codex 整体已有超过 200 万周活跃用户，OpenAI 正把它定位为更广泛的企业 Agent 平台。产品迭代快，行为可能随版本变化。
 - **安全**：2026 年 3 月 OpenAI 推出了 Codex Security，一个用于识别和修复软件漏洞的应用安全 Agent。让 Agent 执行命令、修改文件本身带有风险，建议在受控目录和版本控制下使用。
 - **社区反馈**：在 Hacker News 关于 Codex CLI 的讨论（516 points，289 条评论）中，有用户反馈遇到认证问题（「Just getting auth issues so far...」），也有人跟进表示同样遇到。这类问题多与登录配置相关，遇到时可先检查账号与网络。
+
+<!-- asset:blog-2 start -->
+![使用 Codex CLI 需注意的风险](/img/ai-news/openai-codex/blog-2.png)
+
+*图：使用 Codex CLI 需注意的风险*
+<!-- asset:blog-2 end -->
+
 
 ## 社区评价（来自 Hacker News 讨论）
 

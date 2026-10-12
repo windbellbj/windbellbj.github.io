@@ -60,6 +60,13 @@ Ponytail 的工作方式不是「先砍再想」，而是**先读懂再动手**�
 - **每轮回复末尾交代「跳过了什么」**：包括没做的部分、没检查的部分，以及你需要知道的风险。
 - **`shortcut:` 注释**：标记一处刻意的走捷径，并写明何时该回头处理，后续可用命令汇总成清单。
 
+<!-- asset:blog-1 start -->
+![决策阶梯：从跳过到最小实现](/img/ai-news/dietrichgebert-ponytail/blog-1.png)
+
+*图：决策阶梯：从跳过到最小实现*
+<!-- asset:blog-1 end -->
+
+
 ## 它由什么组成
 
 Ponytail 本体是**一个提示词**：`skills/ponytail/SKILL.md`。面向「读取规则文件」类 Agent 的精简版是 `AGENTS.md`。仓库里其他内容，都是把这个提示词装进不同 Agent 的适配层。
@@ -109,6 +116,20 @@ Ponytail 本体是**一个提示词**：`skills/ponytail/SKILL.md`。面向「�
 - 默认档位：设置环境变量 `PONYTAIL_DEFAULT_MODE`，或创建 `~/.config/ponytail/config.json`。
 - 想换掉 `shortcut:` 这个标记词（或完全不用），在你项目的 `CLAUDE.md` 或 `AGENTS.md` 中说明，然后运行 `/ponytail-debt <你的词>`。
 
+<!-- asset:code-1 start -->
+```powershell
+/plugin marketplace add DietrichGebert/ponytail
+/plugin install ponytail@ponytail
+codex plugin marketplace add DietrichGebert/ponytail
+codex plugin add ponytail@ponytail
+copilot plugin install ponytail@ponytail
+gemini extensions install github.com/DietrichGebert/ponytail
+pi install git:github.com/DietrichGebert/ponytail
+pi install npm:@dietrichgebert/ponytail
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手
 
 1. 按上面的方式把规则装进你的 Agent（Trae Work 走 `AGENTS.md` 路线）。
@@ -147,6 +168,13 @@ Ponytail 本体是**一个提示词**：`skills/ponytail/SKILL.md`。面向「�
 - **安全提醒**：第三方包可以执行代码并影响 Agent 行为，安装前应审阅源码。
 - **许可证**：MIT，官方自称「能用的最短许可证」。
 - **费用**：项目本身免费，但你仍需为 Agent 的模型调用付费；Ponytail 的作用是让这部分开销下降。
+
+<!-- asset:blog-2 start -->
+![使用前需知的四点风险](/img/ai-news/dietrichgebert-ponytail/blog-2.png)
+
+*图：使用前需知的四点风险*
+<!-- asset:blog-2 end -->
+
 
 ## 社区评价（来自 Hacker News 讨论）
 

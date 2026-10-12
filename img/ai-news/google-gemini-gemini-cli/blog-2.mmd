@@ -1,0 +1,8 @@
+flowchart TD
+  A[认证配置] --> B[Google 账号登录]
+  A --> C[Gemini API Key]
+  A --> D[Vertex AI]
+  B --> B1[免费额度 60/分 1000/天]
+  C --> C1[设置 GEMINI_API_KEY]
+  D --> D1[设置 GOOGLE_API_KEY]
+  D --> D2[GOOGLE_GENAI_USE_VERTEXAI=true]

@@ -1,0 +1,5 @@
+flowchart TD
+  A[本地 AST 解析] --> B[跨文件关系解析]
+  B --> C[社区检测 Leiden]
+  C --> D[语义补充 可选]
+  D --> E[落盘 graphify-out/]

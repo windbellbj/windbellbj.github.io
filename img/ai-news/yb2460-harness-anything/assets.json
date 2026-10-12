@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "CLI 到应用的调用链",
+      "mermaid": "flowchart LR\n  A[CLI 命令] --> B[Click CLI]\n  B --> C[Core 模块]\n  C --> D[COM Bridge]\n  D --> E[应用引擎]"
+    },
+    {
+      "type": "card",
+      "anchor": "包含哪些子项目",
+      "caption": "六个可独立使用的模块",
+      "card": {
+        "heading": "子项目一览",
+        "points": [
+          "cli-anything-wps：47 个 CLI 命令，覆盖 Writer / Calc…",
+          "cli-anything-zotero：文献管理 + 27 个学术 Skill",
+          "Illustrator Harness：COM 创建/编辑矢量图",
+          "Photoshop Harness：COM 创建/编辑位图"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "快速上手",
+      "language": "powershell",
+      "content": "cli-anything-wps document new --type impress --name \"演示\"\ncli-anything-wps preset apply academic --talk-type defense\ncli-anything-wps export render output.pptx -p pptx"
+    },
+    {
+      "anchor": "常用命令速查",
+      "language": "powershell",
+      "content": "cli-anything-zotero skills list\ncli-anything-zotero skills pipeline original_article\ncli-anything-zotero skills pipeline meta_analysis\ncli-anything-zotero skills journal \"Nature\"\ncli-anything-zotero catalog search \"machine learning\""
+    }
+  ],
+  "xhs": {
+    "product": "harness-anything",
+    "one_liner": "用命令行把 WPS / Office、Zotero、PS 变成 Agent 可调用的工具",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "调用链一览",
+        "mermaid": "flowchart LR\n  A[CLI 命令] --> B[Click CLI]\n  B --> C[Core 模块]\n  C --> D[COM Bridge]\n  D --> E[应用引擎]"
+      },
+      {
+        "type": "card",
+        "heading": "环境与前置依赖",
+        "points": [
+          "操作系统：Windows 10 / 11",
+          "Python：3.10+",
+          "办公软件：WPS Office 2019+ 或 Microsoft Office 2016+",
+          "文献工具：Zotero 7+（使用学术功能时）"
+        ]
+      }
+    ]
+  }
+}

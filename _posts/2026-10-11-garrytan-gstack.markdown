@@ -49,6 +49,13 @@ gstack 的核心理念是把单个 AI 助手变成一支虚拟开发团队。每
 
 从架构视角看，gstack 的组件大致分为几层：规划与交付（Agent 宿主、产品规划、Autoplan）、实现、评审与保障（代码评审、QA 工作流、安全审计、预检门禁、发布策略）、浏览器与文档（浏览服务、浏览器生命周期、无头显示、设计工作流、PDF 生成）、记忆与集成（记忆摄取、Gbrain 执行），以及共享运行时（状态根、出口凭据、重生成、结果码、产物校验）。
 
+<!-- asset:blog-1 start -->
+![gstack 组件分层结构](/img/ai-news/garrytan-gstack/blog-1.png)
+
+*图：gstack 组件分层结构*
+<!-- asset:blog-1 end -->
+
+
 ## 环境前置依赖
 
 | 依赖 | 要求 |
@@ -103,6 +110,24 @@ gstack 的形态是**技能目录 + 斜杠命令**，不是 MCP 服务，也不�
 - 在 Spring 项目里，让 `/review` 审你的分支改动、`/qa` 打你的本地或预发接口、`/ship` 走发布流程、`/cso` 做安全审计。
 
 > 再次强调：**官方未提供与 Trae Work / Java 的集成方式**，也没有公开的 MCP 配置路径或 SDK 接入示例。请勿自行编造配置项。
+
+<!-- asset:code-2 start -->
+```powershell
+./setup --host auto
+./setup --host codex
+./setup --status
+```
+<!-- asset:code-2 end -->
+
+
+<!-- asset:code-1 start -->
+```powershell
+git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git $HOME\gstack
+cd $HOME\gstack
+./setup
+```
+<!-- asset:code-1 end -->
+
 
 ## 快速上手：六步判断它是否适合你
 
@@ -162,6 +187,13 @@ gstack 的形态是**技能目录 + 斜杠命令**，不是 MCP 服务，也不�
 - **许可证**：MIT，可自由 fork、改进、自用。
 - **成熟度**：仓库创建于 2026-03-11，最近更新 2026-10-11，主语言 TypeScript。第三方站点标注版本为 v0.4.1，官方仓库未在已公开内容中给出对应版本号，两者口径不一致。
 - **作者自述的产出数据存在争议**：官方说明中给出了「2026 年约 810 倍于 2013 年节奏」「年初至 4 月 18 日已产出 2013 年全年的 240 倍」等基于逻辑代码变更的统计，并主动回应了关于 LOC 指标的批评，附有方法论与复现脚本说明。这些是作者自述数据，非独立第三方验证。
+
+<!-- asset:blog-2 start -->
+![gstack 主要局限](/img/ai-news/garrytan-gstack/blog-2.png)
+
+*图：gstack 主要局限*
+<!-- asset:blog-2 end -->
+
 
 ## 社区评价（来自 Hacker News 讨论）
 

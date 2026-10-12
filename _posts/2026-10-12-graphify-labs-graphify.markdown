@@ -53,6 +53,13 @@ news_category: skill
 
 持久化的图里带有 `graph.schema_version`（便于集成方检测格式不兼容变化）和 `graph.graphify_version`（标明产出该图的 Graphify 版本）。
 
+<!-- asset:blog-1 start -->
+![Graphify 一次运行的五个步骤](/img/ai-news/graphify-labs-graphify/blog-1.png)
+
+*图：Graphify 一次运行的五个步骤*
+<!-- asset:blog-1 end -->
+
+
 ## 环境与前置依赖
 
 | 依赖 | 最低要求 | 检查命令 | 安装方式 |
@@ -112,6 +119,16 @@ news_category: skill
 
 `graphify uninstall --project --platform codex` 可移除指定注册；`graphify uninstall` 移除跨平台的用户级注册。可选的 `--purge` 会一并删除 `graphify-out/`，不加则保留你的图。
 
+<!-- asset:code-1 start -->
+```powershell
+uv tool install graphifyy
+uv tool update-shell
+pipx install graphifyy
+pip install graphifyy
+```
+<!-- asset:code-1 end -->
+
+
 ## 如何融入 Trae Work 工作流
 
 Graphify 官方列出的集成方式是「AI 编程助手技能」和「MCP 服务」两条路径，支持 Claude Code、Cursor、Codex、Gemini CLI、GitHub Copilot 等 17 个助手。**官方未提供与 Trae Work 的专门集成方式，也未提供 Java/Spring 的 SDK 或 HTTP 集成方式。** 因此对 Trae Work 用户，现实可行的路径是下面两条，具体是否可用取决于 Trae Work 是否支持读取对应技能目录或接入 MCP 客户端：
@@ -133,6 +150,17 @@ Graphify 官方列出的集成方式是「AI 编程助手技能」和「MCP 服�
 
 官方给出的真实输出示例（在 FastAPI 代码库上运行）：执行 `graphify explain "APIRouter"` 会返回节点来源文件与行号、所属社区、度数，以及 47 条连接，每条连接标注 `[uses] [INFERRED]` 或 `[method] [EXTRACTED]` 这样的关系与置信标签；执行 `graphify path "FastAPI" "ModelField"` 会返回一条 3 跳的最短路径。
 
+<!-- asset:code-2 start -->
+```powershell
+cd D:\work\my-spring-service
+graphify install
+graphify query "<你的问题>"
+graphify path A B
+graphify explain "<概念>"
+```
+<!-- asset:code-2 end -->
+
+
 ## 如何确认安装与运行成功
 
 - `graphify --help` 能正常输出，说明 CLI 装好了。
@@ -140,6 +168,13 @@ Graphify 官方列出的集成方式是「AI 编程助手技能」和「MCP 服�
 - 运行 `/graphify .` 后，项目根目录出现 `graphify-out/`，且其中包含 `graph.html`、`GRAPH_REPORT.md`、`graph.json` 三个文件。
 - 用浏览器打开 `graph.html` 能看到可点击的力导向图。
 - 执行一次 `graphify explain "<你项目里的某个类名>"`，能返回该节点的来源、社区、度数和连接列表。
+
+<!-- asset:blog-2 start -->
+![五步确认装好了](/img/ai-news/graphify-labs-graphify/blog-2.png)
+
+*图：五步确认装好了*
+<!-- asset:blog-2 end -->
+
 
 ## 性能与基准数据
 

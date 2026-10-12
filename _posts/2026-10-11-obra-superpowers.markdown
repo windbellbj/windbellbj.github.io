@@ -108,6 +108,14 @@ Superpowers 的核心机制有两层：
 
 > 请勿自行编造 Trae Work 的插件目录或配置文件名去「接入」Superpowers，官方没有公开这类路径。
 
+<!-- asset:code-1 start -->
+```powershell
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手
 
 以 Claude Code 为例（其他 harness 安装后流程类似）：
@@ -121,6 +129,13 @@ Superpowers 的核心机制有两层：
 7. 任务完成后触发 `finishing-a-development-branch`，验证测试并给出合并 / PR / 保留 / 丢弃选项。
 
 官方描述的完整基础工作流顺序是：`brainstorming` → `using-git-worktrees` → `writing-plans` → `subagent-driven-development` 或 `executing-plans` → `test-driven-development` → `requesting-code-review` → `finishing-a-development-branch`。
+
+<!-- asset:blog-1 start -->
+![官方完整基础工作流顺序](/img/ai-news/obra-superpowers/blog-1.png)
+
+*图：官方完整基础工作流顺序*
+<!-- asset:blog-1 end -->
+
 
 ## 如何确认安装成功
 
@@ -140,6 +155,13 @@ Superpowers 的核心机制有两层：
 - **许可证**：官方目录列出了 License 一节，但本次可获取的内容未包含具体许可证文本，具体条款暂无公开资料。
 - **商业支持**：官方说明企业用户如需商业支持、额外工具或托管支出，可联系 sales@primeradiant.com。
 - **贡献限制**：官方明确表示通常不接受新技能的贡献，且对技能的更新必须能在所有 harness 上工作。
+
+<!-- asset:blog-2 start -->
+![使用前需注意的几点](/img/ai-news/obra-superpowers/blog-2.png)
+
+*图：使用前需注意的几点*
+<!-- asset:blog-2 end -->
+
 
 ## 社区评价
 

@@ -1,0 +1,9 @@
+flowchart TD
+  A[安装 Codex CLI] --> B[官方脚本安装]
+  A --> C[强制走 GitHub Releases]
+  A --> D[npm 安装]
+  A --> E[手动下载二进制]
+  B --> F[运行 codex]
+  C --> F
+  D --> F
+  E --> F

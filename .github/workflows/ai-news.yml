@@ -31,21 +31,58 @@ jobs:
           python-version: '3.12'
 
       - name: 抓取并生成文章
+        id: fetch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRODUCTHUNT_TOKEN: ${{ secrets.PRODUCTHUNT_TOKEN }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days }}
-        run: python scripts/ai_news_fetch.py
+        run: |
+          python scripts/ai_news_fetch.py
+          # 只有本次确实生成了新文章，后续配图与提交步骤才执行
+          if [ -n "$(git status --porcelain _posts)" ]; then
+            echo "has_new=1" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: 提交生成的文章
+      - name: 安装 Node
+        if: steps.fetch.outputs.has_new == '1'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装 Mermaid CLI
+        if: steps.fetch.outputs.has_new == '1'
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: 安装 Playwright 与中文字体
+        if: steps.fetch.outputs.has_new == '1'
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk
+
+      - name: 生成小红书文案与封面模板
+        if: steps.fetch.outputs.has_new == '1'
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: python scripts/xhs_build.py
+
+      - name: 生成博客/小红书配图并回填文章
+        if: steps.fetch.outputs.has_new == '1'
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        run: python scripts/assets_build.py
+
+      - name: 提交生成的文章与配图素材
+        if: steps.fetch.outputs.has_new == '1'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add _posts scripts/ai_news_state.json
+          git add _posts scripts/ai_news_state.json img/ai-news xhs
           if git diff --staged --quiet; then
-            echo "本次没有新文章，无需提交"
+            echo "本次没有可提交的内容"
           else
-            git commit -m "chore(ai-news): 自动生成 AI 新资讯文章"
+            git commit -m "chore(ai-news): 自动生成 AI 新资讯文章与配图素材"
             git push
           fi

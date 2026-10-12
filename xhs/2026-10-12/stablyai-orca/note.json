@@ -1,0 +1,15 @@
+{
+  "title": "多个AI同时改代码总冲突？试试这个",
+  "body": "多个 AI Agent 同时改一个文件，冲突到想砸键盘？\n\n⚡️ Orca 把「一个任务 = 一个隔离 worktree = 一个 Agent」固定下来，让并行不再互相踩文件。\n\n它解决的核心痛点就一个：AI 写代码并行不起来。\n一个 Agent 在改 OrderService，另一个也在改，冲突、覆盖、来回 rebase。\n\n🎯 核心能力\n一条提示词可以扇出给多个 Agent，各自跑在独立 git worktree 里，跑完对比 diff，挑最好的合并。\n\n终端即工作台，支持无限分屏，滚动历史重启后还在。\n\n评审闭环：能在 AI 生成的 diff 任意行留评论并回传给 Agent，也能在应用内看 PR 和 issue。\n\n手机端可监控、催办 Agent，跑完会通知你。\n\n🧩 适合谁\n手上已有多个 Agent 订阅、想同时推进多条改动线的开发者。\n\n它支持任何能在终端跑的 CLI Agent，Claude Code、Codex、Grok、OpenCode、Goose、Cline 等都能接。\n\n对 Java / Spring 开发者来说，现有订阅可以直接复用，不用换模型供应商。\n\n✅ 上手门槛与费用\n应用本身免费开源，MIT 许可证。\n\n模型额度来自你自己的 Agent 订阅，Orca 不替你买额度。\n\n本机需要有 git，以及至少一个已登录的 Agent CLI。\n\n支持 macOS、Windows、Linux，手机端有 iOS 和 Android。\n\n⚠️ 需要注意\n它和 Trae Work、Java / Spring 没有官方集成，只能并列使用，别指望一键调用。\n\n项目处于快速迭代期，Windows 上的实际体验公开反馈较少。\n\n应用会驱动终端、浏览器和 SSH，建议先在非核心仓库试用。\n\n值不值得试？\n如果你已经在用 CLI Agent 且经常要并行推进多条线，值得试。\n如果你全部工作都在 Trae Work 内完成，可以观望。\n\n完整版图文教程在我主页。",
+  "tags": [
+    "#AI编程",
+    "#AI工具",
+    "#程序员效率",
+    "#Agent开发",
+    "#git工作流"
+  ],
+  "category": "harness",
+  "category_name": "Agent Harness",
+  "slug": "stablyai-orca",
+  "date": "2026-10-12"
+}

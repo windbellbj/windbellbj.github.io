@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念：技能、命令与生命周期",
+      "caption": "开发阶段与斜杠命令映射",
+      "mermaid": "flowchart LR\n  A[定义要构建什么] --> B[规划怎么构建]\n  B --> C[增量地构建]\n  C --> D[证明它能工作]\n  D --> E[设定质量标准]\n  E --> F[合并前评审]\n  F --> G[审计 Web 性能]\n  G --> H[简化代码]\n  H --> I[发布到生产]"
+    },
+    {
+      "type": "card",
+      "anchor": "快速上手：确认它真的生效",
+      "caption": "确认技能生效的成功信号",
+      "card": {
+        "heading": "技能生效的成功信号",
+        "points": [
+          "先产出覆盖目标与边界的 PRD 式文档",
+          "先写会失败的测试，运行并展示失败",
+          "评审输出按五个轴组织并给严重度标签",
+          "反合理化表被正确加载"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置（Windows + Trae Work）",
+      "language": "powershell",
+      "content": "npx skills add addyosmani/agent-skills --list\nnpx skills add addyosmani/agent-skills\nnpx skills add addyosmani/agent-skills --skill code-review-and-quality\nnpx skills add addyosmani/agent-skills --skill interview-me\nnpx skills add addyosmani/agent-skills --skill test-driven-development"
+    }
+  ],
+  "xhs": {
+    "product": "Agent Skills",
+    "one_liner": "面向 AI 编程代理的生产级工程技能包",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "开发阶段与命令映射",
+        "mermaid": "flowchart LR\n  A[定义要构建什么] --> B[规划怎么构建]\n  B --> C[增量地构建]\n  C --> D[证明它能工作]\n  D --> E[设定质量标准]\n  E --> F[合并前评审]\n  F --> G[审计 Web 性能]\n  G --> H[简化代码]\n  H --> I[发布到生产]"
+      },
+      {
+        "type": "card",
+        "heading": "技能生效的成功信号",
+        "points": [
+          "先产出覆盖目标与边界的 PRD 式文档",
+          "先写会失败的测试，运行并展示失败",
+          "评审输出按五个轴组织并给严重度标签",
+          "反合理化表被正确加载"
+        ]
+      }
+    ]
+  }
+}

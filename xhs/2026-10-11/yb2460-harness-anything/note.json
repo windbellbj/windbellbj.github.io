@@ -1,0 +1,15 @@
+{
+  "title": "Windows 上让 AI 帮你做 PP",
+  "body": "写业务代码不累，累的是答辩 PPT、汇报表格、论文配图。\n\n有个思路挺有意思：把 WPS、Office、Zotero、PS、AI 这些桌面软件，变成 AI Agent 能直接调用的工具。\n\n⚡️ 它解决的核心痛点\n\n那些「必须打开 Office 点出来」的产物，现在可以交给 Agent 编排。\n\n底层走 Windows COM 自动化，调用的还是你本机装好的软件，不是云端模拟。\n\n🎯 核心能力有哪些\n\n办公模块覆盖 Writer / Calc / Impress，几十条命令，支持 8 种导出格式。\n\n学术模块把文献工作流拆成 27 个 Skill，检索、写作、审稿、可视化、分析都有。\n\n设计模块能操控 Illustrator 和 Photoshop，建图层、加文字、导出图都行。\n\n还有一套 PPT 生成引擎，JSON 驱动，内置预设、布局和质量审查。\n\n🧩 适合谁用\n\n在 Windows 上频繁产出 PPT / Word / Excel 的开发者。\n\n做科研、写论文、管文献库的研究者。\n\n想把设计软件纳入自动化流水线的工程师。\n\n正在搭 Agent 工作流、缺现成工具层的人。\n\n⚠️ 上手门槛和费用\n\n只支持 Windows，强依赖 COM，macOS 和 Linux 用不了。\n\n设计模块还要求本机装 Adobe 软件，版本得够新。\n\n项目本身是 MIT 许可，免费用，但它调的 Office、Adobe 都是商业软件，授权自己准备。\n\n另外它没有标准 MCP 封装，Agent 调用时要你显式给命令和参数。\n\n✅ 值不值得试\n\n如果你在 Windows 上、经常产出 Office 文档或学术材料、又想让 Agent 把这条链路自动化，它提供了一套现成的工具层，装完就能用。\n\n但如果你需要跨平台，或者要标准 MCP 集成，目前还不满足。\n\n建议先在受控目录里试，重要文档记得备份。\n\n完整版图文教程在我主页。",
+  "tags": [
+    "#AI工具",
+    "#AI编程",
+    "#办公自动化",
+    "#科研效率",
+    "#Agent"
+  ],
+  "category": "harness",
+  "category_name": "Agent Harness",
+  "slug": "yb2460-harness-anything",
+  "date": "2026-10-11"
+}

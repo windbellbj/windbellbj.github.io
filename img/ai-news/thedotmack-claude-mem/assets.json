@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "claude-mem 记忆工作流",
+      "mermaid": "flowchart LR\n  A[生命周期钩子捕获] --> B[AI 压缩成结构化观察]\n  B --> C[SQLite 存储]\n  C --> D[Chroma 向量检索]\n  D --> E[新会话注入上下文]\n  E --> F[mem-search / MCP 召回]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需注意的风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "捕获范围有限，取决于工具与集成方式",
+          "Trae Work 无官方集成，Java 无官方 SDK",
+          "Windows 部分脚本需 WSL 或 Git Bash",
+          "记忆会被压缩存储，敏感数据需脱敏"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置（Windows + PowerShell）",
+      "language": "powershell",
+      "content": "node -v\nnpx claude-mem install\nnpx claude-mem install --ide opencode\nnpx claude-mem install --ide t3code\nnpx claude-mem install --ide antigravity\nnpx claude-mem install --ide omp\nnpx claude-mem install --ide pi\nnpx claude-mem install --ide dsh --dsh-profile tui\nnpx claude-mem install --ide grok-bot"
+    }
+  ],
+  "xhs": {
+    "product": "claude-mem",
+    "one_liner": "给 AI 编程助手加跨会话持久记忆的开源系统",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "记忆工作流",
+        "mermaid": "flowchart LR\n  A[钩子捕获会话] --> B[AI 压缩成观察]\n  B --> C[SQLite 存储]\n  C --> D[向量检索召回]\n  D --> E[注入新会话]"
+      },
+      {
+        "type": "card",
+        "heading": "安装四步走",
+        "points": [
+          "确认 Node 版本不低于 v20",
+          "执行 npx claude-mem install",
+          "按目标 Agent 选安装参数",
+          "重启 Agent 开始编码会话"
+        ]
+      }
+    ]
+  }
+}

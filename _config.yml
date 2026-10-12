@@ -26,7 +26,19 @@ highlighter: rouge
 permalink: pretty
 timezone: Asia/Shanghai
 paginate: 10
-exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","Gemfile","Gemfile.lock","vendor","scripts"]
+exclude:
+  - less
+  - node_modules
+  - Gruntfile.js
+  - package.json
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - scripts
+  - xhs
+  - img/ai-news/**/*.json
+  - img/ai-news/**/*.mmd
 anchorjs: true
 
 

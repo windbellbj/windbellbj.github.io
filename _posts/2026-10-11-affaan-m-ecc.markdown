@@ -42,6 +42,13 @@ AI 编程助手能写代码，但通常缺少一套稳定的工作方式：不�
 
 一句话概括它的设计信条：**优化上下文窗口，其余一切持久化。**
 
+<!-- asset:blog-1 start -->
+![ECC 固化的工程流程](/img/ai-news/affaan-m-ecc/blog-1.png)
+
+*图：ECC 固化的工程流程*
+<!-- asset:blog-1 end -->
+
+
 ## 支持哪些工具，成熟度并不一致
 
 ECC 官方明确说明：目前与 **Claude Code** 配合最好，**Codex 与 Qoder** 有原生插件路径，对 **Cursor、OpenCode、Gemini、Zed、GitHub Copilot、Antigravity、Qwen** 等提供能力受限的适配器。官方提醒不要默认各平台功能对等，使用前应先查看其支持状态矩阵。
@@ -61,6 +68,15 @@ ECC 官方明确说明：目前与 **Claude Code** 配合最好，**Codex 与 Qo
 3. 运行 `claude --version`，确认 Claude Code 不低于 2.1。
 
 任何一条提示「找不到命令」，先安装或修复该前置项，再重新执行 ECC 安装。
+
+<!-- asset:code-1 start -->
+```powershell
+node --version
+git --version
+claude --version
+```
+<!-- asset:code-1 end -->
+
 
 ## 安装：推荐走引导式安装
 
@@ -91,6 +107,16 @@ Windows 首次安装可按下面步骤照做：
 官方同时提示：**锁定版本号不等于安全审计或完整性校验**。运行包代码前应自行审阅发布源码与仓库完整性，未发布的改动请使用经过审阅的检出副本。
 
 官网首页另给出一个引导式安装写法 `npx ecc-universal install --guided`，与仓库中带版本号的 `setup` 写法并存。两种写法在不同渠道出现，具体以你实际执行的版本为准。
+
+<!-- asset:code-2 start -->
+```powershell
+node --version
+git --version
+claude --version
+npx ecc-universal@2.2.3 setup
+```
+<!-- asset:code-2 end -->
+
 
 ## 在 Trae Work + Java / Spring 工作流中怎么用
 
@@ -139,6 +165,13 @@ Windows 首次安装可按下面步骤照做：
 - **对 Trae Work 用户的实际收益有限**：没有官方集成路径，需要手动搬运文本资产。
 - **版本与命令存在渠道差异**：仓库写 `npx ecc-universal@2.2.3 setup`，官网写 `npx ecc-universal install --guided`，两者并列存在，执行前请以实际版本为准。
 - **数据口径需谨慎**：star 数、下载量、clone 数来自不同时间点与不同统计口径，且官方承认存在重叠与上报缺口。
+
+<!-- asset:blog-2 start -->
+![使用 ECC 需注意的风险](/img/ai-news/affaan-m-ecc/blog-2.png)
+
+*图：使用 ECC 需注意的风险*
+<!-- asset:blog-2 end -->
+
 
 ## 快速上手清单
 

@@ -1,0 +1,62 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "核心概念：两种「石头」",
+      "caption": "两种石头：代理压输入，技能压输出",
+      "card": {
+        "heading": "两种「石头」",
+        "points": [
+          "大石头（the proxy）：本地代理，压缩 Agent 读进来的内容",
+          "小石头（the skill）：纯输出压缩，只让回答变短，不碰输入",
+          "技能包安装最轻，兼容面最广",
+          "代理跑在本机，用你自己的密钥与登录态"
+        ]
+      }
+    },
+    {
+      "type": "mermaid",
+      "anchor": "快速上手：先看它省不省",
+      "caption": "官方自检命令顺序",
+      "mermaid": "flowchart TD\n  A[caveman learn] --> B[caveman learn implement]\n  B --> C[caveman trial -- claude]\n  C --> D[caveman shrink -- pnpm test]\n  D --> E[caveman browse url]\n  E --> F[caveman stats]"
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置（Windows / PowerShell）",
+      "language": "powershell",
+      "content": "node -v\nnpx skills add JuliusBrussee/caveman -g\nnpm install -g @caveman-ai/cli && caveman setup --install\ncaveman claude\nirm https://raw.githubusercontent.com/JuliusBrussee/caveman/v3.2.0/install.ps1 | iex\nnpx -y github:JuliusBrussee/caveman -- --uninstall"
+    },
+    {
+      "anchor": "快速上手：先看它省不省",
+      "language": "powershell",
+      "content": "caveman learn\ncaveman learn implement\ncaveman trial -- claude\ncaveman shrink -- pnpm test\ncaveman browse <url>\ncaveman stats"
+    }
+  ],
+  "xhs": {
+    "product": "Caveman",
+    "one_liner": "给编码 Agent 用的省 token 方案：说话变短，读的东西变小",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "两种「石头」",
+        "points": [
+          "大石头：本地代理，压缩读入内容",
+          "小石头：纯输出压缩，不碰输入",
+          "技能包最轻，兼容面最广",
+          "代理用你自己的密钥与登录态"
+        ]
+      },
+      {
+        "type": "card",
+        "heading": "官方实测数字",
+        "points": [
+          "整段会话输入 token 少 33.2%",
+          "单文件缩小 98.5%–99.1%",
+          "六类合计 130,611 → 22,994",
+          "HTML 无压缩器，反而差 9.9%"
+        ]
+      }
+    ]
+  }
+}

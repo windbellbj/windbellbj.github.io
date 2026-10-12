@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它到底是什么",
+      "caption": "Agent 与 Harness 的关系",
+      "mermaid": "graph LR\n  A[模型 Model] --> B[Harness]\n  B --> C[工作区]\n  B --> D[工具]\n  B --> E[权限]\n  B --> F[会话记忆]\n  B --> G[Agent 循环]"
+    },
+    {
+      "type": "card",
+      "anchor": "核心概念：插件、技能与创造模式",
+      "caption": "核心概念速览",
+      "card": {
+        "heading": "核心概念",
+        "points": [
+          "插件：dsh 的最小能力单元",
+          "创造模式：通过对话直接创建插件",
+          "技能：以 SKILL.md 形式加载",
+          "自动化任务：实验性插件按计划触发"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与启动",
+      "language": "powershell",
+      "content": "cd D:\\work\\my-spring-project\nnpx @deepseek-ai/dsh web\nnpx @deepseek-ai/dsh web --no-open"
+    },
+    {
+      "anchor": "安装与启动",
+      "language": "powershell",
+      "content": "git clone https://github.com/deepseek-ai/deepseek-harness.git\ncd deepseek-harness\npnpm install\npnpm run build\npnpm dsh web"
+    }
+  ],
+  "xhs": {
+    "product": "DeepSeek Harness",
+    "one_liner": "一切皆插件的开源 Agent 运行壳，命令名 dsh",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "它能帮你做什么",
+        "points": [
+          "日常工作：整理资料、撰写文档",
+          "编写代码：理解项目、修复问题",
+          "资料查证：给出带来源的结论",
+          "后台任务：批量处理并查看进度"
+        ]
+      },
+      {
+        "type": "mermaid",
+        "heading": "三种安装方式",
+        "mermaid": "graph LR\n  A[npx 一条命令] --> D[dsh]\n  B[源码运行] --> D\n  C[桌面端] --> D"
+      }
+    ]
+  }
+}

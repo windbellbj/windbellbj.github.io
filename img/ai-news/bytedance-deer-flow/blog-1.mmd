@@ -1,0 +1,12 @@
+flowchart TD
+  A[App 应用层] --> B[Harness 核心引擎]
+  A --> C[前端 Next.js 3000]
+  A --> D[Gateway API 8001]
+  A --> E[Nginx 80]
+  B --> F[LangGraph Server 2024]
+  B --> G[智能体编排]
+  B --> H[工具系统]
+  B --> I[沙箱]
+  B --> J[记忆]
+  B --> K[技能]
+  B --> L[MCP 连接]

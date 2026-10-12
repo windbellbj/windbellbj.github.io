@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "核心概念",
+      "caption": "Gemini CLI 六大核心概念",
+      "card": {
+        "heading": "核心概念速览",
+        "points": [
+          "终端优先的 Agent：能自主调用工具",
+          "内置工具：文件、shell、网页抓取与搜索",
+          "MCP：挂载自定义工具扩展能力",
+          "GEMINI.md：项目持久上下文文件"
+        ]
+      }
+    },
+    {
+      "type": "mermaid",
+      "anchor": "认证配置",
+      "caption": "三条认证路线",
+      "mermaid": "flowchart TD\n  A[认证配置] --> B[Google 账号登录]\n  A --> C[Gemini API Key]\n  A --> D[Vertex AI]\n  B --> B1[免费额度 60/分 1000/天]\n  C --> C1[设置 GEMINI_API_KEY]\n  D --> D1[设置 GOOGLE_API_KEY]\n  D --> D2[GOOGLE_GENAI_USE_VERTEXAI=true]"
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "认证配置",
+      "language": "powershell",
+      "content": "$env:GOOGLE_CLOUD_PROJECT=\"YOUR_PROJECT_ID\"\n$env:GEMINI_API_KEY=\"YOUR_API_KEY\"\n$env:GOOGLE_API_KEY=\"YOUR_API_KEY\"\n$env:GOOGLE_GENAI_USE_VERTEXAI=true"
+    },
+    {
+      "anchor": "融入 Trae Work + Java / Spring 的日常工作流",
+      "language": "powershell",
+      "content": "gemini --include-directories ../lib,../docs\ngemini -m gemini-2.5-flash\ngemini -p \"Explain the architecture of this codebase\"\ngemini -p \"你的问题\""
+    }
+  ],
+  "xhs": {
+    "product": "Gemini CLI",
+    "one_liner": "Google 开源的终端 AI Agent，把 Gemini 接进命令行",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "它能做什么",
+        "points": [
+          "代码理解与生成：读写大型代码库",
+          "自动化与集成：PR、rebase、MCP",
+          "进阶能力：搜索 grounding、检查点",
+          "GitHub 集成：PR 评审、Issue 分类"
+        ]
+      },
+      {
+        "type": "mermaid",
+        "heading": "三条认证路线",
+        "mermaid": "flowchart TD\n  A[认证配置] --> B[Google 账号登录]\n  A --> C[Gemini API Key]\n  A --> D[Vertex AI]\n  B --> B1[免费额度 60/分 1000/天]\n  C --> C1[设置 GEMINI_API_KEY]\n  D --> D1[设置 GOOGLE_API_KEY]\n  D --> D2[GOOGLE_GENAI_USE_VERTEXAI=true]"
+      }
+    ]
+  }
+}

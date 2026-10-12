@@ -99,6 +99,23 @@ frontmatter 下面的 Markdown 正文，就是 Claude 在该技能激活时要�
 
 在 Windows + Trae Work 的日常开发中，可行的做法是**把技能当作可复用的提示资产来用**：把 `SKILL.md` 的正文内容整理成项目内的规范文档或提示模板，在 Trae Work 里按需引用；如果你所在环境支持自定义技能目录，请以该工具自身的官方说明为准。
 
+<!-- asset:code-1 start -->
+```powershell
+/plugin marketplace add anthropics/skills
+/plugin install document-skills@anthropic-agent-skills
+/plugin install example-skills@anthropic-agent-skills
+npx skills add https://github.com/anthropics/skills --skill skill-creator
+```
+<!-- asset:code-1 end -->
+
+
+<!-- asset:blog-1 start -->
+![四条安装路线](/img/ai-news/anthropics-skills/blog-1.png)
+
+*图：四条安装路线*
+<!-- asset:blog-1 end -->
+
+
 ## 快速上手：从零写一个技能
 
 1. 想清楚这个技能要做什么、大致怎么做。
@@ -127,6 +144,13 @@ frontmatter 下面的 Markdown 正文，就是 Claude 在该技能激活时要�
 - **费用**：Claude 应用侧 Skills 面向 Pro、Max、Team、Enterprise 付费计划；API 侧按用量计费。
 - **安全**：技能可以包含可执行代码，第三方技能等同于引入外部脚本，来源不明的技能不要直接在生产环境运行。第三方审计信息显示该仓库的 `skill-creator` 通过 Gen Agent Trust Hub 与 Snyk 审计，Socket 给出 Warn 提示。
 - **平台绑定**：官方接入路径围绕 Claude 生态，跨平台可移植性由 Agent Skills 开放标准承诺，但具体到 Trae Work 等第三方工具，官方未公开说明支持情况。
+
+<!-- asset:blog-2 start -->
+![四个主要风险](/img/ai-news/anthropics-skills/blog-2.png)
+
+*图：四个主要风险*
+<!-- asset:blog-2 end -->
+
 
 ## 给 Java / Spring 开发者的试用建议
 

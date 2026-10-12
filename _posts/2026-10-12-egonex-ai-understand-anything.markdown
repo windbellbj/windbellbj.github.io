@@ -35,6 +35,13 @@ Understand Anything 的做法是把「结构」显式地建出来，分三步：
 
 官方反复强调的定位是：**目标不是做一张炫技的复杂图，而是一张安静教会你各部分如何拼合的图。**
 
+<!-- asset:blog-1 start -->
+![Understand Anything 三步工作流](/img/ai-news/egonex-ai-understand-anything/blog-1.png)
+
+*图：Understand Anything 三步工作流*
+<!-- asset:blog-1 end -->
+
+
 ## 核心能力一览
 
 | 能力 | 说明 |
@@ -80,6 +87,15 @@ Trae 在官方兼容表中列为「✅ Supported」，安装方式是 `install.s
 
 > 官方未提供与 Trae Work / Java 的 SDK 或 HTTP 集成方式，也没有公开说明可作为 MCP 服务接入。当前唯一公开的接入路径就是上面的安装脚本 + 斜杠命令。
 
+<!-- asset:code-1 start -->
+```powershell
+iwr -useb https://raw.githubusercontent.com/Egonex-AI/Understand-Anything/main/install.ps1 | iex
+& "$HOME/.understand-anything/repo/install.ps1" -Update
+& "$HOME/.understand-anything/repo/install.ps1" -Uninstall trae
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手：以 Spring 项目为例
 
 假设你刚接手一个 Spring 单体或微服务仓库，想先看清全局再动手。
@@ -107,6 +123,13 @@ Trae 在官方兼容表中列为「✅ Supported」，安装方式是 `install.s
 - 重启 Trae Work 后，输入 `/understand` 能被识别并开始扫描，而不是提示未知命令。
 - 分析完成后，项目下出现 `.ua/knowledge-graph.json`（老项目则是 `.understand-anything/` 目录）。
 - 执行 `/understand-dashboard` 能打开本地网页仪表盘，图谱可缩放、可搜索。
+
+<!-- asset:blog-2 start -->
+![安装成功的四个信号](/img/ai-news/egonex-ai-understand-anything/blog-2.png)
+
+*图：安装成功的四个信号*
+<!-- asset:blog-2 end -->
+
 
 ## 团队协作：把图谱提交进仓库
 

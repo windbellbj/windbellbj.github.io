@@ -49,6 +49,13 @@ news_category: harness
 | WPS PPT 自动化生成 | 5 校招生数据全景示例 | JSON 数据驱动 + 元素类型路由，全自动生成高质量 PPT |
 | pptengine | 通用 WPS PPT 生成引擎 | 路径无关、开箱即用，代码驱动 + JSON 驱动双模式 |
 
+<!-- asset:blog-2 start -->
+![六个可独立使用的模块](/img/ai-news/yb2460-harness-anything/blog-2.png)
+
+*图：六个可独立使用的模块*
+<!-- asset:blog-2 end -->
+
+
 ## 核心概念与工作原理
 
 理解三个关键词，就能看懂整个项目：
@@ -74,6 +81,13 @@ Zotero 部分把学术工作流拆成 27 个 Skill，分 7 大类，并支持把
 | visualization | 4 | 幻灯片 / 示意图 / 海报 / 期刊图表 |
 | analysis | 3 | 探索分析 / 统计 / 证据评估 |
 | pipeline | 2 | 完整学术流水线 / 研究到论文 |
+
+<!-- asset:blog-1 start -->
+![CLI 到应用的调用链](/img/ai-news/yb2460-harness-anything/blog-1.png)
+
+*图：CLI 到应用的调用链*
+<!-- asset:blog-1 end -->
+
 
 ## 环境与前置依赖
 
@@ -149,6 +163,15 @@ Zotero 部分把学术工作流拆成 27 个 Skill，分 7 大类，并支持把
 2. 运行代码驱动示例：`python build_demo.py`，产物在 `out/demo.pptx`
 3. 运行 JSON 驱动示例：`python build_from_json.py`，产物在 `out/from_json.pptx`
 
+<!-- asset:code-1 start -->
+```powershell
+cli-anything-wps document new --type impress --name "演示"
+cli-anything-wps preset apply academic --talk-type defense
+cli-anything-wps export render output.pptx -p pptx
+```
+<!-- asset:code-1 end -->
+
+
 ## 如何确认安装成功
 
 - 执行 `cli-anything-wps --help`，能看到命令组列表即安装成功。
@@ -218,6 +241,17 @@ Hacker News 讨论中，社区关注点集中在「用 CLI 把桌面软件变成
 | 导出 PNG | `cli-anything-photoshop export png --output result.png` |
 | 生成示例 PPT | `python build_demo.py` |
 | JSON 驱动生成 | `python build_from_json.py` |
+
+<!-- asset:code-2 start -->
+```powershell
+cli-anything-zotero skills list
+cli-anything-zotero skills pipeline original_article
+cli-anything-zotero skills pipeline meta_analysis
+cli-anything-zotero skills journal "Nature"
+cli-anything-zotero catalog search "machine learning"
+```
+<!-- asset:code-2 end -->
+
 
 ## 导出格式一览
 

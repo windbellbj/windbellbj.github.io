@@ -1,0 +1,57 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它到底是什么",
+      "caption": "Pi 的 npm 包组成",
+      "mermaid": "graph TD\n  A[Pi] --> B[pi-coding-agent 编码 Agent CLI]\n  A --> C[pi-ai 统一多厂商 LLM API]\n  A --> D[pi-agent-core Agent 运行时]\n  A --> E[pi-tui 终端 UI 库]\n  A --> F[pi-durable 持久化会话 实验性]\n  A --> G[chord 应用组合运行时]\n  A --> H[pi-telemetry 遥测契约]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用 Pi 前需知的风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "没有内置权限系统，默认继承启动用户全部权限",
+          "刻意缺少 sub-agents 与 plan mode",
+          "Pi Durable 被官方定义为实验性",
+          "版本号命名与配置目录位置存在争议"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装：Windows 上的可照做步骤",
+      "language": "powershell",
+      "content": "powershell -c \"irm https://pi.dev/install.ps1 | iex\"\nnode -v\nnpm install -g --ignore-scripts @earendil-works/pi-coding-agent\nnix run github:earendil-works/pi/stable\nnix profile add github:earendil-works/pi/stable\nnix profile upgrade pi\npi update"
+    },
+    {
+      "anchor": "开发与本地构建（可选）",
+      "language": "powershell",
+      "content": "npm install --ignore-scripts\nnpm run build\nnpm run build:offline\nnpm run check\n./test.sh\n./pi-test.sh\nnpm run pack:packages -- --out .artifacts/pi-packages\nnode scripts/use-local-packages.mjs"
+    }
+  ],
+  "xhs": {
+    "product": "Pi 极简可扩展 Agent Ha…",
+    "one_liner": "把统一多模型 LLM API、Agent 循环、终端 UI 和编码 Agent CLI 打包成可改造的工具",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "Pi 的包组成",
+        "mermaid": "graph TD\n  A[Pi] --> B[pi-coding-agent 编码 Agent CLI]\n  A --> C[pi-ai 统一多厂商 LLM API]\n  A --> D[pi-agent-core Agent 运行时]\n  A --> E[pi-tui 终端 UI 库]\n  A --> F[pi-durable 持久化会话 实验性]\n  A --> G[chord 应用组合运行时]\n  A --> H[pi-telemetry 遥测契约]"
+      },
+      {
+        "type": "card",
+        "heading": "使用前必知的风险",
+        "points": [
+          "没有内置权限系统，默认继承启动用户全部权限",
+          "刻意缺少 sub-agents 与 plan mode",
+          "Pi Durable 被官方定义为实验性",
+          "版本号命名与配置目录位置存在争议"
+        ]
+      }
+    ]
+  }
+}

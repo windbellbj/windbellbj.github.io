@@ -57,6 +57,13 @@ DeerFlow 全称 **D**eep **E**xploration and **E**fficient **R**esearch **Flow**
 
 私有知识检索（RAGFlow）、聊天归档、会话目标、手动上下文压缩、智能体浏览器控制、上下文工程、长期记忆、项目与文档架、定时任务（cron）、终端工作台（TUI）、嵌入式 Python 客户端。
 
+<!-- asset:blog-1 start -->
+![两层架构与端口分布](/img/ai-news/bytedance-deer-flow/blog-1.png)
+
+*图：两层架构与端口分布*
+<!-- asset:blog-1 end -->
+
+
 ## 适用场景与它解决的问题
 
 | 场景 | DeerFlow 提供什么 |
@@ -69,6 +76,13 @@ DeerFlow 全称 **D**eep **E**xploration and **E**fficient **R**esearch **Flow**
 | 需要定时跑任务 | 定时任务（cron），并可通过 API 预览 cron 触发时间 |
 
 反过来，如果你的需求只是「在 IDE 里补全 Java 代码」，DeerFlow 属于重型方案，起一套 Docker 服务的成本明显高于收益。
+
+<!-- asset:blog-2 start -->
+![DeerFlow 适用场景](/img/ai-news/bytedance-deer-flow/blog-2.png)
+
+*图：DeerFlow 适用场景*
+<!-- asset:blog-2 end -->
+
 
 ## 环境与前置依赖
 
@@ -136,6 +150,17 @@ DeerFlow 全称 **D**eep **E**xploration and **E**fficient **R**esearch **Flow**
 官方未提供与 Trae Work / Java 的集成方式，也没有公开的 Java SDK。可确认的接入面是：DeerFlow 自身提供 **Gateway API（FastAPI，第三方评测称端口 8001）** 与 **嵌入式 Python 客户端**，并支持作为 **MCP 服务** 对外提供能力。
 
 因此对 Java 后端而言，现实路径只有两条：一是把 DeerFlow 当作独立服务跑起来，Java/Spring 侧通过 HTTP 调用它的 Gateway API；二是如果它暴露 MCP 端点，再考虑在支持 MCP 的客户端里挂载。**具体端点路径、鉴权方式与 MCP 挂载配置，官方未公开说明，请以启动后服务的实际暴露情况为准，不要凭猜测填写配置。**
+
+<!-- asset:code-1 start -->
+```powershell
+git clone https://github.com/bytedance/deer-flow.git
+cd deer-flow
+make setup
+make doctor
+make support-bundle
+```
+<!-- asset:code-1 end -->
+
 
 ## 如何确认安装成功
 

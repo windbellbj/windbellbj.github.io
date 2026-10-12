@@ -34,6 +34,13 @@ news_category: harness
 
 一句话概括：它不是 IDE 里的补全插件，而是一个**能长期在线、越用越懂你的自主智能体**。
 
+<!-- asset:blog-1 start -->
+![Hermes Agent 的四个核心卖点](/img/ai-news/nousresearch-hermes-agent/blog-1.png)
+
+*图：Hermes Agent 的四个核心卖点*
+<!-- asset:blog-1 end -->
+
+
 ## 核心概念与工作原理
 
 | 概念 | 说明 |
@@ -45,6 +52,13 @@ news_category: harness
 | 子智能体 | 可派生隔离的 subagent 并行处理不同工作流；也可写 Python 脚本通过 RPC 调用工具，把多步流水线压缩成零上下文开销的一轮 |
 | 定时自动化 | 内置 cron 调度器，用自然语言描述日报、夜间备份、每周审计等任务，无人值守运行 |
 | 模型无关 | 支持 Nous Portal、OpenRouter、OpenAI、自建 endpoint 等多种 provider，用 `hermes model` 切换，不改代码、不锁定 |
+
+<!-- asset:blog-2 start -->
+![Hermes Agent 核心概念](/img/ai-news/nousresearch-hermes-agent/blog-2.png)
+
+*图：Hermes Agent 核心概念*
+<!-- asset:blog-2 end -->
+
 
 ## 环境与前置依赖
 
@@ -87,6 +101,22 @@ news_category: harness
 
 对 Java 后端开发者而言，现实可行的用法是**并行使用**：在 Trae Work 里写 Spring 代码，同时让 Hermes Agent 在终端或云端承担跨会话的长期任务（例如定时生成日报、跑脚本、做资料检索）。若确实需要打通，只能自行基于其 CLI 或 Python RPC 能力做二次封装，官方暂无现成路径。
 
+<!-- asset:code-1 start -->
+```powershell
+iex (irm https://hermes-agent.nousresearch.com/install.ps1)
+hermes setup
+hermes setup --portal
+hermes model
+hermes tools
+hermes config set
+hermes config get
+hermes
+gateway setup
+hermes gateway start
+```
+<!-- asset:code-1 end -->
+
+
 ## 快速上手
 
 常用命令一览：
@@ -114,6 +144,18 @@ news_category: harness
 4. 若用了 Portal，运行 `hermes portal info` 确认 provider 与 Tool Gateway 已接通。
 
 > **Windows 用户注意**：若杀毒软件（Bitdefender、Windows Defender 等）把 `%LOCALAPPDATA%\hermes\bin\uv.exe` 报为恶意软件，这是**误报**。该文件是 Astral 的 `uv`（Rust 写的 Python 包管理器），基于机器学习的杀毒引擎常误判这类会下载安装包的无签名 Rust 二进制。官方给出了用 GitHub CLI 做 attestation 校验的完整流程，校验通过且哈希比对为 `True` 即可放心。加白名单时请**加整个文件夹**而非文件哈希，因为 Hermes 每次更新 `uv` 哈希都会变：以管理员身份运行 PowerShell 后执行 `Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\hermes\bin"`。
+
+<!-- asset:code-2 start -->
+```powershell
+source ~/.bashrc
+source ~/.zshrc
+hermes doctor
+hermes
+hermes portal info
+Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\hermes\bin"
+```
+<!-- asset:code-2 end -->
+
 
 ## 局限与风险
 
