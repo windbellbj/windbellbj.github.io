@@ -48,9 +48,9 @@ kramdown:
 # 获取 data-repo-id 和 data-category-id 后填入下面两项，评论区才会显示
 giscus:
   repo: windbellbj/windbellbj.github.io
-  repo-id: ""
-  category: Comments
-  category-id: ""
+  repo-id: "R_kgDOVEzkGw"
+  category: Announcements
+  category-id: "DIC_kwDOVEzkG84DH02R"
   mapping: pathname
   reactions-enabled: "1"
   theme: preferred_color_scheme
