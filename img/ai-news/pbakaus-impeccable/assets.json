@@ -1,0 +1,46 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需知的边界",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "只做前端设计，不参与后端逻辑",
+          "需要人工把关，改文案前必须先问",
+          "验证轮次有上限，不无限打磨",
+          "平台差异：Hermes 不装设计 hook"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "快速上手",
+      "language": "powershell",
+      "content": "/impeccable audit blog           # 审计博客首页 + 文章页\n/impeccable critique landing     # UX 设计评审\n/impeccable polish settings      # 交付前最后一轮\n/impeccable harden checkout      # 补错误处理 + 边界情况"
+    }
+  ],
+  "xhs": {
+    "product": "Impeccable",
+    "one_liner": "给 AI 编码助手用的设计语言，让前端不再千篇一律",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "命令即设计词汇",
+        "mermaid": "graph LR\n  A[/impeccable craft] --> B[先定形态再构建]\n  C[/impeccable shape] --> D[写代码前规划UX/UI]\n  E[/impeccable critique] --> F[UX设计评审]\n  G[/impeccable audit] --> H[技术质量检查]\n  I[/impeccable polish] --> J[交付前最后一轮]\n  K[/impeccable harden] --> L[错误处理与边界情况]"
+      },
+      {
+        "type": "card",
+        "heading": "反模式清单",
+        "points": [
+          "不用 Inter、Arial、系统默认字体",
+          "不在彩色背景上用灰字",
+          "不用纯黑纯灰，永远带色调",
+          "不把所有东西都塞进卡片、不嵌套卡片"
+        ]
+      }
+    ]
+  }
+}

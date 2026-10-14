@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它到底解决什么问题",
+      "caption": "Paperclip 三步使用路径",
+      "mermaid": "flowchart LR\n  A[定义目标] --> B[招人组队]\n  B --> C[审批并开跑]\n  C --> D[看板监控]"
+    },
+    {
+      "type": "card",
+      "anchor": "核心概念：四根支柱",
+      "caption": "四根支柱",
+      "card": {
+        "heading": "四根支柱",
+        "points": [
+          "Agentic Task Manager：任务、审批与评审关卡",
+          "Org Chart for Agents：人类 + Agent 混合组织图",
+          "Agent Employee Training：Skill Studio 与共享技能",
+          "Agentic OS：跨供应商运行时与成本控制"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置（Windows PowerShell）",
+      "language": "powershell",
+      "content": "npx paperclipai onboard --yes"
+    }
+  ],
+  "xhs": {
+    "product": "Paperclip",
+    "one_liner": "开源的多 Agent 编排控制台，把不同 Agent 编进一张组织架构图",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "三步使用路径",
+        "mermaid": "flowchart LR\n  A[定义目标] --> B[招人组队]\n  B --> C[审批并开跑]\n  C --> D[看板监控]"
+      },
+      {
+        "type": "card",
+        "heading": "四根支柱",
+        "points": [
+          "Agentic Task Manager：任务、审批与评审关卡",
+          "Org Chart for Agents：人类 + Agent 混合组织图",
+          "Agent Employee Training：Skill Studio 与共享技能",
+          "Agentic OS：跨供应商运行时与成本控制"
+        ]
+      }
+    ]
+  }
+}

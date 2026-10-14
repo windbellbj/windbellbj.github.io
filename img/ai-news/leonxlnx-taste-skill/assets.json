@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "核心概念与工作原理",
+      "caption": "一次构建的六步流程",
+      "mermaid": "flowchart TD\nA[读取需求简报] --> B[脚本发三张方向牌]\nB --> C[选一个方向]\nC --> D[一句话绑定主题与方向]\nD --> E[用真实图片构建并标注出处]\nE --> F[真实浏览器三宽度检查]\nF --> G[看截图修最严重三个问题]\nG --> F"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需注意的几点",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "v2 实验性且已是默认版本",
+          "默认技能不适合仪表盘与应用内界面",
+          "一次构建约 30 到 45 分钟、几十万 token",
+          "图片仅限开放图库授权，建议替换自有素材"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与配置",
+      "language": "powershell",
+      "content": "npx skills add https://github.com/Leonxlnx/taste-skill\nnpx skills add https://github.com/Leonxlnx/taste-skill --skill \"design-taste-frontend\""
+    }
+  ],
+  "xhs": {
+    "product": "Taste Skill",
+    "one_liner": "让编码 Agent 像设计师一样做网站，而不是拼出千篇一律的落地页",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "六步构建流程",
+        "mermaid": "flowchart TD\nA[读取需求简报] --> B[脚本发三张方向牌]\nB --> C[选一个方向]\nC --> D[一句话绑定主题与方向]\nD --> E[用真实图片构建并标注出处]\nE --> F[真实浏览器三宽度检查]\nF --> G[看截图修最严重三个问题]\nG --> F"
+      },
+      {
+        "type": "card",
+        "heading": "适用场景",
+        "points": [
+          "从零做新的公开页面：taste-skill",
+          "改进已有页面：redesign-skill",
+          "视觉方向已定：soft/minimalist/brutalist",
+          "先出图再写代码：image-to-code-skill"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "title": "让AI Agent自己上网查资料",
+  "body": "你的 AI Agent 写代码很溜，一让它上网查东西就抓瞎。\n\nYouTube 拿不到字幕、Twitter API 要付费、Reddit 匿名接口 403、小红书必须登录、网页抓回来一堆 HTML 标签。每个平台都有自己的门槛，一个一个踩坑太累了。\n\n🎯 Agent Reach 就是来解决这个问题的。\n\n它是一个「能力层」工具，替你的 Agent 选好、装好、体检好各平台的读取与搜索通道。你只需要复制一段安装指令给 Agent，几分钟后它就能读推特、搜 Reddit、看 YouTube 字幕、刷小红书、查 GitHub。\n\n⚡️ 核心能力：\n\n每个平台都有首选和备选方案，某条路失效了就自动换下一条。一条命令就能看到每个渠道当前走哪条路、哪个通、哪个不通。\n\n零配置就能用的有：网页阅读、YouTube 字幕、RSS、GitHub 公开仓库、Twitter 单条推文、B站搜索、V2EX 热帖。\n\n需要登录态才能解锁的：全网语义搜索、GitHub 私有仓库和提 PR、Twitter 搜索和时间线、Reddit 搜索和评论、小红书搜索和评论、LinkedIn、Boss直聘、雪球、小宇宙播客。\n\n🧩 适合谁：\n\n已经在用 Claude Code、Cursor、Windsurf 等命令行 Agent 的开发者。想让 Agent 帮你调研技术话题在 Twitter 和 Reddit 上的真实评价，或者总结 YouTube 和 B站技术视频的字幕内容，或者查 GitHub 仓库和 Issue 讨论。\n\n⚠️ 不适合谁：\n\n需要稳定 SLA 的生产级数据管道，或者需要官方授权 API 合规审计的商业采集。它面向的是个人开发者日常「让 Agent 上网看看」的轻量需求。\n\n✅ 上手门槛和费用：\n\n所有工具开源、所有 API 免费。本地电脑不需要代理，部署在服务器上才需要，约 1 美元一个月。Python 3.10+ 就能跑。\n\n安装默认只检查环境，不会自动改系统。只有你明确允许时才会安装系统依赖。\n\n⚠️ 使用 Cookie 登录的平台有封号风险，务必用专用小号。Cookie 只存在本地，权限 600，不上传不外传。\n\n值不值得试？如果你已经在用命令行 Agent，想让它在网上帮你找东西，这个工具能省掉大量配置和踩坑时间。从零配置渠道开始试，装完即用，不需要任何登录态。\n\n完整版图文教程在我主页。",
+  "tags": [
+    "#AI编程",
+    "#AI工具",
+    "#Agent",
+    "#效率工具",
+    "#程序员"
+  ],
+  "category": "agent-cli",
+  "category_name": "编码Agent",
+  "slug": "panniantong-agent-reach",
+  "date": "2026-10-15"
+}

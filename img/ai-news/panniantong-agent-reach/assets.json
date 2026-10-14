@@ -1,0 +1,65 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "核心概念：能力层，而不是又一个工具",
+      "caption": "能力层负责选型安装体检路由",
+      "card": {
+        "heading": "能力层做什么",
+        "points": [
+          "负责选型、安装、体检、路由",
+          "不负责底层读取本身",
+          "读取由 Agent 直接调用上游工具",
+          "每个平台是首选加备选的有序后端列表"
+        ]
+      }
+    },
+    {
+      "type": "card",
+      "anchor": "给 Java 后端程序员的试用建议",
+      "caption": "Java 后端试用五步",
+      "card": {
+        "heading": "试用建议",
+        "points": [
+          "先确认 Trae Work 能否执行 shell 命令",
+          "从零配置渠道开始试",
+          "用 agent-reach doctor 确认状态",
+          "需要登录态的平台一律用专用小号"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "更新与卸载",
+      "language": "powershell",
+      "content": "agent-reach uninstall\nagent-reach uninstall --dry-run\nagent-reach uninstall --keep-config\npip uninstall agent-reach"
+    }
+  ],
+  "xhs": {
+    "product": "Agent Reach",
+    "one_liner": "替你的 AI Agent 选好装好各平台读取与搜索通道",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "装好即用的平台",
+        "points": [
+          "网页：阅读任意网页",
+          "YouTube：字幕提取加视频搜索",
+          "RSS：阅读任意 RSS/Atom 源",
+          "GitHub：读公开仓库加搜索"
+        ]
+      },
+      {
+        "type": "card",
+        "heading": "局限与风险",
+        "points": [
+          "Cookie 登录平台有封号风险",
+          "务必使用专用小号",
+          "凭据只存本机权限 600",
+          "接入方式会换代"
+        ]
+      }
+    ]
+  }
+}

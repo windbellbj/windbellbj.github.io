@@ -1,0 +1,65 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "核心概念与工作原理",
+      "caption": "五个核心概念",
+      "card": {
+        "heading": "理解 Archify 的五个词",
+        "points": [
+          "Agent Skill：以技能形式挂载到编码 Agent",
+          "类型化 JSON IR：先落成有 schema 的中间表示",
+          "校验：交付前的原子化检查，失败给规则代码",
+          "上次良好状态：新候选通过全部关卡才刷新"
+        ]
+      }
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需知的边界",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "不是通用绘图编辑器，也不做仪表盘",
+          "不声称运行时影响，不凭空发明拓扑",
+          "源证据需显式请求才标记 SRC n",
+          "第三方服务与付费计划由各自提供方运营"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "如何确认安装与运行成功",
+      "language": "powershell",
+      "content": "node archify/bin/archify.mjs guide \"Show an API request with Redis cache miss\""
+    }
+  ],
+  "xhs": {
+    "product": "Archify",
+    "one_liner": "把描述直接变成可探索的图",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "它解决什么问题",
+        "points": [
+          "不用打开绘图工具，也不手写 Mermaid",
+          "输出单个 HTML，内联 SVG，可离线打开",
+          "先经过校验再交付，才替换上次良好输出",
+          "不是通用绘图编辑器，也不做仪表盘"
+        ]
+      },
+      {
+        "type": "card",
+        "heading": "支持的图表类型",
+        "points": [
+          "Architecture：它由什么组成",
+          "Workflow：接下来发生什么",
+          "Sequence：谁在什么时候说了什么",
+          "Data Flow：东西都流到哪去了"
+        ]
+      }
+    ]
+  }
+}
