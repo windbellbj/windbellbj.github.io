@@ -1,0 +1,51 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "怎么工作",
+      "caption": "只读链接设备的工作方式",
+      "mermaid": "flowchart LR\n  A[手机 WhatsApp] -->|扫码链接一次| B[Cloudflare 服务]\n  C[代理发起请求] --> B\n  D[每天一次] --> B\n  B -->|收取排队消息| E[Durable Object SQLite]\n  E -->|搜索阅读| C\n  B -.->|不保持长连接| A"
+    },
+    {
+      "type": "card",
+      "anchor": "社区怎么看",
+      "caption": "HN 讨论聚焦隐私质疑",
+      "card": {
+        "heading": "社区隐私争议",
+        "points": [
+          "Cloudflare 可见私信流量",
+          "对话另一方从未同意",
+          "通讯录上传早已发生",
+          "对话安全取决于对方"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么开始试用",
+      "language": "powershell",
+      "content": "git clone https://github.com/finereli/whatsapp-mcp\nnpm install\nnpx wrangler kv namespace create OAUTH_KV\nnpx wrangler secret put OWNER_PASSWORD\nnpm run deploy\nclaude mcp add --transport http whatsapp https://your-url/mcp"
+    }
+  ],
+  "xhs": {
+    "product": "WhatsApp MCP",
+    "one_liner": "在 Cloudflare 上免费读取聊天记录的只读 MCP 服务",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "只读链接怎么工作",
+        "mermaid": "flowchart LR\n  A[手机 WhatsApp] -->|扫码链接| B[Cloudflare 服务]\n  C[代理请求] --> B\n  B --> E[SQLite 数据库]\n  E -->|搜索阅读| C"
+      },
+      {
+        "type": "card",
+        "heading": "试用前想清楚",
+        "points": [
+          "需 Workers Paid 计划",
+          "Node 20 或以上",
+          "另一方隐私不由你定"
+        ]
+      }
+    ]
+  }
+}

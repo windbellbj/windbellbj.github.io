@@ -1,0 +1,7 @@
+flowchart LR
+  A[手机 WhatsApp] -->|"扫码链接一次"| B[Cloudflare 服务]
+  C[代理发起请求] --> B
+  D[每天一次] --> B
+  B -->|"收取排队消息"| E[Durable Object SQLite]
+  E -->|"搜索阅读"| C
+  B -.->|"不保持长连接"| A
