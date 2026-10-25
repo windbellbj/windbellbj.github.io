@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "为什么值得看：架构上的两个关键选择",
+      "caption": "事件日志+无状态worker+租约重试",
+      "mermaid": "flowchart LR\n  A[输入] --> B[Postgres事件日志]\n  B --> C[无状态worker]\n  C --> D[模型输出/工具调用]\n  D --> B\n  C --> E[事务提交]\n  E --> F[租约过期重试]\n  F --> C"
+    },
+    {
+      "type": "card",
+      "anchor": "对 Java 后端 / Windows + Trae Work 用户的价值",
+      "caption": "Java后端视角的价值与提醒",
+      "card": {
+        "heading": "Java后端视角",
+        "points": [
+          "不是IDE插件，不增强Trae Work编码",
+          "适合自托管Agent后端服务",
+          "omnarad主动外连，对Windows内网友好",
+          "暂无Java SDK，示例以CLI/YAML为主"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么开始试用",
+      "language": "powershell",
+      "content": "npx omnara agents launch --file agent.yaml --name \"Machine assistant\" --message \"...\"\nnpx omnara agents chat <agent-id>"
+    }
+  ],
+  "xhs": {
+    "product": "Omnara",
+    "one_liner": "开源可自托管的托管式Agent平台，对标Claude Managed Agents",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "核心架构",
+        "mermaid": "flowchart LR\n  A[输入] --> B[Postgres事件日志]\n  B --> C[无状态worker]\n  C --> D[模型输出/工具调用]\n  D --> B\n  C --> E[事务提交]\n  E --> F[租约过期重试]\n  F --> C"
+      },
+      {
+        "type": "card",
+        "heading": "Java后端价值",
+        "points": [
+          "不是IDE插件，不增强Trae Work",
+          "适合自托管Agent后端服务",
+          "omnarad主动外连，内网友好",
+          "暂无Java SDK，示例以CLI/YAML为主"
+        ]
+      }
+    ]
+  }
+}

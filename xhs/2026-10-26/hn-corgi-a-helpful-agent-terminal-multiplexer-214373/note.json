@@ -1,0 +1,15 @@
+{
+  "title": "多开AI编码Agent，终于不乱了",
+  "body": "同时开三个编码 Agent，最怕不知道谁在等你。\n\nCorgi 就是冲这个痛点来的：一个面向人和 Agent 的终端多路复用器，把多个会话收进一个界面。\n\n⚡️ 它先解决「看不见」的问题。\n每个 Agent 会被标成工作中、需要你、已完成、空闲，按 F1 直接跳到下一个未读会话，不用挨个窗口翻。\n\n🎯 核心能力集中在四件事：\n统一启动器管理多个 CLI Agent 和多账号；token 用量视图回答钱花在哪；活动追踪和改动汇总让你一屏看清它碰过哪些文件；后台常驻，关掉界面进程照样跑。\n\n🧩 还带工作区级的 CPU、内存、GPU 占用，以及 worktree 管理。终端细节也照顾到了，比如粘贴图片、链接一键复制、撤销关闭标签页。\n\n✅ 适合谁？\n经常同时跑 Claude Code、Codex 这类终端 Agent、需要多任务编排的人。如果你主要待在图形界面里写 Java，很少开终端 Agent，收益有限，可以跳过。\n\n⚠️ 上手门槛要说清：\n支持 macOS、Linux 和 WSL，没有原生 Windows 版本，Windows 用户得走 WSL。部分终端特性还依赖特定终端版本，组合体验没有公开说明。安装是一条脚本，费用方面资料里没提收费。\n\n值不值得试？\n如果你已经被多 Agent 切窗口折磨，它值得花半小时试一轮；如果你只有一个 Agent 会话，暂时用不上。\n\n完整版图文教程在我主页。",
+  "tags": [
+    "#AI编程",
+    "#AI工具",
+    "#编码Agent",
+    "#终端效率",
+    "#程序员效率"
+  ],
+  "category": "harness",
+  "category_name": "Agent Harness",
+  "slug": "hn-corgi-a-helpful-agent-terminal-multiplexer-214373",
+  "date": "2026-10-26"
+}

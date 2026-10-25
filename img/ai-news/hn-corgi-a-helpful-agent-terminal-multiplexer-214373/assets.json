@@ -1,0 +1,65 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "解决什么问题",
+      "caption": "Corgi 解决的六个痛点",
+      "card": {
+        "heading": "Corgi 解决的痛点",
+        "points": [
+          "Agent 状态总览：working / needs you / finished / idle",
+          "统一启动器管理 Codex / Claude Code / Pi",
+          "Token 用量视图，回答花在哪",
+          "活动追踪与文件改动汇总"
+        ]
+      }
+    },
+    {
+      "type": "card",
+      "anchor": "对 Java / Spring 程序员的实际价值",
+      "caption": "Java 程序员要不要用",
+      "card": {
+        "heading": "是否值得用",
+        "points": [
+          "不是 Java 专属工具",
+          "不直接提升 Spring 代码质量",
+          "多 CLI Agent 并行时有收益",
+          "主要用 Trae Work 图形界面可跳过"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "平台与安装",
+      "language": "powershell",
+      "content": "curl -fsSL https://corgi.computer/install.sh | bash"
+    }
+  ],
+  "xhs": {
+    "product": "Corgi",
+    "one_liner": "面向人和编码 Agent 的终端多路复用器",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "核心能力一览",
+        "points": [
+          "Agent 状态总览，F1 跳转",
+          "统一启动器管理多个 Agent",
+          "Token 用量视图",
+          "文件改动集中查看"
+        ]
+      },
+      {
+        "type": "card",
+        "heading": "试用前要知道",
+        "points": [
+          "支持 macOS、Linux、WSL",
+          "没有原生 Windows 版本",
+          "图片粘贴需 Ghostty Nightly",
+          "corgi --skill 教会 Agent"
+        ]
+      }
+    ]
+  }
+}

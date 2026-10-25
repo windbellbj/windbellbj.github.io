@@ -1,0 +1,15 @@
+{
+  "title": "后端工程师的Agent持久化方案",
+  "body": "你的Agent是不是一关笔记本就失联？Omnara把Agent循环搬到了云端，状态存进Postgres，重启不丢、空闲不烧钱。\n\n它解决的核心痛点：本地跑的Agent进程，合盖就停，搬到云上又要同步代码和状态。Omnara用一次API调用创建Agent，它负责跑循环、分配沙箱、管理权限，状态持久化在Postgres里。\n\n⚡️ 关键设计：日志即Agent。输入、模型输出、工具调用都作为追加式事件日志存在Postgres中，循环跑在无状态worker上，每轮一个事务提交，worker挂了自动重试。\n\n🎯 控制面与执行面分离。跑循环的机器不是执行命令的机器。任何有网的macOS/Linux机器跑个小守护进程主动外连，不需要开放入站端口，笔记本就能当执行机。\n\n🧩 适合谁：需要多租户、可恢复、按需唤醒的Agent服务的后端工程师。如果你只想要本地编码助手，它的卖点对你意义不大。\n\n✅ 上手门槛：官方快速开始用Node.js 22+的CLI，自托管需要Postgres和Docker。许可证Apache-2.0，可商用自托管，也有云服务。Windows用户建议跑在WSL或Linux机器上。\n\n⚠️ 注意：它不是AI编程助手，也不是IDE插件。Java/Spring生态暂无现成SDK，官方示例以CLI和YAML为主。\n\n值不值得试？想给团队做可自托管的Agent后端，它的架构取舍值得花半小时读；想立刻提升写代码效率，这条可以先跳过。\n\n完整版图文教程在我主页。",
+  "tags": [
+    "#AI编程",
+    "#Agent开发",
+    "#后端架构",
+    "#开源项目",
+    "#Postgres"
+  ],
+  "category": "harness",
+  "category_name": "Agent Harness",
+  "slug": "hn-omnara-open-source-alternative-to-claude-man-183892",
+  "date": "2026-10-26"
+}
