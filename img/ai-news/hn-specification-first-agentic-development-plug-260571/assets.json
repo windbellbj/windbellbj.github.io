@@ -1,0 +1,51 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它是什么",
+      "caption": "Spec-First 四步流程",
+      "mermaid": "flowchart LR\n  A[/create-spec/] --> B[/review-spec/]\n  B --> C[/apply-spec/]\n  C --> D[/deliver-spec/]\n  D --> E[PR 附带规格]"
+    },
+    {
+      "type": "card",
+      "anchor": "解决什么问题",
+      "caption": "规格约束 AI 的四个要点",
+      "card": {
+        "heading": "规格作为红线",
+        "points": [
+          "规格先行：明确目标与完成标准",
+          "双重校验：脚本+新 Agent 审查",
+          "门禁把关：构建测试通过才提交",
+          "并行安全：独立分支与 worktree"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么开始试用",
+      "language": "powershell",
+      "content": "/plugin marketplace add holgerleichsenring/specification-first-agentic-development"
+    }
+  ],
+  "xhs": {
+    "product": "Spec-First",
+    "one_liner": "先写规格再写代码，约束 AI 编码",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "四步流程",
+        "mermaid": "flowchart LR\n  A[/create-spec/] --> B[/review-spec/]\n  B --> C[/apply-spec/]\n  C --> D[/deliver-spec/]"
+      },
+      {
+        "type": "card",
+        "heading": "社区观点",
+        "points": [
+          "支持：规格入 Git 可追溯",
+          "质疑：规格易过时维护成本高",
+          "折中：聚焦意图和决策"
+        ]
+      }
+    ]
+  }
+}
