@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它到底解决什么问题",
+      "caption": "OmniRoute 统一网关示意",
+      "mermaid": "flowchart LR\n  A[OpenAI key] --> G[OmniRoute 本地网关]\n  B[Anthropic key] --> G\n  C[Groq key] --> G\n  D[本地 Ollama] --> G\n  G --> E[统一端点 :20128/v1]\n  E --> F[客户端]\n  G --> H[配额感知自动回退]\n  G --> I[上下文压缩]"
+    },
+    {
+      "type": "card",
+      "anchor": "局限与风险",
+      "caption": "使用前需注意的风险",
+      "card": {
+        "heading": "局限与风险",
+        "points": [
+          "尚未进入 LTS，迭代很快",
+          "12 家提供商被标记条款风险",
+          "Web cookie 接入稳定性需自评",
+          "MCP/Docker/Trae 文档有缺口"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "安装与启动（Windows PowerShell）",
+      "language": "powershell",
+      "content": "npx omniroute"
+    }
+  ],
+  "xhs": {
+    "product": "OmniRoute",
+    "one_liner": "MIT 开源的 AI 网关，把多家提供商收敛到一个 OpenAI 兼容端点",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "统一端点与自动回退",
+        "mermaid": "flowchart LR\n  A[多个提供商 key] --> G[OmniRoute 网关]\n  G --> E[统一端点 :20128/v1]\n  G --> R[配额耗尽自动回退]\n  G --> C[上下文压缩]"
+      },
+      {
+        "type": "card",
+        "heading": "免费额度怎么算",
+        "points": [
+          "484 条免费额度条目",
+          "34 个可循环池键",
+          "头条约 1.62B tokens/月",
+          "理论聚合值，非开箱即得"
+        ]
+      }
+    ]
+  }
+}

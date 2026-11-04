@@ -1,0 +1,9 @@
+flowchart LR
+  A[OpenAI key] --> G[OmniRoute 本地网关]
+  B[Anthropic key] --> G
+  C[Groq key] --> G
+  D[本地 Ollama] --> G
+  G --> E[统一端点 :20128/v1]
+  E --> F[客户端]
+  G --> H[配额感知自动回退]
+  G --> I[上下文压缩]
