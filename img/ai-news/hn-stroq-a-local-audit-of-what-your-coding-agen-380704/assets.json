@@ -1,0 +1,46 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "对 Trae Work 用户的现实判断",
+      "caption": "Trae Work 用户使用建议",
+      "card": {
+        "heading": "Trae Work 用户使用建议",
+        "points": [
+          "官方支持 Claude Code、Cursor、Codex CLI 等",
+          "Trae Work 是否支持暂无公开资料",
+          "Windows 缓存路径与 hooks 落点暂无公开资料",
+          "先用只读审计，确认价值后再试 init"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么开始试用",
+      "language": "powershell",
+      "content": "npx @stroq/cli\nnpx @stroq/cli show 1\nnpx @stroq/cli init\nnpx @stroq/cli inspect\nnpx @stroq/cli why\nnpx @stroq/cli attack\nnpx @stroq/cli uninstall"
+    }
+  ],
+  "xhs": {
+    "product": "Stroq",
+    "one_liner": "本地运行的 AI 编码 Agent 安全审计工具",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "Stroq 核心能力",
+        "mermaid": "flowchart TD\n  A[Agent 会话记录] --> B[事后审计]\n  B --> C[生成卡片]\n  C --> D[显示命令来源]\n  C --> E[显示密钥名]\n  F[工具调用] --> G[事前拦截]\n  G --> H[拒绝 curl | sh]\n  G --> I[拒绝密钥外泄]\n  G --> J[重复文本先询问]"
+      },
+      {
+        "type": "card",
+        "heading": "社区评价与边界",
+        "points": [
+          "审计不能防危险命令，太晚了",
+          "hooks 是过滤器，不是沙箱",
+          "审计能发现策略漏洞",
+          "inspect 可识别 .git/hooks 并告警"
+        ]
+      }
+    ]
+  }
+}
