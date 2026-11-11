@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "它是什么",
+      "caption": "Modern Web Guidance 三件套",
+      "card": {
+        "heading": "它是什么",
+        "points": [
+          "Agent Skill：调优技能描述，前端任务可激活",
+          "CLI：按需检索指南注入 Agent 上下文",
+          "legacy-scan：确定性扫描识别过时写法",
+          "200+ 篇 Web 专家最佳实践，开源 Apache-2.0"
+        ]
+      }
+    },
+    {
+      "type": "mermaid",
+      "anchor": "怎么开始试用",
+      "caption": "四步试用流程",
+      "mermaid": "flowchart TD\nA[安装技能包] --> B[search 检索指南]\nB --> C[retrieve 按 ID 取单篇]\nC --> D[legacy-scan 扫描旧写法]\nD --> E[手动注入 Trae 上下文]"
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么开始试用",
+      "language": "powershell",
+      "content": "DISABLE_TELEMETRY=1 npx modern-web-guidance@latest install\nDISABLE_TELEMETRY=1 npx modern-web-guidance@latest search \"animate dialog modal\"\nnpx modern-web-guidance@latest retrieve \"animate-to-from-top-layer\"\nDISABLE_TELEMETRY=1 npx modern-web-guidance@latest legacy-scan ./src"
+    }
+  ],
+  "xhs": {
+    "product": "Modern Web Guidan…",
+    "one_liner": "用 200+ 条现代 Web 最佳实践，把 Agent 拉回原生 API 时代",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "它是什么",
+        "points": [
+          "Agent Skill：前端任务可激活",
+          "CLI：按需检索指南注入上下文",
+          "legacy-scan：扫描过时写法",
+          "200+ 篇最佳实践，开源 Apache-2.0"
+        ]
+      },
+      {
+        "type": "mermaid",
+        "heading": "四步试用流程",
+        "mermaid": "flowchart TD\nA[安装技能包] --> B[search 检索指南]\nB --> C[retrieve 取单篇]\nC --> D[legacy-scan 扫描旧写法]\nD --> E[手动注入 Trae 上下文]"
+      }
+    ]
+  }
+}
