@@ -1,0 +1,65 @@
+{
+  "blog_figures": [
+    {
+      "type": "card",
+      "anchor": "它是什么",
+      "caption": "AgentRun 四项核心能力",
+      "card": {
+        "heading": "AgentRun 在 Agent 周围做四件事",
+        "points": [
+          "自学习：保留笔记、skill 或工作流",
+          "持久执行：运行存统一存储，重启继续",
+          "环境沙箱：按任务配 sandbox、桌面、手机或浏览器",
+          "控制面：审批、花费上限、统一控制台"
+        ]
+      }
+    },
+    {
+      "type": "card",
+      "anchor": "Java 程序员 / Windows + Trae Work 视角",
+      "caption": "Windows + Trae Work 视角要点",
+      "card": {
+        "heading": "关注但暂不必迁移",
+        "points": [
+          "本地仅 macOS/Linux，需 Node 24.22.3+",
+          "Trae Work 不在官方兼容名单",
+          "项目为 Node/TypeScript 生态",
+          "可借鉴沉淀 skill/工作流思路"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么开始试用",
+      "language": "powershell",
+      "content": "npx @parcha/agentrun"
+    }
+  ],
+  "xhs": {
+    "product": "AgentRun",
+    "one_liner": "开源托管式 Agent 平台，叠加自学习、持久执行和控制台",
+    "figures": [
+      {
+        "type": "card",
+        "heading": "AgentRun 四项能力",
+        "points": [
+          "自学习：保留笔记、skill 或工作流",
+          "持久执行：运行存统一存储，重启继续",
+          "环境沙箱：按任务配 sandbox、桌面、手机或浏览器",
+          "控制面：审批、花费上限、统一控制台"
+        ]
+      },
+      {
+        "type": "card",
+        "heading": "Windows 用户注意",
+        "points": [
+          "本地仅 macOS/Linux，需 Node 24.22.3+",
+          "Windows 可走托管版 console.agentrun.ai",
+          "Trae Work 不在官方兼容名单",
+          "可借鉴沉淀 skill/工作流思路"
+        ]
+      }
+    ]
+  }
+}
