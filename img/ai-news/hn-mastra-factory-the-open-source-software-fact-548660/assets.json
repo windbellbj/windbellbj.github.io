@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它是什么",
+      "caption": "Factory 的智能体看板流程",
+      "mermaid": "flowchart LR\nA[triage] --> B[plan]\nB --> C[build]\nC --> D[review]\nD --> E[shipped]\nF[Slack @ 它] --> A"
+    },
+    {
+      "type": "card",
+      "anchor": "为什么值得关注",
+      "caption": "官方量化数据",
+      "card": {
+        "heading": "关键数据",
+        "points": [
+          "Mastra 周下载量接近 400 万",
+          "团队每周合并数百个 PR",
+          "上周 Factory 自动开+合并 238 个 PR",
+          "上周人类合并 630 个 PR"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么开始试用",
+      "language": "powershell",
+      "content": "npm create factory"
+    }
+  ],
+  "xhs": {
+    "product": "Mastra Factory",
+    "one_liner": "可在 Slack 里 @ 的智能体看板，自动跑 PR 流水线",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "智能体看板流程",
+        "mermaid": "flowchart LR\nA[triage] --> B[plan]\nB --> C[build]\nC --> D[review]\nD --> E[shipped]"
+      },
+      {
+        "type": "card",
+        "heading": "社区讨论焦点",
+        "points": [
+          "讨论集中在关闭外部贡献者 PR",
+          "低价值 PR 数量暴涨",
+          "换用其他 issue 追踪器可减少自动 PR",
+          "下一个前沿是只修真正重要的 issue"
+        ]
+      }
+    ]
+  }
+}

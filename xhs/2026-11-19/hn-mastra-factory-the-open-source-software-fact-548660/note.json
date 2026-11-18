@@ -1,0 +1,15 @@
+{
+  "title": "能@的AI看板，一周自动合238个PR",
+  "body": "维护大型仓库的PR和issue，是不是已经把你拖到没时间写代码？\nMastra团队开源了他们自用的「软件工厂」，一周自动开+合并238个PR。\n\n🎯 它解决什么痛点\n把triage、plan、build、review、shipped这条流水线，交给一个可配置的智能体看板。\n你可以在Slack里直接@它，让它跑长时任务。\n\n⚡️ 核心能力\n持久化智能体支撑长时间会话，对话式记忆跨会话保留上下文。\n带来源引用的markdown wiki负责注入团队知识，信号机制能订阅PR评论并接入会话。\n还有可定制的云沙箱，内置编码harness。\n\n🧩 实际怎么用\n资深工程师会并行开多个会话，比如「把最老的20个issue都triage一遍」。\n也能接入bug和漏洞扫描器，让流程自动流转。\n\n✅ 适合谁\n适合维护大型开源仓库、PR和issue量爆炸的团队。\n技术栈是TypeScript加Slack加GitHub，不是Java/Spring生态。\n如果你用Trae Work写Java业务代码，这个工具帮不上忙，建议直接跳过。\n\n⚠️ 上手门槛和费用\n项目完全开源，可以跑在自己的基础设施上，官方也提供托管版本。\n需要Node/npm环境，系统要求和Windows支持情况官方没公开说明。\n\n值不值得试？\n如果你正被低价值PR淹没，它值得花时间评估；只想提升日常编码效率的话，先收藏理念就好。\n它最值得借鉴的一点：把流程做成可@的智能体会话，只修真正重要的issue。\n\n完整版图文教程在我主页。",
+  "tags": [
+    "#AI工具",
+    "#AI编程",
+    "#开源",
+    "#智能体",
+    "#效率提升"
+  ],
+  "category": "harness",
+  "category_name": "Agent Harness",
+  "slug": "hn-mastra-factory-the-open-source-software-fact-548660",
+  "date": "2026-11-19"
+}
