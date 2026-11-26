@@ -1,0 +1,52 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它解决什么问题",
+      "caption": "AAE 的四步循环",
+      "mermaid": "flowchart LR\n  A[设计:可证伪假设] --> B[分析:预测方向与幅度]\n  B --> C[实现:最小改动+断言]\n  C --> D[实验:跑基准]\n  D -->|更快且正确| E[保留补丁]\n  D -->|否则| F[回滚]"
+    },
+    {
+      "type": "card",
+      "anchor": "你会拿到什么",
+      "caption": "AAE 的四类产出",
+      "card": {
+        "heading": "你会拿到什么",
+        "points": [
+          "更快且仍正确的代码",
+          "每个改动一个 Git 补丁",
+          "PDF 报告：指标轨迹与假设页",
+          "共享知识库：优化技巧与实验结果"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [
+    {
+      "anchor": "怎么开始试用",
+      "language": "powershell",
+      "content": "/plugin install aae --marketplace CHSZLab/AgenticAlgorithmEngineering\n/aae:aae make the solver in src/ faster on the graphs in data/"
+    }
+  ],
+  "xhs": {
+    "product": "AAE 算法工程 Skill",
+    "one_liner": "把算法工程的可证伪假设循环交给 AI Agent 自动执行",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "AAE 四步循环",
+        "mermaid": "flowchart LR\n  A[设计:可证伪假设] --> B[分析:预测效果]\n  B --> C[实现:最小改动+断言]\n  C --> D[实验:跑基准]\n  D -->|更快且正确| E[保留]\n  D -->|否则| F[回滚]"
+      },
+      {
+        "type": "card",
+        "heading": "官方效果速览",
+        "points": [
+          "VieCut 最小割快 8.9x",
+          "KaHIP kaffpa 快 3.9x",
+          "Hochbaum 最大流快 3.0x",
+          "FREIGHT 快 1.82x 输出逐位一致"
+        ]
+      }
+    ]
+  }
+}

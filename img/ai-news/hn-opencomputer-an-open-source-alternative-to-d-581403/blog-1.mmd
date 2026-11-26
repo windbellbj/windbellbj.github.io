@@ -1,0 +1,7 @@
+flowchart LR
+  A[Slack @Computer] --> B[Calvin 网关]
+  B --> C[Claude Code / Codex / OpenCode]
+  C --> D[rootless Podman 隔离]
+  D --> E[本地磁盘 + git 存储]
+  B --> F[Cloudflare Workers]
+  C --> G[Pull Request]

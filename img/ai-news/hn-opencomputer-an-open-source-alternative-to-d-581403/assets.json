@@ -1,0 +1,46 @@
+{
+  "blog_figures": [
+    {
+      "type": "mermaid",
+      "anchor": "它是什么",
+      "caption": "OpenComputer 核心架构",
+      "mermaid": "flowchart LR\n  A[Slack @Computer] --> B[Calvin 网关]\n  B --> C[Claude Code / Codex / OpenCode]\n  C --> D[rootless Podman 隔离]\n  D --> E[本地磁盘 + git 存储]\n  B --> F[Cloudflare Workers]\n  C --> G[Pull Request]"
+    },
+    {
+      "type": "card",
+      "anchor": "为什么值得试",
+      "caption": "官方卖点：快与省",
+      "card": {
+        "heading": "为什么值得试",
+        "points": [
+          "首个 commit 落地 24s，对比 53–72s",
+          "4 个 PR 全开出且 CI 绿 56s，Devin 185s",
+          "首次 push 24s，对比平均 62s",
+          "每月超约 640 会话小时，常开 4 vCPU VM 更省"
+        ]
+      }
+    }
+  ],
+  "code_blocks": [],
+  "xhs": {
+    "product": "OpenComputer",
+    "one_liner": "可自托管的开源云端编码 Agent，Slack 派活产出 PR",
+    "figures": [
+      {
+        "type": "mermaid",
+        "heading": "OpenComputer …",
+        "mermaid": "flowchart LR\n  A[Slack @Computer] --> B[Calvin 网关]\n  B --> C[Claude Code / Codex / OpenCode]\n  C --> D[rootless Podman 隔离]\n  D --> E[本地磁盘 + git 存储]\n  B --> F[Cloudflare Workers]\n  C --> G[Pull Request]"
+      },
+      {
+        "type": "card",
+        "heading": "为什么值得试",
+        "points": [
+          "首个 commit 落地 24s，对比 53–72s",
+          "4 个 PR 全开出且 CI 绿 56s，Devin 185s",
+          "首次 push 24s，对比平均 62s",
+          "每月超约 640 会话小时，常开 4 vCPU VM 更省"
+        ]
+      }
+    ]
+  }
+}
